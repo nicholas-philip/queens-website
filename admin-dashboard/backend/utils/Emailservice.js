@@ -20,8 +20,11 @@ const transporter = nodemailer.createTransport({
 // Core send function — all helpers below call this
 const sendEmail = async (to, subject, html) => {
   try {
-    if (process.env.NODE_ENV === "development") {
+    if (process.env.NODE_ENV === "development" && (!process.env.EMAIL_USER || process.env.EMAIL_USER.includes("youremail"))) {
       console.log(`📧 [DEV - email skipped] To: ${to} | Subject: ${subject}`);
+      // Log a snippet of the HTML to see tokens/codes in console
+      const snippet = html.replace(/<[^>]*>/g, ' ').substring(0, 250);
+      console.log(`📝 Content Snippet: ${snippet}...`);
       return true;
     }
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {

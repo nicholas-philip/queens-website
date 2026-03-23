@@ -27,9 +27,9 @@ const logActivity = require("../middleware/activityLogger");
 // Returns products where stock is at or below the low-stock threshold (default 10)
 const getLowStockProducts = catchAsync(async (req, res) => {
   const threshold = parseInt(req.query.threshold) || 10;
-  const products = await Product.find({ stock: { $lte: threshold } })
-    .sort({ stock: 1 })
-    .select("name sku stock status images price category")
+  const products = await Product.find({ stockQuantity: { $lte: threshold } })
+    .sort({ stockQuantity: 1 })
+    .select("title SKU brand stockQuantity status images price category")
     .populate("category", "name");
 
   res.status(200).json({
@@ -43,12 +43,10 @@ const getLowStockProducts = catchAsync(async (req, res) => {
 // ── GET /admin/products ───────────────────────────
 // All products with filtering, search, and pagination via filterQuery
 const getProducts = catchAsync(async (req, res) => {
-  const result = await filterQuery(Product, req.query, ["status", "category"]);
+  const result = await filterQuery(Product, req.query, ["status", "category", "brand"]);
   res.status(200).json({ success: true, ...result });
 });
 
-// ── POST /admin/products ──────────────────────────
-// Create a new product; handles image uploads via multer + Cloudinary
 const createProduct = catchAsync(async (req, res) => {
   // Upload any images sent via multer (req.files from upload.array("images", 5))
   let images = [];
@@ -58,8 +56,13 @@ const createProduct = catchAsync(async (req, res) => {
     );
   }
 
+  // Handle tags (support comma-separated string from frontend)
+  if (typeof req.body.tags === "string") {
+    req.body.tags = req.body.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+
   const product = await Product.create({ ...req.body, images });
-  await logActivity(req, "CREATED_PRODUCT", `Product: ${product.name}`);
+  await logActivity(req, "CREATED_PRODUCT", `Product: ${product.title}`);
 
   res.status(201).json({
     success: true,
@@ -98,7 +101,7 @@ const updateProduct = catchAsync(async (req, res) => {
     return res.status(404).json({ success: false, message: "Product not found." });
   }
 
-  await logActivity(req, "UPDATED_PRODUCT", `Product: ${product.name}`);
+  await logActivity(req, "UPDATED_PRODUCT", `Product: ${product.title}`);
   res.status(200).json({ success: true, message: "Product updated.", product });
 });
 
@@ -106,7 +109,7 @@ const updateProduct = catchAsync(async (req, res) => {
 // Toggle active/inactive/draft without touching other fields
 const updateProductStatus = catchAsync(async (req, res) => {
   const { status } = req.body;
-  const allowed = ["active", "inactive", "draft"];
+  const allowed = ["Active", "Draft", "Out of Stock"];
   if (!status || !allowed.includes(status)) {
     return res.status(400).json({
       success: false,
@@ -124,7 +127,7 @@ const updateProductStatus = catchAsync(async (req, res) => {
     return res.status(404).json({ success: false, message: "Product not found." });
   }
 
-  await logActivity(req, "UPDATED_PRODUCT_STATUS", `Product: ${product.name}`, `Status → ${status}`);
+  await logActivity(req, "UPDATED_PRODUCT_STATUS", `Product: ${product.title}`, `Status → ${status}`);
   res.status(200).json({ success: true, message: `Product status set to "${status}".`, product });
 });
 
@@ -141,20 +144,20 @@ const adjustStock = catchAsync(async (req, res) => {
     return res.status(404).json({ success: false, message: "Product not found." });
   }
 
-  const newStock = (product.stock || 0) + adjustment;
+  const newStock = (product.stockQuantity || 0) + adjustment;
   if (newStock < 0) {
     return res.status(400).json({
       success: false,
-      message: `Cannot reduce stock below 0. Current stock: ${product.stock}.`,
+      message: `Cannot reduce stock below 0. Current stock: ${product.stockQuantity}.`,
     });
   }
 
-  product.stock = newStock;
+  product.stockQuantity = newStock;
   await product.save();
 
   await logActivity(
     req, "ADJUSTED_STOCK",
-    `Product: ${product.name}`,
+    `Product: ${product.title}`,
     `${adjustment > 0 ? "+" : ""}${adjustment} → New stock: ${newStock}. Reason: ${reason || "N/A"}`
   );
 
@@ -178,8 +181,8 @@ const deleteProduct = catchAsync(async (req, res) => {
     await Promise.allSettled(product.images.map((url) => deleteFromCloudinary(url)));
   }
 
-  await logActivity(req, "DELETED_PRODUCT", `Product: ${product.name}`);
-  res.status(200).json({ success: true, message: `Product "${product.name}" deleted.` });
+  await logActivity(req, "DELETED_PRODUCT", `Product: ${product.title}`);
+  res.status(200).json({ success: true, message: `Product "${product.title}" deleted.` });
 });
 
 // ── POST /admin/products/:id/variants ────────────
@@ -194,7 +197,7 @@ const addVariant = catchAsync(async (req, res) => {
   await product.save();
 
   const newVariant = product.variants[product.variants.length - 1];
-  await logActivity(req, "ADDED_VARIANT", `Product: ${product.name}`, `Variant: ${req.body.name || req.body.sku || "new"}`);
+  await logActivity(req, "ADDED_VARIANT", `Product: ${product.title}`, `Variant: ${req.body.SKU || "new"}`);
 
   res.status(201).json({
     success: true,
@@ -237,7 +240,7 @@ const deleteVariant = catchAsync(async (req, res) => {
   variant.deleteOne();
   await product.save();
 
-  await logActivity(req, "DELETED_VARIANT", `Product: ${product.name}`);
+  await logActivity(req, "DELETED_VARIANT", `Product: ${product.title}`);
   res.status(200).json({ success: true, message: "Variant deleted.", variants: product.variants });
 });
 

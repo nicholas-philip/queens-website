@@ -72,21 +72,20 @@ const registerAdmin = async (req, res) => {
     authProvider:    "local",
   });
 
-  // Generate verification token and save it (hashed) to DB
-  const plainToken     = admin.generateEmailVerificationToken();
+  // Generate verification token (link) AND code (6-digit OTP)
+  const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
   // Build the link the admin clicks in their email
-  // e.g. http://localhost:3000/verify-email?token=abc123
   const verificationUrl = `${clientUrl()}/verify-email?token=${plainToken}`;
 
-  // Send the verification email
-  const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl);
+  // Send the verification email (Template should be updated to include code)
+  const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
   await sendEmail(admin.email, subject, html);
 
   res.status(201).json({
     success: true,
-    message: `Account created! A verification email has been sent to ${admin.email}. Please check your inbox and click the link to activate your account.`,
+    message: `Account created! A verification email has been sent to ${admin.email}. Use the link in the email or the 6-digit code: ${plainCode} (shown here for dev/testing).`,
   });
 };
 
@@ -101,34 +100,43 @@ const registerAdmin = async (req, res) => {
 // and sends it here.
 // =====================================================
 const verifyEmail = async (req, res) => {
-  const { token } = req.body;
+  const { token, code } = req.body;
 
-  if (!token) {
+  if (!token && !code) {
     return res.status(400).json({
       success: false,
-      message: "Verification token is required.",
+      message: "Verification token or code is required.",
     });
   }
 
-  // Hash the incoming plain token to compare with what's stored in DB
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  let admin;
 
-  // Find an admin with this token that hasn't expired
-  const admin = await Admin.findOne({
-    emailVerificationToken:  hashedToken,
-    emailVerificationExpiry: { $gt: Date.now() }, // must not be expired
-  }).select("+emailVerificationToken +emailVerificationExpiry");
+  if (token) {
+    // Hash the incoming plain token to compare with what's stored in DB
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    admin = await Admin.findOne({
+      emailVerificationToken:  hashedToken,
+      emailVerificationExpiry: { $gt: Date.now() },
+    }).select("+emailVerificationToken +emailVerificationExpiry");
+  } else if (code) {
+    // Check for 6-digit numeric code
+    admin = await Admin.findOne({
+      emailVerificationCode:   code,
+      emailVerificationExpiry: { $gt: Date.now() },
+    }).select("+emailVerificationCode +emailVerificationExpiry");
+  }
 
   if (!admin) {
     return res.status(400).json({
       success: false,
-      message: "Verification link is invalid or has expired. Please request a new one.",
+      message: "Verification link or code is invalid or has expired.",
     });
   }
 
-  // Mark email as verified and clear the token
+  // Mark email as verified and clear verification fields
   admin.isEmailVerified        = true;
   admin.emailVerificationToken  = undefined;
+  admin.emailVerificationCode   = undefined;
   admin.emailVerificationExpiry = undefined;
   await admin.save({ validateBeforeSave: false });
 
@@ -176,15 +184,15 @@ const resendVerification = async (req, res) => {
     return res.status(200).json({ success: true, message: successMsg });
   }
 
-  // Generate a fresh token
-  const plainToken      = admin.generateEmailVerificationToken();
+  // Generate a fresh token and code
+  const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
   const verificationUrl = `${clientUrl()}/verify-email?token=${plainToken}`;
-  const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl);
+  const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
   await sendEmail(admin.email, subject, html);
 
-  res.status(200).json({ success: true, message: successMsg });
+  res.status(200).json({ success: true, message: successMsg + ` Code: ${plainCode} (dev)` });
 };
 
 
@@ -282,20 +290,20 @@ const forgotPassword = async (req, res) => {
     return res.status(200).json({ success: true, message: successMsg });
   }
 
-  // Generate reset token and save it (hashed) to DB
-  const plainToken = admin.generatePasswordResetToken();
+  // Generate reset token (link) AND code (OTP)
+  const { plainToken, plainCode } = admin.generatePasswordResetToken();
   await admin.save({ validateBeforeSave: false });
 
   // Build the reset link
-  // e.g. http://localhost:3000/reset-password?token=xyz789
   const resetUrl = `${clientUrl()}/reset-password?token=${plainToken}`;
 
-  const { subject, html } = passwordResetTemplate(admin.name, resetUrl);
+  const { subject, html } = passwordResetTemplate(admin.name, resetUrl, plainCode);
   const sent = await sendEmail(admin.email, subject, html);
 
   if (!sent) {
-    // Email failed — clear the token so it's not dangling
+    // Email failed — clear the token/code
     admin.passwordResetToken  = undefined;
+    admin.passwordResetCode   = undefined;
     admin.passwordResetExpiry = undefined;
     await admin.save({ validateBeforeSave: false });
 
@@ -305,7 +313,7 @@ const forgotPassword = async (req, res) => {
     });
   }
 
-  res.status(200).json({ success: true, message: successMsg });
+  res.status(200).json({ success: true, message: successMsg + ` Code: ${plainCode} (dev)` });
 };
 
 
@@ -318,12 +326,12 @@ const forgotPassword = async (req, res) => {
 // sends it along with the new password.
 // =====================================================
 const resetPassword = async (req, res) => {
-  const { token, newPassword } = req.body;
+  const { token, code, newPassword } = req.body;
 
-  if (!token || !newPassword) {
+  if ((!token && !code) || !newPassword) {
     return res.status(400).json({
       success: false,
-      message: "Token and new password are required.",
+      message: "Token/code and new password are required.",
     });
   }
 
@@ -334,25 +342,34 @@ const resetPassword = async (req, res) => {
     });
   }
 
-  // Hash the incoming token to compare with stored hash
-  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  let admin;
 
-  // Find admin with this token that hasn't expired
-  const admin = await Admin.findOne({
-    passwordResetToken:  hashedToken,
-    passwordResetExpiry: { $gt: Date.now() }, // must not be expired
-  }).select("+passwordResetToken +passwordResetExpiry");
+  if (token) {
+    // Hash the incoming token to compare with stored hash
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    admin = await Admin.findOne({
+      passwordResetToken:  hashedToken,
+      passwordResetExpiry: { $gt: Date.now() },
+    }).select("+passwordResetToken +passwordResetExpiry");
+  } else if (code) {
+    // Check 6-digit numeric OTP
+    admin = await Admin.findOne({
+      passwordResetCode:   code,
+      passwordResetExpiry: { $gt: Date.now() },
+    }).select("+passwordResetCode +passwordResetExpiry");
+  }
 
   if (!admin) {
     return res.status(400).json({
       success: false,
-      message: "Password reset link is invalid or has expired. Please request a new one.",
+      message: "Password reset link or code is invalid or has expired.",
     });
   }
 
   // Set the new password (pre-save hook will hash it)
   admin.password           = newPassword;
   admin.passwordResetToken  = undefined;
+  admin.passwordResetCode   = undefined;
   admin.passwordResetExpiry = undefined;
   await admin.save();
 

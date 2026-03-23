@@ -22,33 +22,73 @@ const { sendOrderConfirmation, sendOrderStatusUpdate } = require("../utils/Email
 
 // ── POST /orders (public — guest checkout) ────────
 const createOrder = catchAsync(async (req, res) => {
-  // Check stock for every item before creating order
-  for (const item of req.body.items) {
-    const product = await Product.findById(item.product);
+  const { items, subtotal, shipping, tax, discount, total } = req.body;
+
+  // 1. Verify and enrich every item
+  const enrichedItems = [];
+  for (const item of items) {
+    const product = await Product.findById(item.productId);
+    
     if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: `Product not found: ${item.product}`,
-      });
+      return res.status(404).json({ success: false, message: `Product not found: ${item.productId}`});
     }
-    if (product.stock !== undefined && product.stock < item.quantity) {
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient stock for "${product.name}". Available: ${product.stock}.`,
-      });
+
+    // Check stock
+    if (!product.hasVariants) {
+      if (product.stockQuantity < item.quantity) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Insufficient stock for "${product.title}". Only ${product.stockQuantity} left.` 
+        });
+      }
+    } else if (item.variantId) {
+      const variant = product.variants.id(item.variantId);
+      if (!variant || variant.stockQuantity < item.quantity) {
+        return res.status(400).json({ 
+          success: false, 
+          message: `Insufficient stock for variant ${variant?.SKU || "unknown"}.` 
+        });
+      }
     }
-  }
 
-  const order = await Order.create(req.body);
-
-  // Deduct stock
-  for (const item of req.body.items) {
-    await Product.findByIdAndUpdate(item.product, {
-      $inc: { stock: -item.quantity, totalSold: item.quantity },
+    // Enrich item for the order model
+    const price = product.discountPrice !== null ? product.discountPrice : product.price;
+    enrichedItems.push({
+      productId:  product._id,
+      variantId:  item.variantId || null,
+      title:      product.title,
+      SKU:        product.SKU,
+      price:      price,
+      quantity:   item.quantity,
+      lineTotal:  price * item.quantity
     });
   }
 
-  // Send confirmation email (non-blocking)
+  // 2. Create the order
+  const order = await Order.create({
+    ...req.body,
+    items: enrichedItems,
+    currentStatus: "Pending",
+    statusHistory: [{ status: "Pending", note: "Order placed." }]
+  });
+
+  // 3. Deduct stock (since order was successfully created)
+  for (const item of enrichedItems) {
+    if (!item.variantId) {
+      await Product.findByIdAndUpdate(item.productId, {
+        $inc: { stockQuantity: -item.quantity, totalSold: item.quantity }
+      });
+    } else {
+      // Deduct from variant
+      const product = await Product.findById(item.productId);
+      const variant = product.variants.id(item.variantId);
+      variant.stockQuantity -= item.quantity;
+      product.totalSold     += item.quantity;
+      await product.save();
+    }
+  }
+
+  // 4. Send confirmation email (non-blocking)
   sendOrderConfirmation(order).catch(() => {});
 
   res.status(201).json({
@@ -66,7 +106,7 @@ const getAllOrders = catchAsync(async (req, res) => {
 
 // ── GET /admin/orders/:id ─────────────────────────
 const getOrderById = catchAsync(async (req, res) => {
-  const order = await Order.findById(req.params.id).populate("items.product", "name sku images price");
+  const order = await Order.findById(req.params.id).populate("items.productId", "title SKU images price");
   if (!order) {
     return res.status(404).json({ success: false, message: "Order not found." });
   }
@@ -82,7 +122,7 @@ const updateOrderStatus = catchAsync(async (req, res) => {
     return res.status(404).json({ success: false, message: "Order not found." });
   }
 
-  order.status = status;
+  order.currentStatus = status;
 
   // Push to status history if the model supports it
   if (Array.isArray(order.statusHistory)) {

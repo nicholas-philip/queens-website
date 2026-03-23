@@ -84,6 +84,12 @@ const AdminSchema = new mongoose.Schema(
       select: false, // hidden from normal queries
     },
 
+    // A 6-digit numeric code for manual verification
+    emailVerificationCode: {
+      type:   String,
+      select: false,
+    },
+
     // Token expires after 24 hours — admin must re-request if they miss it
     emailVerificationExpiry: {
       type:   Date,
@@ -98,6 +104,12 @@ const AdminSchema = new mongoose.Schema(
       select: false,
     },
 
+    // A 6-digit numeric code for manual password reset
+    passwordResetCode: {
+      type:   String,
+      select: false,
+    },
+
     // Token expires after 1 hour for security
     passwordResetExpiry: {
       type:   Date,
@@ -108,11 +120,10 @@ const AdminSchema = new mongoose.Schema(
 );
 
 // ── Auto-hash password before saving ──────────────
-AdminSchema.pre("save", async function (next) {
+AdminSchema.pre("save", async function () {
   // Only hash if the password field was actually changed
-  if (!this.isModified("password") || !this.password) return next();
+  if (!this.isModified("password") || !this.password) return;
   this.password = await bcrypt.hash(this.password, 10);
-  next();
 });
 
 // ── Compare entered password with stored hash ──────
@@ -122,29 +133,40 @@ AdminSchema.methods.comparePassword = async function (entered) {
 };
 
 // ── Generate a secure email verification token ─────
-// Creates a random token, hashes it for storage,
-// returns the plain token (sent in the email link)
+// ── Generate a secure email verification token ─────
+// Creates a random token + a 6-digit numeric code.
+// Returns an object: { plainToken, plainCode }
 AdminSchema.methods.generateEmailVerificationToken = function () {
-  // Generate a cryptographically secure random string
+  // 1. Generate the long link token
   const plainToken = crypto.randomBytes(32).toString("hex");
-
-  // Hash it before storing in DB (so even if DB is leaked, token is useless)
   this.emailVerificationToken  = crypto.createHash("sha256").update(plainToken).digest("hex");
-  this.emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-  // Return the PLAIN token — this is what goes in the email link
-  return plainToken;
+  // 2. Generate a 6-digit numeric verification code (OTP)
+  const plainCode = Math.floor(100000 + Math.random() * 900000).toString();
+  this.emailVerificationCode = plainCode;
+
+  // 3. Expiry (24 hours for both)
+  this.emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); 
+
+  return { plainToken, plainCode };
 };
 
 // ── Generate a secure password reset token ─────────
-// Same pattern as above — plain token in email, hashed in DB
+// Creates a random token + a 6-digit numeric code.
+// Returns an object: { plainToken, plainCode }
 AdminSchema.methods.generatePasswordResetToken = function () {
+  // 1. Link token (hashed in DB)
   const plainToken = crypto.randomBytes(32).toString("hex");
-
   this.passwordResetToken  = crypto.createHash("sha256").update(plainToken).digest("hex");
-  this.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour only
 
-  return plainToken;
+  // 2. Numeric OTP (stored as plain string)
+  const plainCode = Math.floor(100000 + Math.random() * 900000).toString();
+  this.passwordResetCode = plainCode;
+
+  // 3. Expiry (1 hour only)
+  this.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000); 
+
+  return { plainToken, plainCode };
 };
 
 module.exports = mongoose.models.Admin || mongoose.model("Admin", AdminSchema);

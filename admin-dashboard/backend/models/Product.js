@@ -11,12 +11,8 @@ const mongoose = require("mongoose");
 
 // One size/color variant
 const VariantSchema = new mongoose.Schema({
-  SKU:            { type: String, required: true, uppercase: true, trim: true },
-  attributes: {
-    size:     { type: String, default: null },
-    color:    { type: String, default: null },
-    material: { type: String, default: null },
-  },
+  SKU:            { type: String, uppercase: true, trim: true }, // Not globally unique for variants, but unique within product is usually better. 
+  attributes:    { type: Map, of: String, default: {} }, // Flexible: { "size": "10" } or { "volume": "50ml", "scent": "Floral" }
   stockQuantity:   { type: Number, default: 0, min: 0 },
   priceAdjustment: { type: Number, default: 0 }, // +/- from base price
   image:           { type: String, default: null },
@@ -26,8 +22,10 @@ const VariantSchema = new mongoose.Schema({
 const ProductSchema = new mongoose.Schema(
   {
     title:         { type: String, required: [true, "Title is required"], trim: true },
+    brand:         { type: String, default: "" }, // Brand or Manufacturer
     description:   { type: String, required: [true, "Description is required"] },
-    SKU:           { type: String, required: [true, "SKU is required"], unique: true, uppercase: true, trim: true },
+    SKU:           { type: String, unique: true, uppercase: true, trim: true }, // Will be auto-generated if not provided
+    slug:          { type: String, unique: true }, // For SEO friendly URLs
     price:         { type: Number, required: [true, "Price is required"], min: 0 },
     discountPrice: { type: Number, default: null },
 
@@ -57,6 +55,35 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true, toJSON: { virtuals: true } }
 );
+
+// Auto-generate SKU and Slug
+ProductSchema.pre("save", async function () {
+  // Generate SKU if missing
+  if (!this.SKU) {
+    const random = Math.floor(1000 + Math.random() * 9000); // 4 digit random number
+    const prefix = this.title.substring(0, 3).toUpperCase().replace(/[^A-Z0-9]/g, 'X');
+    this.SKU = `${prefix}-${Date.now().toString().slice(-4)}-${random}`;
+  }
+
+  // Generate Slug from title
+  if (this.isModified("title") || !this.slug) {
+    this.slug = this.title
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  // Ensure variants also have SKUs if they exist
+  if (this.hasVariants && this.variants.length > 0) {
+    this.variants.forEach((v, index) => {
+      if (!v.SKU) {
+        v.SKU = `${this.SKU}-V${index + 1}`;
+      }
+    });
+  }
+});
 
 // Effective selling price (discount overrides regular)
 ProductSchema.virtual("effectivePrice").get(function () {

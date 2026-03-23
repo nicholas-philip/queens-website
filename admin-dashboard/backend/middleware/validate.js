@@ -28,8 +28,9 @@ const schemas = {
   }),
 
   verifyEmail: Joi.object({
-    token,
-  }),
+    token: Joi.string().optional(),
+    code:  Joi.string().length(6).pattern(/^\d+$/).message("Code must be a 6-digit number").optional(),
+  }).or("token", "code"),
 
   resendVerification: Joi.object({
     email,
@@ -45,9 +46,10 @@ const schemas = {
   }),
 
   resetPassword: Joi.object({
-    token,
+    token:       Joi.string().optional(),
+    code:        Joi.string().length(6).pattern(/^\d+$/).message("Code must be a 6-digit number").optional(),
     newPassword: Joi.string().min(6).required(),
-  }),
+  }).or("token", "code"),
 
   changePassword: Joi.object({
     currentPassword: Joi.string().required(),
@@ -60,15 +62,15 @@ const schemas = {
 
   // ── PRODUCTS ──────────────────────────────────
   createProduct: Joi.object({
-    name:        Joi.string().trim().min(2).max(200).required(),
-    description: Joi.string().trim().max(5000).optional(),
-    price:       Joi.number().min(0).required(),
-    comparePrice:Joi.number().min(0).optional(),
-    stock:       Joi.number().integer().min(0).default(0),
-    category:    objectId.optional(),
-    sku:         Joi.string().trim().optional(),
-    tags:        Joi.array().items(Joi.string()).optional(),
-    status:      Joi.string().valid("active", "inactive", "draft").default("active"),
+    title:         Joi.string().trim().min(2).max(200).required(),
+    description:   Joi.string().trim().max(5000).required(),
+    price:         Joi.number().min(0).required(),
+    discountPrice: Joi.number().min(0).optional(),
+    stockQuantity: Joi.number().integer().min(0).default(0),
+    category:      objectId.required(),
+    SKU:           Joi.string().trim().uppercase().optional(),
+    tags:          Joi.alternatives().try(Joi.array().items(Joi.string()), Joi.string()).optional(),
+    status:        Joi.string().valid("Active", "Draft", "Out of Stock").default("Draft"),
   }).options({ allowUnknown: true }), // allow extra image fields from multer
 
   adjustStock: Joi.object({
@@ -78,26 +80,30 @@ const schemas = {
 
   // ── ORDERS ────────────────────────────────────
   createOrder: Joi.object({
-    customer: Joi.object({
+    customerDetails: Joi.object({
       name:  Joi.string().trim().required(),
       email: Joi.string().email().lowercase().trim().required(),
-      phone: Joi.string().trim().optional(),
-    }).required(),
-    shippingAddress: Joi.object({
-      street:  Joi.string().required(),
-      city:    Joi.string().required(),
-      state:   Joi.string().optional(),
-      zip:     Joi.string().optional(),
-      country: Joi.string().required(),
+      phone: Joi.string().trim().required(),
+      address: Joi.object({
+        street:  Joi.string().required(),
+        city:    Joi.string().required(),
+        state:   Joi.string().required(),
+        zipCode: Joi.string().allow("").optional(),
+        country: Joi.string().default("Nigeria"),
+      }).required(),
     }).required(),
     items: Joi.array().items(
       Joi.object({
-        product:  objectId.required(),
-        quantity: Joi.number().integer().min(1).required(),
-        price:    Joi.number().min(0).required(),
-        variant:  Joi.string().optional(),
+        productId: objectId.required(),
+        quantity:  Joi.number().integer().min(1).required(),
+        variantId: objectId.optional(),
       })
     ).min(1).required(),
+    subtotal:       Joi.number().min(0).required(),
+    discount:       Joi.number().min(0).default(0),
+    shipping:       Joi.number().min(0).default(0),
+    tax:            Joi.number().min(0).default(0),
+    total:          Joi.number().min(0).required(),
     couponCode:     Joi.string().trim().uppercase().optional(),
     paymentMethod:  Joi.string().valid("card", "paypal", "bank_transfer", "cash_on_delivery").optional(),
     notes:          Joi.string().trim().max(500).optional(),
@@ -105,7 +111,7 @@ const schemas = {
 
   updateOrderStatus: Joi.object({
     status: Joi.string()
-      .valid("pending", "processing", "shipped", "delivered", "cancelled", "refunded")
+      .valid("Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded")
       .required(),
     note: Joi.string().trim().max(300).optional(),
   }),
@@ -118,11 +124,12 @@ const schemas = {
 
   createCoupon: Joi.object({
     code:             Joi.string().trim().uppercase().min(3).max(30).required(),
+    description:      Joi.string().trim().max(500).optional(),
     discountType:     Joi.string().valid("percentage", "fixed").required(),
     discountValue:    Joi.number().min(0).required(),
     minOrderAmount:   Joi.number().min(0).default(0),
-    maxUses:          Joi.number().integer().min(1).optional(),
-    expiresAt:        Joi.date().iso().optional(),
+    maxUses:          Joi.number().integer().min(1).allow(null).optional(),
+    expiryDate:       Joi.date().iso().required(),
     isActive:         Joi.boolean().default(true),
     applicableProducts: Joi.array().items(objectId).optional(),
     applicableCategories: Joi.array().items(objectId).optional(),
@@ -142,7 +149,7 @@ const schemas = {
   bulkUpdateOrders: Joi.object({
     ids:    Joi.array().items(objectId).min(1).required(),
     status: Joi.string()
-      .valid("pending", "processing", "shipped", "delivered", "cancelled", "refunded")
+      .valid("Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded")
       .required(),
   }),
 

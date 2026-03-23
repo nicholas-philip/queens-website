@@ -14,13 +14,12 @@ const InvoiceSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Auto-generate a professional invoice ID (e.g. INV-2024-0001)
-InvoiceSchema.pre("validate", async function (next) {
+InvoiceSchema.pre("validate", async function () {
   if (this.isNew) {
     const count = await mongoose.model("Invoice").countDocuments();
     const year = new Date().getFullYear();
     this.invoiceId = `INV-${year}-${String(count + 1).padStart(4, "0")}`;
   }
-  next();
 });
 
 module.exports = mongoose.models.Invoice || mongoose.model("Invoice", InvoiceSchema);

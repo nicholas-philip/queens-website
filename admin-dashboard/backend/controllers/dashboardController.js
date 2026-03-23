@@ -10,7 +10,7 @@ const Order        = require("../models/Order");
 const Product      = require("../models/Product");
 const Transaction  = require("../models/Transaction");
 const Customer     = require("../models/Customer");
-const ActivityLog  = require("../models/Activitylog");
+const ActivityLog  = require("../models/ActivityLog");
 const Review       = require("../models/Review");
 
 // Calculate % growth: ((current - previous) / previous) * 100

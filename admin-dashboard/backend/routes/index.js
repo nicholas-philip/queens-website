@@ -151,6 +151,7 @@ router.patch ("/admin/invoices/:id/status", verifyAdmin, updateInvoiceStatus);
 // =====================================================
 router.get   ("/categories",          cat.getAllCategories);          // public
 router.get   ("/categories/:id",      cat.getCategoryById);           // public
+router.get   ("/admin/categories",    verifyAdmin, cat.getAllCategories);
 router.post  ("/admin/categories",    verifyAdmin, upload.single("image"), cat.createCategory);
 router.put   ("/admin/categories/:id",verifyAdmin, upload.single("image"), cat.updateCategory);
 router.delete("/admin/categories/:id",verifyAdmin, cat.deleteCategory);
@@ -230,5 +231,8 @@ router.get("/admin/export/customers",     verifyAdmin, exp.exportCustomers);
 // GLOBAL SEARCH
 // =====================================================
 router.get("/admin/search", verifyAdmin, srch.globalSearch);
+
+// ── HEALTH CHECK ─────────────────────────────────
+router.get("/health", (req, res) => res.status(200).json({ success: true, uptime: process.uptime() }));
 
 module.exports = router;

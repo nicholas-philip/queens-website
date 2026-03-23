@@ -67,14 +67,19 @@ const wrap = (title, body) => `
 // verificationUrl example:
 //   http://localhost:3000/verify-email?token=abc123def456
 // ─────────────────────────────────────────────────
-const verifyEmailTemplate = (adminName, verificationUrl) => ({
+const verifyEmailTemplate = (adminName, verificationUrl, plainCode) => ({
   subject: "Verify your admin email address",
   html: wrap("Verify Your Email", `
     <h2>Welcome, ${adminName}! 👋</h2>
     <p>Your admin account has been created. Before you can log in,
     you need to verify your email address.</p>
 
-    <p>Click the button below to verify your email:</p>
+    <div class="info" style="text-align:center">
+      <strong>Your Verification Code:</strong><br>
+      <span style="font-size:32px; font-weight:700; color:#18181b; letter-spacing:4px; margin:12px 0; display:block">${plainCode || "------"}</span>
+    </div>
+
+    <p>Or click the button below to verify automatically:</p>
 
     <a href="${verificationUrl}" class="btn">✅ Verify Email Address</a>
 
@@ -99,18 +104,25 @@ const verifyEmailTemplate = (adminName, verificationUrl) => ({
 // resetUrl example:
 //   http://localhost:3000/reset-password?token=xyz789abc
 // ─────────────────────────────────────────────────
-const passwordResetTemplate = (adminName, resetUrl) => ({
+const passwordResetTemplate = (adminName, resetUrl, plainCode) => ({
   subject: "Reset your admin password",
   html: wrap("Password Reset Request", `
     <h2>Password Reset</h2>
     <p>Hi <strong>${adminName}</strong>,</p>
     <p>We received a request to reset the password for your admin account.
-    Click the button below to set a new password.</p>
+    You can use the numeric code below or the button to set a new password.</p>
+
+    <div class="info" style="text-align:center">
+      <strong>Your Reset Code:</strong><br>
+      <span style="font-size:32px; font-weight:700; color:#18181b; letter-spacing:4px; margin:12px 0; display:block">${plainCode || "------"}</span>
+    </div>
+
+    <p>Or click the button below to reset automatically:</p>
 
     <a href="${resetUrl}" class="btn">🔑 Reset My Password</a>
 
     <div class="warning">
-      <strong>⏱ This link expires in 1 hour.</strong><br>
+      <strong>⏱ This link and code expire in 1 hour.</strong><br>
       If you did not request a password reset, you can safely ignore this email.
       Your password will not change.
     </div>
@@ -194,7 +206,7 @@ const passwordChangedTemplate = (adminName) => ({
 //
 // Used in adminController → createAdmin()
 // ─────────────────────────────────────────────────
-const newAdminInviteTemplate = (newAdminName, inviterName, tempPassword, verificationUrl) => ({
+const newAdminInviteTemplate = (newAdminName, inviterName, tempPassword, verificationUrl, plainCode) => ({
   subject: `You've been added as an admin`,
   html: wrap("Admin Invitation", `
     <h2>You've been invited! 🎉</h2>
@@ -205,6 +217,9 @@ const newAdminInviteTemplate = (newAdminName, inviterName, tempPassword, verific
     <div class="info">
       <strong>Temporary Password:</strong>
       <span class="code">${tempPassword}</span><br><br>
+      <strong>Verification Code:</strong>
+      <span style="font-family:monospace; font-weight:700">${plainCode || "------"}</span>
+      <br><br>
       <strong>Important:</strong> You must verify your email and change this password after logging in.
     </div>
 

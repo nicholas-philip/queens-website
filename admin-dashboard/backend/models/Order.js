@@ -63,12 +63,11 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-OrderSchema.pre("save", async function (next) {
+OrderSchema.pre("save", async function () {
   if (this.isNew) {
     const count      = await mongoose.model("Order").countDocuments();
     this.orderNumber = `#GK-${1001 + count}`;
   }
-  next();
 });
 
 module.exports = mongoose.models.Order || mongoose.model("Order", OrderSchema);
