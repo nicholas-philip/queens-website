@@ -1,11 +1,11 @@
 // =====================================================
 // utils/emailService.js
 // Sends transactional emails via Nodemailer.
-// Skips sending in development mode — just logs.
-// All functions return true/false, never throw.
+// Premium "Queens" styling for order & inventory alerts.
 // =====================================================
 
 const nodemailer = require("nodemailer");
+const { wrap, THEME } = require("./emailLayout");
 
 const transporter = nodemailer.createTransport({
   host:   process.env.EMAIL_HOST || "smtp.gmail.com",
@@ -17,103 +17,84 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Core send function — all helpers below call this
 const sendEmail = async (to, subject, html) => {
   try {
-    if (process.env.NODE_ENV === "development" && (!process.env.EMAIL_USER || process.env.EMAIL_USER.includes("youremail"))) {
+    if (process.env.NODE_ENV === "development" && (!process.env.EMAIL_PASS || process.env.EMAIL_PASS.length < 5)) {
       console.log(`📧 [DEV - email skipped] To: ${to} | Subject: ${subject}`);
-      // Log a snippet of the HTML to see tokens/codes in console
-      const snippet = html.replace(/<[^>]*>/g, ' ').substring(0, 250);
-      console.log(`📝 Content Snippet: ${snippet}...`);
       return true;
     }
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.warn("⚠️ Email credentials missing. Skipping.");
-      return false;
-    }
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Your Store" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"Queens Store" <${process.env.EMAIL_USER}>`,
       to, subject, html,
     });
-    console.log(`✅ Email sent → ${to}`);
     return true;
   } catch (err) {
-    console.error(`❌ Email failed → ${to}:`, err.message);
+    console.error(`❌ Email failed:`, err.message);
     return false;
   }
 };
 
-// ── Helpers called from controllers ──────────────
+// ── Helpers ──────────────
 
-// New order — sends confirmation to customer + alert to admin
 const sendOrderConfirmation = async (order) => {
-  const items = order.items.map((i) =>
-    `<tr><td>${i.title}</td><td>${i.SKU}</td><td>${i.quantity}</td><td>₦${Number(i.price).toLocaleString()}</td></tr>`
-  ).join("");
+  const rows = order.items.map((i) => `
+    <tr>
+      <td>${i.title}</td>
+      <td>${i.quantity}</td>
+      <td>₦${Number(i.price).toLocaleString()}</td>
+    </tr>`).join("");
 
-  const customerHtml = `
-    <h2>Order Confirmed — ${order.orderNumber}</h2>
-    <p>Hi <strong>${order.customerDetails.name}</strong>, your order has been received!</p>
-    <table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">
-      <tr><th>Item</th><th>SKU</th><th>Qty</th><th>Price</th></tr>${items}
+  const body = `
+    <h2>Order Received 👋</h2>
+    <p>Hi ${order.customerDetails.name}, your order <strong>#${order.orderNumber}</strong> has been confirmed. We're getting it ready for delivery.</p>
+    <table class="item-table">
+      <thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr class="total-row"><td colspan="2">Total</td><td>₦${Number(order.total).toLocaleString()}</td></tr></tfoot>
     </table>
-    <p><strong>Total: ₦${Number(order.total).toLocaleString()}</strong></p>
-    <p>We'll update you when your order ships.</p>`;
+    <div style="text-align: center; margin-top: 30px;">
+      <p style="color: ${THEME.muted}; font-size: 13px;">Shipping to: ${order.customerDetails.address || "Main Address"}</p>
+    </div>`;
 
-  const adminHtml = `
-    <h2>🛒 New Order: ${order.orderNumber}</h2>
-    <p><strong>Customer:</strong> ${order.customerDetails.name}</p>
-    <p><strong>Phone:</strong> ${order.customerDetails.phone}</p>
-    <p><strong>Total:</strong> ₦${Number(order.total).toLocaleString()}</p>`;
-
-  if (order.customerDetails.email) {
-    await sendEmail(order.customerDetails.email, `Order Confirmed ✅ — ${order.orderNumber}`, customerHtml);
-  }
-  if (process.env.ADMIN_ALERT_EMAIL) {
-    await sendEmail(process.env.ADMIN_ALERT_EMAIL, `🆕 New Order ${order.orderNumber}`, adminHtml);
-  }
+  await sendEmail(order.customerDetails.email, `Order Confirmed: ${order.orderNumber} 🛍️`, wrap("Order Confirmed", body));
 };
 
-// Status update — sent to customer
 const sendOrderStatusUpdate = async (order, note) => {
   if (!order.customerDetails.email) return;
-  const html = `
-    <h2>Order Update — ${order.orderNumber}</h2>
-    <p>Your order status is now: <strong>${order.currentStatus}</strong></p>
-    ${note ? `<p>Note: ${note}</p>` : ""}
-    ${order.trackingNumber ? `<p>Tracking: <strong>${order.trackingNumber}</strong></p>` : ""}`;
-  await sendEmail(order.customerDetails.email, `Order ${order.currentStatus} — ${order.orderNumber}`, html);
+
+  const body = `
+    <h2>Order Status: ${order.currentStatus} 📦</h2>
+    <p>Great news! Your order <strong>#${order.orderNumber}</strong> has been updated to: <strong>${order.currentStatus}</strong>.</p>
+    ${note ? `<div style="background-color: rgba(255,255,255,0.03); padding: 20px; border-radius: 12px; margin: 20px 0;"><p style="margin:0; font-style: italic;">"${note}"</p></div>` : ""}
+    ${order.trackingNumber ? `<p style="text-align:center">Tracking Number: <strong style="color: ${THEME.primary}">${order.trackingNumber}</strong></p>` : ""}`;
+
+  await sendEmail(order.customerDetails.email, `Order Update: ${order.orderNumber}`, wrap("Shipping Update", body));
 };
 
-// Refund confirmation — sent to customer
-const sendRefundConfirmation = async (order, transaction, reason) => {
-  if (!order.customerDetails.email) return;
-  const html = `
-    <h2>Refund Processed — ${order.orderNumber}</h2>
-    <p>Hi ${order.customerDetails.name}, your refund of <strong>₦${Number(transaction.amount).toLocaleString()}</strong> has been processed.</p>
-    <p>Reason: ${reason || "Requested by admin"}</p>
-    <p>Please allow 5–10 business days to appear in your account.</p>`;
-  await sendEmail(order.customerDetails.email, `Refund Confirmed — ${order.orderNumber}`, html);
-};
-
-// Low stock alert — sent to admin
 const sendLowStockAlert = async (products) => {
-  if (!process.env.ADMIN_ALERT_EMAIL || !products.length) return;
-  const rows = products.map((p) =>
-    `<tr><td>${p.title}</td><td>${p.SKU}</td><td style="color:red">${p.stockQuantity}</td></tr>`
-  ).join("");
-  const html = `
-    <h2>⚠️ Low Stock Alert</h2>
-    <table border="1" cellpadding="8" style="border-collapse:collapse;width:100%">
-      <tr><th>Product</th><th>SKU</th><th>Stock Left</th></tr>${rows}
+  if (!process.env.ADMIN_ALERT_EMAIL) return;
+
+  const rows = products.map((p) => `
+    <tr>
+      <td>${p.title}</td>
+      <td>${p.SKU}</td>
+      <td style="color: ${THEME.error}; font-weight: 700;">${p.stockQuantity} Left</td>
+    </tr>`).join("");
+
+  const body = `
+    <h2 style="color: ${THEME.error}">⚠️ Low Stock Warning</h2>
+    <p>The following luxury items are running low. Consider restocking soon to avoid sales interruption.</p>
+    <table class="item-table">
+      <thead><tr><th>Product</th><th>SKU</th><th>Stock</th></tr></thead>
+      <tbody>${rows}</tbody>
     </table>`;
-  await sendEmail(process.env.ADMIN_ALERT_EMAIL, `⚠️ Low Stock — ${products.length} products`, html);
+
+  await sendEmail(process.env.ADMIN_ALERT_EMAIL, `Inventory Alert: ${products.length} items low`, wrap("Stock Alert", body, "QUEENS ADMIN"));
 };
 
 module.exports = {
   sendEmail,
   sendOrderConfirmation,
   sendOrderStatusUpdate,
-  sendRefundConfirmation,
   sendLowStockAlert,
 };

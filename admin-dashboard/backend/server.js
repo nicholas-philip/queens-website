@@ -13,6 +13,10 @@ const helmet = require("helmet");
 
 const errorHandler = require("./middleware/errorHandler");
 const routes = require("./routes");
+const { initFirebase } = require("./utils/firebase");
+
+// Initialize Firebase Admin SDK at startup
+initFirebase();
 
 // Initialize express app
 const app = express();
@@ -20,7 +24,7 @@ const app = express();
 // Configure Middleware
 app.use(helmet());
 app.use(cors({
-  origin: "*", // Configure this to restrict domains in production
+  origin: ["http://localhost:5173", "http://localhost:3000"],
   credentials: true
 }));
 app.use(express.json());
@@ -69,3 +73,4 @@ mongoose.connect(MONGO_URI)
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
+// touch

@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { Eye, EyeOff, Store, Loader2 } from "lucide-react"
-
+import { Eye, EyeOff, Loader2, Mail, Lock, Globe } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import { authAPI } from "../../libs/api"
+import logo from "../../assets/logo.png"
 
 export default function LoginPage() {
   const { login, loginWithGoogle } = useAuth()
@@ -24,10 +24,9 @@ export default function LoginPage() {
     setLoading(true)
     setServerError("")
     setNeedsVerify(false)
-
     try {
       await login(data.email, data.password)
-      navigate("/dashboard") // Redirect after successful login
+      navigate("/dashboard")
     } catch (err) {
       const msg = err.response?.data?.message || "Login failed."
       const action = err.response?.data?.action
@@ -44,7 +43,7 @@ export default function LoginPage() {
       await loginWithGoogle()
       navigate("/dashboard")
     } catch (err) {
-      toast.error("Google Login Failed", err.message)
+      toast.error("Google Login Failed: " + err.message)
     } finally {
       setGoogleLoading(false)
     }
@@ -53,132 +52,147 @@ export default function LoginPage() {
   const resendVerification = async () => {
     const email = getValues("email")
     if (!email) return
-
     try {
       await authAPI.resendVerification({ email })
-      toast.success("Email Sent", "Verification email resent. Check your inbox.")
+      toast.success("Verification email resent.")
     } catch {
-      toast.error("Failed", "Could not resend. Try again.")
+      toast.error("Could not resend. Try again.")
     }
   }
 
-  // Reusable Input Field
-  const InputField = ({ label, type, placeholder, name, error, showToggle }) => (
-    <div>
-      <div className="flex items-center justify-between mb-1">
-        <label className="label mb-0">{label}</label>
-        {name === "password" && (
-          <Link to="/auth/forgot-password" className="text-xs text-blue-600 hover:text-blue-700">
-            Forgot password?
-          </Link>
-        )}
-      </div>
-      <div className="relative">
-        <input
-          type={type}
-          placeholder={placeholder}
-          className={`input w-full ${error ? "border-red-400 focus:ring-red-400" : ""} ${showToggle ? "pr-10" : ""}`}
-          {...register(name, { required: `${label} is required` })}
-        />
-        {showToggle && (
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-          >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
-        )}
-      </div>
-      {error && <p className="mt-1 text-xs text-red-600">{error.message}</p>}
-    </div>
-  )
-
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-fade-in">
+    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Ambient glows */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-yellow-500/10 blur-[120px]" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-amber-600/10 blur-[100px]" />
+      </div>
+      {/* Dot grid */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.035]"
+        style={{ backgroundImage: "radial-gradient(rgba(212,160,23,1) 1px, transparent 1px)", backgroundSize: "28px 28px" }}
+      />
+
+      <div className="w-full max-w-md z-10">
 
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 mb-4">
-            <Store className="h-7 w-7 text-white" />
+          <div className="inline-block mb-4">
+            <img
+              src={logo}
+              alt="Queens Admin Logo"
+              className="h-24 w-24 object-contain"
+              style={{ filter: "drop-shadow(0 0 18px rgba(212,160,23,0.55)) drop-shadow(0 0 6px rgba(212,160,23,0.3))" }}
+              loading="lazy"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">Sign in to your account</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Admin Dashboard</h1>
+          <p className="text-neutral-500 text-sm mt-1">Sign in to manage your store</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        {/* Card */}
+        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.7)] p-8 overflow-hidden">
+          {/* Gold shimmer top edge */}
+          <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent" />
 
-          {/* Error Alert */}
+          {/* Server error */}
           {serverError && (
-            <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3">
-              <p className="text-sm text-red-700">{serverError}</p>
-              {needsVerify && (
-                <button
-                  onClick={resendVerification}
-                  className="mt-1 text-xs font-semibold text-red-700 underline underline-offset-2"
-                >
-                  Resend verification email
-                </button>
-              )}
+            <div className="mb-5 rounded-xl bg-red-950/60 border border-red-800/50 px-4 py-3 flex items-start gap-3">
+              <div className="h-4 w-4 rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center mt-0.5 shrink-0">
+                <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-red-400">{serverError}</p>
+                {needsVerify && (
+                  <button onClick={resendVerification} className="mt-1 text-xs font-semibold text-red-400 underline underline-offset-2 hover:text-red-300 transition-colors">
+                    Resend verification email →
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <InputField
-              label="Email address"
-              type="email"
-              placeholder="admin@store.com"
-              name="email"
-              error={errors.email}
-            />
-            <InputField
-              label="Password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              name="password"
-              error={errors.password}
-              showToggle
-            />
+            {/* Email */}
+            <div>
+              <label className="block text-xs font-semibold text-neutral-400 uppercase tracking-widest mb-2">
+                Email address
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500 pointer-events-none" />
+                <input
+                  type="email"
+                  placeholder="admin@store.com"
+                  className={`w-full bg-neutral-800/70 border ${errors.email ? "border-red-500/60 focus:border-red-500" : "border-neutral-700 focus:border-yellow-600/70"} rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:ring-2 ${errors.email ? "focus:ring-red-500/10" : "focus:ring-yellow-600/10"} transition-all`}
+                  {...register("email", { required: "Email is required" })}
+                />
+              </div>
+              {errors.email && <p className="mt-1.5 text-xs text-red-400 flex items-center gap-1">⚠ {errors.email.message}</p>}
+            </div>
 
+            {/* Password */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-neutral-400 uppercase tracking-widest">Password</label>
+                <Link to="/auth/forgot-password" className="text-xs text-yellow-500 hover:text-yellow-300 font-medium transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500 pointer-events-none" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className={`w-full bg-neutral-800/70 border ${errors.password ? "border-red-500/60 focus:border-red-500" : "border-neutral-700 focus:border-yellow-600/70"} rounded-xl pl-10 pr-11 py-3 text-sm text-white placeholder-neutral-600 outline-none focus:ring-2 ${errors.password ? "focus:ring-red-500/10" : "focus:ring-yellow-600/10"} transition-all`}
+                  {...register("password", { required: "Password is required" })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors p-0.5"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && <p className="mt-1.5 text-xs text-red-400">⚠ {errors.password.message}</p>}
+            </div>
+
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full py-2.5"
+              className="w-full mt-2 py-3 rounded-xl bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-semibold text-sm shadow-[0_4px_20px_rgba(212,160,23,0.3)] hover:shadow-[0_4px_28px_rgba(212,160,23,0.5)] transition-all duration-200 flex items-center justify-center gap-2"
             >
-              {loading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" /> Signing in...</> : "Sign in"}
+              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</> : "Sign in"}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="relative my-5">
+          <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-slate-200" />
+              <div className="w-full border-t border-neutral-800" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-white px-3 text-xs text-slate-400">or continue with</span>
+              <span className="bg-neutral-900 px-3 text-xs text-neutral-600">or continue with</span>
             </div>
           </div>
 
-          {/* Google Login */}
+          {/* Google */}
           <button
             onClick={handleGoogleLogin}
             disabled={googleLoading}
-            className="btn-secondary w-full py-2.5 gap-3 flex items-center justify-center"
+            className="w-full py-3 rounded-xl bg-neutral-800 hover:bg-neutral-750 border border-neutral-700 hover:border-yellow-600/30 text-white text-sm font-medium flex items-center justify-center gap-3 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {googleLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <img src="/icons/google.svg" alt="Google Logo" className="h-4 w-4" />
-            )}
+            {googleLoading
+              ? <Loader2 className="h-4 w-4 animate-spin text-yellow-500" />
+              : <Globe className="h-4 w-4 text-neutral-300" />}
             Sign in with Google
           </button>
 
-          <p className="mt-5 text-center text-xs text-slate-400">
+          <p className="mt-6 text-center text-xs text-neutral-600">
             Don't have an account?{" "}
-            <Link to="/auth/register" className="text-blue-600 hover:text-blue-700 font-medium">
-              Contact your SuperAdmin
+            <Link to="/auth/register" className="text-yellow-500 hover:text-yellow-300 font-medium transition-colors underline-offset-4 hover:underline">
+              Sign Up
             </Link>
           </p>
         </div>

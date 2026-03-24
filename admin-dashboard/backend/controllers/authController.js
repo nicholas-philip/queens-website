@@ -77,7 +77,7 @@ const registerAdmin = async (req, res) => {
   await admin.save({ validateBeforeSave: false });
 
   // Build the link the admin clicks in their email
-  const verificationUrl = `${clientUrl()}/verify-email?token=${plainToken}`;
+  const verificationUrl = `${clientUrl()}/auth/verify-email?token=${plainToken}`;
 
   // Send the verification email (Template should be updated to include code)
   const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
@@ -188,7 +188,7 @@ const resendVerification = async (req, res) => {
   const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
-  const verificationUrl = `${clientUrl()}/verify-email?token=${plainToken}`;
+  const verificationUrl = `${clientUrl()}/auth/verify-email?token=${plainToken}`;
   const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
   await sendEmail(admin.email, subject, html);
 
@@ -295,7 +295,7 @@ const forgotPassword = async (req, res) => {
   await admin.save({ validateBeforeSave: false });
 
   // Build the reset link
-  const resetUrl = `${clientUrl()}/reset-password?token=${plainToken}`;
+  const resetUrl = `${clientUrl()}/auth/reset-password?token=${plainToken}`;
 
   const { subject, html } = passwordResetTemplate(admin.name, resetUrl, plainCode);
   const sent = await sendEmail(admin.email, subject, html);
@@ -516,10 +516,22 @@ const firebaseLogin = async (req, res) => {
   }
 
   if (!admin) {
-    return res.status(403).json({
-      success: false,
-      message: "No admin account found for this Firebase user. Ask a SuperAdmin to create your account.",
+    // If no admin found by UID or Email, check if this is the first admin EVER
+    const adminCount = await Admin.countDocuments();
+    
+    admin = await Admin.create({
+      name:            decoded.name || "New Admin",
+      email:           decoded.email.toLowerCase(),
+      // First person to log in becomes SuperAdmin, others are Managers
+      role:            adminCount === 0 ? "SuperAdmin" : "Manager",
+      firebaseUid:     decoded.uid,
+      authProvider:    "firebase",
+      isEmailVerified: true, // Firebase already verified the Google email
+      isActive:        true,
+      avatar:          decoded.picture || null,
     });
+
+    console.log(`🆕 Auto-created ${admin.role} via Google: ${admin.email}`);
   }
 
   if (!admin.isActive) {

@@ -1,6 +1,6 @@
-import { X }         from "lucide-react"
+import { X } from "lucide-react"
 import { useEffect } from "react"
-import { cn }        from "@/lib/utils"
+import { cn } from "../libs/utils"
 
 export default function Modal({ open, onClose, title, children, size = "md", footer }) {
   useEffect(() => {
@@ -16,18 +16,33 @@ export default function Modal({ open, onClose, title, children, size = "md", foo
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
-      <div className={cn("animate-fade-in w-full bg-white rounded-xl shadow-xl flex flex-col max-h-[90vh]", sizes[size])}>
+      <div className={cn(
+        "w-full bg-neutral-900 border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.7)] flex flex-col max-h-[90vh] relative overflow-hidden",
+        sizes[size]
+      )}>
+        {/* Gold top edge */}
+        <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-yellow-500/70 to-transparent" />
+
         {title && (
-          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
-            <button onClick={onClose} className="text-slate-400 hover:text-slate-600"><X className="h-5 w-5" /></button>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
+            <h2 className="text-base font-semibold text-white">{title}</h2>
+            <button
+              onClick={onClose}
+              className="text-neutral-500 hover:text-neutral-200 transition-colors rounded-lg p-1 hover:bg-neutral-800"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
         )}
         <div className="flex-1 overflow-y-auto px-6 py-4">{children}</div>
-        {footer && <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-end gap-3">{footer}</div>}
+        {footer && (
+          <div className="px-6 py-4 border-t border-neutral-800 flex items-center justify-end gap-3">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -37,13 +52,23 @@ export function ConfirmModal({ open, onClose, onConfirm, title, message, confirm
   return (
     <Modal open={open} onClose={onClose} title={title} size="sm"
       footer={<>
-        <button onClick={onClose}   className="btn-secondary" disabled={loading}>Cancel</button>
-        <button onClick={onConfirm} className="btn-danger"    disabled={loading}>
-          {loading ? "Please wait..." : confirmLabel}
+        <button
+          onClick={onClose}
+          disabled={loading}
+          className="px-4 py-2 rounded-xl text-sm font-medium text-neutral-300 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-all disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onConfirm}
+          disabled={loading}
+          className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-500 transition-all disabled:opacity-50"
+        >
+          {loading ? "Please wait…" : confirmLabel}
         </button>
       </>}
     >
-      <p className="text-sm text-slate-600">{message}</p>
+      <p className="text-sm text-neutral-400">{message}</p>
     </Modal>
   )
 }
