@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const productController = require("../controllers/Productcontroller");
+const productController = require("../controllers/productController");
 const { verifyAdmin } = require("../middleware/verifyAdmin");
 
 // Public (to see items on storefront)
-router.get("/", productController.getAllProducts);
-router.get("/:id", productController.getProduct);
+router.get("/", productController.getProducts);
+router.get("/:id", productController.getProductById);
 
 // Admin Only (manage items)
 router.post("/", verifyAdmin, productController.createProduct);
