@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils"
+import { cn } from "../lib/utils"
 
 export function Table({ children, className }) {
   return <div className={cn("overflow-x-auto", className)}><table className="w-full text-sm">{children}</table></div>
