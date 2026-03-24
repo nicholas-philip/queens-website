@@ -13,7 +13,7 @@ const TransactionSchema = new mongoose.Schema(
 
     paymentMethod: {
       type:    String,
-      enum:    ["Card","Bank Transfer","USSD","Cash on Delivery","Wallet","Other"],
+      enum:    ["Card","Bank Transfer","USSD","Cash on Delivery","Wallet","Mobile Money","Other"],
       default: "Card",
     },
 

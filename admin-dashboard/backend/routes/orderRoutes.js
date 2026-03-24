@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const orderController = require("../controllers/orderController");
+const orderController = require("../controllers/Ordercontroller");
 const { verifyAdmin } = require("../middleware/verifyAdmin");
 
 // --- ORDER ACTIONS (1:1 Mapping) ---

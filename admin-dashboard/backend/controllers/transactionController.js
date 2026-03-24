@@ -17,6 +17,7 @@ const Notification = require("../models/Notification");
 const filterQuery  = require("../utils/filterQuery");
 const logActivity  = require("../middleware/activityLogger");
 const { sendRefundConfirmation } = require("../utils/Emailservice");
+const paystackService = require("../utils/paystackService");
 
 
 // ── Record payment (called by payment gateway) ─
@@ -138,4 +139,95 @@ const refundTransaction = async (req, res) => {
   res.status(200).json({ success: true, message: `Refund of ₦${t.amount.toLocaleString()} processed.`, transaction: t });
 };
 
-module.exports = { createTransaction, getAllTransactions, getTransactionSummary, getTransactionsByOrder, getTransactionById, refundTransaction };
+// ── INITIALIZE PAYMENT (Start payment flow) ──
+const initializePayment = async (req, res) => {
+  const { orderId, email, amount } = req.body;
+
+  if (!orderId || !email || !amount) {
+    return res.status(400).json({ success: false, message: "orderId, email, and amount are required." });
+  }
+
+  // 1. Verify Order exists
+  const order = await Order.findById(orderId);
+  if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+
+  // 2. Call Paystack service
+  const result = await paystackService.initializeTransaction({
+    email,
+    amount, // frontend sends exact amount, service converts to sub-currency (kobo/pesewas)
+    orderId,
+    metadata: {
+      items: order.items.map(i => i.title).join(", ")
+    }
+  });
+
+  // 3. Keep track of 'Pending' transaction
+  await Transaction.create({
+    transactionId: result.data.reference, 
+    orderRef: orderId,
+    amount,
+    status: "Pending",
+    paymentMethod: "Mobile Money", // Assume or update later
+    gatewayResponse: result.data
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Payment initialized.",
+    data: result.data // authorization_url is here
+  });
+};
+
+// ── VERIFY PAYMENT (Callback/Verify after user pays) ──
+const verifyPayment = async (req, res) => {
+  const { reference } = req.params;
+
+  if (!reference) return res.status(400).json({ success: false, message: "Reference is required." });
+
+  // 1. Ask Paystack for status
+  const verification = await paystackService.verifyTransaction(reference);
+  const { status, amount, metadata, channel } = verification.data;
+
+  // 2. Find internal transaction
+  const transaction = await Transaction.findOne({ transactionId: reference });
+  if (!transaction) return res.status(404).json({ success: false, message: "Transaction record not found." });
+
+  // 3. Update status
+  const finalStatus = (status === "success" || status === "Success") ? "Success" : "Failed";
+  transaction.status = finalStatus;
+  transaction.gatewayResponse = verification.data;
+  transaction.paymentMethod = channel === "mobile_money" ? "Mobile Money" : (channel === "card" ? "Card" : "Other");
+  await transaction.save();
+
+  // 4. Update order if success
+  const order = await Order.findById(transaction.orderRef);
+  if (order && finalStatus === "Success") {
+    order.currentStatus = "Processing";
+    order.statusHistory.push({ 
+      status: "Processing", 
+      note: `Payment confirmed via ${transaction.paymentMethod}. Ref: ${reference}`, 
+      changedAt: new Date() 
+    });
+    await order.save();
+    await Invoice.findOneAndUpdate({ orderRef: order._id }, { status: "Paid" });
+  }
+
+  res.status(200).json({
+    success: true,
+    status: finalStatus,
+    message: `Payment ${finalStatus}.`,
+    data: verification.data
+  });
+};
+
+
+module.exports = { 
+  createTransaction, 
+  getAllTransactions, 
+  getTransactionSummary, 
+  getTransactionsByOrder, 
+  getTransactionById, 
+  refundTransaction,
+  initializePayment,
+  verifyPayment,
+};
