@@ -1,5 +1,4 @@
 import axios from "axios"
-import { useAuthStore } from "../context/AuthContext"
 
 const API_URL = import.meta.env.VITE_API_URL || "https://queens-website.onrender.com"
 
@@ -21,7 +20,10 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      useAuthStore.getState().logout()
+      // ✅ Lazy import breaks the circular dependency
+      import("../context/AuthContext").then(({ useAuthStore }) => {
+        useAuthStore.getState().logout()
+      })
       window.location.href = "/auth/login"
     }
     return Promise.reject(err)
