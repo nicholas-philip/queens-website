@@ -1,6 +1,7 @@
 import axios from "axios"
+import { useAuthStore } from "../context/AuthContext"
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+const API_URL = import.meta.env.VITE_API_URL || "https://queens-website.onrender.com"
 
 const api = axios.create({ baseURL: API_URL, headers: { "Content-Type": "application/json" } })
 
@@ -20,9 +21,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
-      localStorage.removeItem("admin_token")
-      localStorage.removeItem("admin_user")
-      localStorage.removeItem("auth_provider")
+      useAuthStore.getState().logout()
       window.location.href = "/auth/login"
     }
     return Promise.reject(err)

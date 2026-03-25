@@ -25,9 +25,13 @@ const logout = useAuthStore((s) => s.logout)
             <div className="w-8 h-8 rounded-lg bg-yellow-500 flex items-center justify-center font-black text-black shadow-[0_0_15px_rgba(234,179,8,0.4)]">Q</div>
             <span className="font-bold text-white tracking-tight">Queens Admin</span>
         </div>
-        <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors">
-           <Menu className="h-6 w-6" />
-        </button>
+
+        {/* Hide hamburger when sidebar is open */}
+        {!sidebarOpen && (
+          <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors">
+            <Menu className="h-6 w-6" />
+          </button>
+        )}
       </div>
 
       {/* ── Sidebar Overlay ── */}
