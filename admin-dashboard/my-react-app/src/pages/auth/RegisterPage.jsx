@@ -47,19 +47,19 @@ export default function RegisterPage() {
     `w-full bg-neutral-800/70 border ${err ? "border-neutral-600" : "border-neutral-700"} rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-neutral-600 outline-none focus:border-yellow-600/60 focus:ring-2 focus:ring-yellow-600/10 transition-all`
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-base-100 flex items-center justify-center p-4 relative overflow-hidden">
 
-      {/* Ambient glows */}
-      <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-yellow-500/10 blur-[120px]" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-amber-600/10 blur-[100px]" />
+      {/* Ambient glows (Hidden on mobile to protect Safari) */}
+      <div className="pointer-events-none fixed inset-0 z-0 hidden lg:block">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/10 blur-3xl opacity-50" />
+        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-primary/10 blur-3xl opacity-50" />
       </div>
 
       {/* Dot grid */}
       <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.035]"
+        className="pointer-events-none fixed inset-0 z-0 opacity-10"
         style={{
-          backgroundImage: "radial-gradient(rgba(212,160,23,1) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(var(--color-primary) 1px, transparent 1px)",
           backgroundSize: "28px 28px",
         }}
       />
@@ -67,34 +67,34 @@ export default function RegisterPage() {
       <div className="w-full max-w-md z-10 animate-fade-in">
 
         {/* Card */}
-        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl p-8 overflow-hidden">
+        <div className="relative bg-base-200 border border-base-300 rounded-2xl p-8 overflow-hidden shadow-2xl">
           {/* Gold shimmer top edge */}
-          <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent" />
+          <div className="absolute top-0 left-[10%] right-[10%] h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent" />
 
           {/* Header */}
           <div className="text-center mb-7">
-            <h1 className="text-2xl font-bold text-white tracking-tight">Create Account</h1>
-            <p className="text-sm text-neutral-500 mt-1">Join the Queens management team</p>
+            <h1 className="text-2xl font-bold text-base-content tracking-tight">Create Account</h1>
+            <p className="text-sm text-base-content/60 mt-1">Join the Queens management team</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
             {/* Full Name */}
             <div>
-              <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
+              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Full Name
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600 pointer-events-none" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Nicholas Philip"
-                  className={inputCls(errors.name)}
+                  className={`w-full bg-base-100 border ${errors.name ? "border-red-500" : "border-base-300"} rounded-xl pl-10 pr-4 py-2.5 text-sm text-base-content placeholder-base-content/40 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all`}
                   {...register("name", { required: "Name is required" })}
                 />
               </div>
               {errors.name && (
-                <p className="mt-1.5 text-xs text-neutral-400 flex items-center gap-1">
+                <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-medium">
                   <AlertCircle className="h-3 w-3" /> {errors.name.message}
                 </p>
               )}
@@ -102,20 +102,20 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div>
-              <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
+              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600 pointer-events-none" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 pointer-events-none" />
                 <input
                   type="email"
                   placeholder="admin@queens.com"
-                  className={inputCls(errors.email)}
+                  className={`w-full bg-base-100 border ${errors.email ? "border-red-500" : "border-base-300"} rounded-xl pl-10 pr-4 py-2.5 text-sm text-base-content placeholder-base-content/40 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all`}
                   {...register("email", { required: "Email is required" })}
                 />
               </div>
               {errors.email && (
-                <p className="mt-1.5 text-xs text-neutral-400 flex items-center gap-1">
+                <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-medium">
                   <AlertCircle className="h-3 w-3" /> {errors.email.message}
                 </p>
               )}
@@ -123,15 +123,15 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">
+              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600 pointer-events-none" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 pointer-events-none" />
                 <input
                   type={showPass ? "text" : "password"}
                   placeholder="••••••••"
-                  className={`${inputCls(errors.password)} pr-11`}
+                  className={`w-full bg-base-100 border ${errors.password ? "border-red-500" : "border-base-300"} rounded-xl pl-10 pr-11 py-2.5 text-sm text-base-content placeholder-base-content/40 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all`}
                   {...register("password", {
                     required: "Password is required",
                     minLength: { value: 6, message: "Min. 6 characters" },
@@ -140,13 +140,13 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPass(!showPass)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-300 transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-base-content/50 hover:text-base-content transition-colors"
                 >
                   {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1.5 text-xs text-neutral-400 flex items-center gap-1">
+                <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1 font-medium">
                   <AlertCircle className="h-3 w-3" /> {errors.password.message}
                 </p>
               )}
@@ -156,7 +156,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-1 py-2.5 rounded-xl bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-black font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2"
+              className="w-full mt-1 py-2.5 rounded-xl bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-primary-content font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg"
             >
               {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Creating account…</> : "Create Account"}
             </button>
@@ -165,10 +165,10 @@ export default function RegisterPage() {
           {/* Divider */}
           <div className="relative my-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-neutral-800" />
+              <div className="w-full border-t border-base-300" />
             </div>
             <div className="relative flex justify-center">
-              <span className="bg-neutral-900 px-3 text-xs text-neutral-600">or continue with</span>
+              <span className="bg-base-200 px-3 text-xs text-base-content/60">or continue with</span>
             </div>
           </div>
 
@@ -176,18 +176,18 @@ export default function RegisterPage() {
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 text-white text-sm font-medium flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-xl bg-base-100 hover:bg-base-300 border border-base-300 text-base-content text-sm font-medium flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             {googleLoading
-              ? <Loader2 className="h-4 w-4 animate-spin text-yellow-500" />
-              : <Globe className="h-4 w-4 text-neutral-400" />
+              ? <Loader2 className="h-4 w-4 animate-spin text-primary" />
+              : <Globe className="h-4 w-4 text-base-content/50" />
             }
             Sign up with Google
           </button>
 
-          <p className="text-center mt-5 text-xs text-neutral-600">
+          <p className="text-center mt-5 text-xs text-base-content/60">
             Already have an account?{" "}
-            <Link to="/auth/login" className="text-yellow-500 hover:text-yellow-400 font-medium transition-colors">
+            <Link to="/auth/login" className="text-primary hover:text-primary/80 font-medium transition-colors">
               Sign in
             </Link>
           </p>
