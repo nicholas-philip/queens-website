@@ -26,7 +26,8 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://queens-website-three.vercel.app",  // production frontend
+    "https://queens-website-three.vercel.app",  // production frontend vercel
+    "https://queens-admin-frontend.onrender.com",// production frontend render
     process.env.FRONTEND_URL,                    // additional overrides via Render env vars
     process.env.ADMIN_CLIENT_URL,                // fallback
   ].filter(Boolean),
