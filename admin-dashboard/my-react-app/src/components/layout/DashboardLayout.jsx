@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Outlet, Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../context/AuthContext"
-import { Bell, Search, Menu, LogOut } from "lucide-react"
+import { Bell, Search, Menu } from "lucide-react"
 import Sidebar from "../Sidebar"
 
 export default function DashboardLayout() {
@@ -26,20 +26,12 @@ const logout = useAuthStore((s) => s.logout)
             <span className="font-bold text-white tracking-tight">Queens Admin</span>
         </div>
 
-        <div className="flex items-center gap-2">
-            {/* Quick Logout for Mobile Header */}
-            <button onClick={handleLogout} className="flex flex-row items-center gap-2 px-3 py-1.5 text-red-500 bg-red-500/10 rounded-lg border border-red-500/20 hover:bg-red-500 hover:text-white transition-all font-bold text-xs shadow-lg">
-                <LogOut className="h-4 w-4" />
-                <span>Logout</span>
-            </button>
-            
-            {/* Hide hamburger when sidebar is open */}
-            {!sidebarOpen && (
-              <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors bg-neutral-900 rounded-lg border border-neutral-800">
-                <Menu className="h-5 w-5" />
-              </button>
-            )}
-        </div>
+        {/* Hide hamburger when sidebar is open */}
+        {!sidebarOpen && (
+          <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors bg-neutral-900 rounded-lg border border-neutral-800">
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
       </div>
 
       {/* ── Sidebar Overlay ── */}
