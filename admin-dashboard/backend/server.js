@@ -5,56 +5,64 @@
 
 require("dotenv").config();
 require("express-async-errors");
-const express = require("express");
+const express  = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors");
-const morgan = require("morgan");
-const helmet = require("helmet");
+const cors     = require("cors");
+const morgan   = require("morgan");
+const helmet   = require("helmet");
 
-const errorHandler = require("./middleware/errorHandler");
-const routes = require("./routes");
+const errorHandler    = require("./middleware/errorHandler");
+const routes          = require("./routes");
 const { initFirebase } = require("./utils/firebase");
 
 // Initialize Firebase Admin SDK at startup
 initFirebase();
 
-// Initialize express app
 const app = express();
 
-// Configure Middleware
-app.use(helmet());
+// ── CORS ─────────────────────────────────────────
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000"],
-  credentials: true
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    process.env.FRONTEND_URL,        // set this in Render env vars
+  ].filter(Boolean),
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Auth-Provider"],
 }));
+
+// Handle preflight for all routes
+app.options("*", cors());
+
+// ── Core Middleware ───────────────────────────────
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Http logger
-if (process.env.NODE_ENV === "development" || true) {
+if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-// Mount all API routes
-// Note: Based on standard practice, we mount on /api. 
-// If your frontend uses urls like /admin/..., change /api to /
-app.use("/api", routes);
+// ── Routes ───────────────────────────────────────
+// Mounted at "/" so frontend calls /auth/login, /admin/... work as-is
+app.use("/", routes);
 
-// Base health-check route
+// Base health-check
 app.get("/", (req, res) => {
   res.json({ success: true, message: "Admin Dashboard API is up and running." });
 });
 
-// Fallback 404 Route
-app.use((req, res, next) => {
+// 404
+app.use((req, res) => {
   res.status(404).json({ success: false, message: "API Route not found." });
 });
 
-// Global Error Handler Middleware
+// Global Error Handler
 app.use(errorHandler);
 
-// Connect to MongoDB & Start Server
-const PORT = process.env.PORT || 5000;
+// ── Database & Server ─────────────────────────────
+const PORT     = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -73,4 +81,3 @@ mongoose.connect(MONGO_URI)
     console.error("❌ MongoDB connection error:", err.message);
     process.exit(1);
   });
-// touch
