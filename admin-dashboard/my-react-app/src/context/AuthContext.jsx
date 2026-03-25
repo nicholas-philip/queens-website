@@ -12,7 +12,29 @@ export const useAuthStore = create(
       loading: true,
 
       /* ── Init (runs once) ── */
-      init: () => {
+      init: async () => {
+        try {
+          const { getRedirectResult } = await import("firebase/auth")
+          const result = await getRedirectResult(auth).catch(() => null)
+          if (result && result.user) {
+            const idToken = await result.user.getIdToken()
+            const { data } = await authAPI.firebaseLogin({ idToken })
+            
+            localStorage.setItem("admin_token", idToken)
+            localStorage.setItem("admin_user", JSON.stringify(data.admin))
+            localStorage.setItem("auth_provider", "firebase")
+            
+            set({
+              admin: data.admin,
+              isAuthenticated: true,
+              loading: false,
+            })
+            return
+          }
+        } catch (err) {
+          console.error("Redirect login failed", err)
+        }
+
         const token = localStorage.getItem("admin_token")
         const raw   = localStorage.getItem("admin_user")
 
@@ -73,6 +95,13 @@ export const useAuthStore = create(
             loading: false,
           })
         } catch (err) {
+          if (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user" || err.message?.includes("Cross-Origin")) {
+            // Trigger redirect login for restrictive Android webviews
+            const { signInWithRedirect } = await import("firebase/auth")
+            await signInWithRedirect(auth, provider)
+            // It will redirect the page, so no need to stop loading
+            return
+          }
           set({ loading: false })
           throw err
         }
