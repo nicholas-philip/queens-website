@@ -25,11 +25,14 @@ app.use(cors({
   origin: [
     "http://localhost:5173",
     "http://localhost:3000",
-    process.env.FRONTEND_URL,        // set this in Render env vars
+    "https://queens-website-three.vercel.app",  // production frontend
+    process.env.FRONTEND_URL,                    // additional overrides via Render env vars
+    process.env.ADMIN_CLIENT_URL,                // fallback
   ].filter(Boolean),
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Auth-Provider"],
+  optionsSuccessStatus: 200,
 }));
 
 // Handle preflight for all routes
