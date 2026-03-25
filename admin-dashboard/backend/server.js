@@ -14,6 +14,7 @@ const helmet   = require("helmet");
 const errorHandler    = require("./middleware/errorHandler");
 const routes          = require("./routes");
 const { initFirebase } = require("./utils/firebase");
+const { startSelfPing } = require("./utils/selfPing");
 
 // Initialize Firebase Admin SDK at startup
 initFirebase();
@@ -78,6 +79,10 @@ mongoose.connect(MONGO_URI)
     console.log("✅ Successfully connected to MongoDB");
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
+      // Start self-ping to prevent Render free-tier sleep
+      if (process.env.NODE_ENV === "production") {
+        startSelfPing();
+      }
     });
   })
   .catch((err) => {
