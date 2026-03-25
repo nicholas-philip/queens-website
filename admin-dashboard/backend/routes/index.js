@@ -26,7 +26,7 @@ const {
 
 const { getDailyRevenue, getOrdersByStatus, getTopProducts, getSalesByCategory, getAnalyticsOverview } = require("../controllers/analyticsController");
 const { getProducts, getProductById, createProduct, updateProduct, updateProductStatus, adjustStock, deleteProduct, getLowStockProducts, addVariant, updateVariant, deleteVariant } = require("../controllers/productController");
-const { createOrder, getAllOrders, getOrderById, updateOrderStatus, addTrackingNumber, updateAdminNotes, deleteOrder } = require("../controllers/Ordercontroller");
+const { createOrder, getAllOrders, getOrderById, updateOrderStatus, addTrackingNumber, updateAdminNotes, deleteOrder } = require("../controllers/orderController");
 const { getAllCustomers, getCustomerStats, getCustomerById, updateCustomerTags, updateCustomerNotes, toggleBlockCustomer, deleteCustomer } = require("../controllers/customerController");
 const { createTransaction, getAllTransactions, getTransactionSummary, getTransactionsByOrder, getTransactionById, refundTransaction } = require("../controllers/transactionController");
 const { getAllInvoices, getInvoiceSummary, getOverdueInvoices, getInvoiceById, updateInvoiceStatus } = require("../controllers/invoiceController");
