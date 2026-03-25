@@ -33,7 +33,7 @@ CouponSchema.methods.isValidStatus = function (total = 0) {
   if (isExpired) return { valid: false, reason: "Coupon has expired." };
   if (isInactive) return { valid: false, reason: "Coupon is no longer active." };
   if (reachedLimit) return { valid: false, reason: "Coupon usage limit reached." };
-  if (belowMin) return { valid: false, reason: `Minimum order of ₦${this.minOrderAmount} required.` };
+  if (belowMin) return { valid: false, reason: `Minimum order of GH₵${this.minOrderAmount} required.` };
 
   return { valid: true };
 };

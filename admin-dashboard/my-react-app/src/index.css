@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -31,3 +32,25 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #525252;
 }
+
+/* User requirement: All buttons white and no hover effect */
+button {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* button:hover,
+button:active {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+  transform: none !important;
+} */

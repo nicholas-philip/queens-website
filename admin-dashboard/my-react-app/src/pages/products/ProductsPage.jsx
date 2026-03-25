@@ -237,7 +237,7 @@ export default function ProductsPage() {
 
       {/* ── Delete Confirmation Modal ── */}
       <Modal 
-        isOpen={!!deleteId} 
+        open={!!deleteId} 
         onClose={() => setDeleteId(null)} 
         title="Delete Product"
       >

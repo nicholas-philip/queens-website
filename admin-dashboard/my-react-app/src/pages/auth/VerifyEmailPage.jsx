@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react"
 import { Link, useSearchParams, useNavigate } from "react-router-dom"
 import { CheckCircle, XCircle, Loader2 } from "lucide-react"
-import { useAuth } from "../../context/AuthContext"
+import {  useAuthStore } from "../../context/AuthContext"
 import { authAPI } from "../../libs/api"
 
 export default function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { refreshAdmin } = useAuth()
+  const admin = useAuthStore((s) => s.admin)
   const token = searchParams.get("token")
 
   const [status, setStatus] = useState("verifying") // "verifying" | "success" | "error"

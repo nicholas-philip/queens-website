@@ -73,7 +73,7 @@ export default function InvoiceDetailPage() {
                     <span className="text-2xl font-bold text-white tracking-tighter print:text-black uppercase">Queens Luxury</span>
                 </div>
                 <div className="text-xs font-bold text-neutral-500 leading-relaxed uppercase tracking-widest print:text-neutral-500">
-                    Lagos, Nigeria<br />
+                    Accra, Ghana<br />
                     Premium Lifestyle Hub<br />
                     billing@queensluxury.com
                 </div>

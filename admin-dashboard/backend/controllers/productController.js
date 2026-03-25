@@ -88,23 +88,40 @@ const getProductById = catchAsync(async (req, res) => {
 // ── PUT /admin/products/:id ───────────────────────
 // Full update — replaces all editable fields
 const updateProduct = catchAsync(async (req, res) => {
-  // Upload new images if any were sent
+  const existingProduct = await Product.findById(req.params.id);
+  if (!existingProduct) {
+    return res.status(404).json({ success: false, message: "Product not found." });
+  }
+
+  if (typeof req.body.tags === "string") {
+    req.body.tags = req.body.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+
+  let keptImages = [];
+  if (req.body.existingImages) {
+    keptImages = Array.isArray(req.body.existingImages) 
+      ? req.body.existingImages 
+      : [req.body.existingImages];
+  }
+
+  const imagesToDelete = (existingProduct.images || []).filter(img => !keptImages.includes(img));
+  if (imagesToDelete.length > 0) {
+    await Promise.allSettled(imagesToDelete.map(url => deleteFromCloudinary(url)));
+  }
+
+  let newImages = [];
   if (req.files && req.files.length > 0) {
-    const newImages = await Promise.all(
+    newImages = await Promise.all(
       req.files.map((file) => uploadToCloudinary(file.buffer, "products"))
     );
-    // Append to existing images instead of replacing (frontend can delete individually)
-    req.body.images = newImages;
   }
+
+  req.body.images = [...keptImages, ...newImages];
 
   const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
   });
-
-  if (!product) {
-    return res.status(404).json({ success: false, message: "Product not found." });
-  }
 
   await logActivity(req, "UPDATED_PRODUCT", `Product: ${product.title}`);
   res.status(200).json({ success: true, message: "Product updated.", product });

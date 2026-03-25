@@ -267,7 +267,7 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ── Adjust Stock Modal ── */}
-      <Modal isOpen={adjModal} onClose={() => setAdjModal(false)} title="Inventory Adjustment">
+      <Modal open={adjModal} onClose={() => setAdjModal(false)} title="Inventory Adjustment">
         <div className="p-8 space-y-8">
           <div className="flex items-center justify-between p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl">
             <div>
@@ -311,7 +311,7 @@ export default function ProductDetailPage() {
                 value={adjReason} 
                 onChange={(e) => setAdjReason(e.target.value)} 
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all placeholder:text-neutral-700" 
-                placeholder="e.g. Restocked from Lagos Hub" 
+                placeholder="e.g. Restocked from Accra Hub" 
             />
           </div>
 
@@ -329,7 +329,7 @@ export default function ProductDetailPage() {
       </Modal>
 
       {/* ── Confirm Delete Modal ── */}
-      <Modal isOpen={deleteOpen} onClose={() => setDeleteOpen(false)} title="Destructive Action">
+      <Modal open={deleteOpen} onClose={() => setDeleteOpen(false)} title="Destructive Action">
         <div className="p-8">
             <div className="flex items-center gap-4 p-4 bg-red-500/5 border border-red-500/10 rounded-2xl mb-8">
                 <AlertTriangle className="h-8 w-8 text-red-500 shrink-0" />

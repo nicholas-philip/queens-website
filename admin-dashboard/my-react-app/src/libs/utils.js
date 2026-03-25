@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 
 export const cn = (...inputs) => twMerge(clsx(inputs))
 
-export const formatCurrency = (amount, symbol = "₦") =>
+export const formatCurrency = (amount, symbol = "GH₵") =>
   `${symbol}${Number(amount || 0).toLocaleString("en-NG", { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
 
 export const formatDate = (date) => {

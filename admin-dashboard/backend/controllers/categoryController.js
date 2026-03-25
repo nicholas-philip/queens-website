@@ -77,7 +77,7 @@ const validateCoupon = async (req, res) => {
     success: true, isValid: true, couponCode: coupon.code,
     discountType: coupon.discountType, discountValue: coupon.discountValue,
     discountAmount, originalTotal: orderTotal, newTotal: orderTotal - discountAmount,
-    message: `Coupon applied! You save ₦${discountAmount.toLocaleString()}.`,
+    message: `Coupon applied! You save GH₵${discountAmount.toLocaleString()}.`,
   });
 };
 
@@ -105,7 +105,7 @@ const createCoupon = async (req, res) => {
   const exists = await Coupon.findOne({ code: code?.trim().toUpperCase() });
   if (exists) return res.status(400).json({ success: false, message: `Coupon "${code}" already exists.` });
   const coupon = await Coupon.create(req.body);
-  await logActivity(req, "CREATED_COUPON", `Coupon: ${coupon.code}`, `${coupon.discountValue}${coupon.discountType === "percentage" ? "%" : "₦"} off`);
+  await logActivity(req, "CREATED_COUPON", `Coupon: ${coupon.code}`, `${coupon.discountValue}${coupon.discountType === "percentage" ? "%" : "GH₵"} off`);
   res.status(201).json({ success: true, message: `Coupon "${coupon.code}" created.`, coupon });
 };
 

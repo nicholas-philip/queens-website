@@ -41,7 +41,7 @@ const sendOrderConfirmation = async (order) => {
     <tr>
       <td>${i.title}</td>
       <td>${i.quantity}</td>
-      <td>₦${Number(i.price).toLocaleString()}</td>
+      <td>GH₵${Number(i.price).toLocaleString()}</td>
     </tr>`).join("");
 
   const body = `
@@ -50,7 +50,7 @@ const sendOrderConfirmation = async (order) => {
     <table class="item-table">
       <thead><tr><th>Item</th><th>Qty</th><th>Price</th></tr></thead>
       <tbody>${rows}</tbody>
-      <tfoot><tr class="total-row"><td colspan="2">Total</td><td>₦${Number(order.total).toLocaleString()}</td></tr></tfoot>
+      <tfoot><tr class="total-row"><td colspan="2">Total</td><td>GH₵${Number(order.total).toLocaleString()}</td></tr></tfoot>
     </table>
     <div style="text-align: center; margin-top: 30px;">
       <p style="color: ${THEME.muted}; font-size: 13px;">Shipping to: ${order.customerDetails.address || "Main Address"}</p>

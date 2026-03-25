@@ -89,7 +89,7 @@ const schemas = {
         city:    Joi.string().required(),
         state:   Joi.string().required(),
         zipCode: Joi.string().allow("").optional(),
-        country: Joi.string().default("Nigeria"),
+        country: Joi.string().default("Ghana"),
       }).required(),
     }).required(),
     items: Joi.array().items(

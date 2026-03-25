@@ -42,7 +42,7 @@ const createTransaction = async (req, res) => {
 
   if (status === "Success") {
     order.currentStatus = "Processing";
-    order.statusHistory.push({ status: "Processing", note: `₦${amount.toLocaleString()} confirmed via ${paymentMethod || "Card"}`, changedAt: new Date() });
+    order.statusHistory.push({ status: "Processing", note: `GH₵${amount.toLocaleString()} confirmed via ${paymentMethod || "Card"}`, changedAt: new Date() });
     await order.save();
     await Invoice.findOneAndUpdate({ orderRef: order._id }, { status: "Paid" });
   }
@@ -123,20 +123,20 @@ const refundTransaction = async (req, res) => {
   const order = await Order.findById(t.orderRef);
   if (order) {
     order.currentStatus = "Cancelled";
-    order.statusHistory.push({ status: "Cancelled", note: `Refund ₦${t.amount.toLocaleString()}. Reason: ${reason || "N/A"}`, changedAt: new Date() });
+    order.statusHistory.push({ status: "Cancelled", note: `Refund GH₵${t.amount.toLocaleString()}. Reason: ${reason || "N/A"}`, changedAt: new Date() });
     await order.save();
     await Invoice.findOneAndUpdate({ orderRef: order._id }, { status: "Unpaid" });
     await sendRefundConfirmation(order, t, reason);
   }
 
-  await Notification.notify("REFUND_PROCESSED", `₦${t.amount.toLocaleString()} refunded on order ${order?.orderNumber}.`);
-  await logActivity(req, "PROCESSED_REFUND", `Transaction: ${t.transactionId}`, `₦${t.amount.toLocaleString()} | Reason: ${reason || "N/A"}`);
+  await Notification.notify("REFUND_PROCESSED", `GH₵${t.amount.toLocaleString()} refunded on order ${order?.orderNumber}.`);
+  await logActivity(req, "PROCESSED_REFUND", `Transaction: ${t.transactionId}`, `GH₵${t.amount.toLocaleString()} | Reason: ${reason || "N/A"}`);
 
   // ── Payment gateway refund API (uncomment to use) ──
   // Paystack: await axios.post("https://api.paystack.co/refund", { transaction: t.transactionId, amount: t.amount * 100 }, { headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` } });
   // Stripe:   await stripe.refunds.create({ payment_intent: t.transactionId });
 
-  res.status(200).json({ success: true, message: `Refund of ₦${t.amount.toLocaleString()} processed.`, transaction: t });
+  res.status(200).json({ success: true, message: `Refund of GH₵${t.amount.toLocaleString()} processed.`, transaction: t });
 };
 
 // ── INITIALIZE PAYMENT (Start payment flow) ──

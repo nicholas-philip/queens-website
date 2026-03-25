@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const SettingsSchema = new mongoose.Schema({
   storeName: { type: String, default: "My Store" },
   storeEmail: { type: String },
-  currencySymbol: { type: String, default: "₦" },
+  currencySymbol: { type: String, default: "GH₵" },
   maintenanceMode: { type: Boolean, default: false },
   lowStockThreshold: { type: Number, default: 10 }
 }, { timestamps: true });

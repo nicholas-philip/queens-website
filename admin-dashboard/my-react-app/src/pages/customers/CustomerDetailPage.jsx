@@ -3,10 +3,10 @@ import { useParams, Link } from "react-router-dom"
 import { ArrowLeft, User, Mail, Phone, MapPin, Calendar, ShoppingBag, CreditCard, Activity, ChevronRight, CheckCircle2, AlertCircle, Clock, Package } from "lucide-react"
 import { customersAPI, ordersAPI } from "../../libs/api"
 import { formatCurrency, formatDate, getStatusBadge, cn } from "../../libs/utils"
-import Spinner from "../../components/Spinner"
-import { useToast } from "../../context/ToastContext"
+import Spinner                           from "../../components/Spinner"
+import { useToast }                      from "../../context/ToastContext"
 import { Table, TableHead, TableBody, TableRow, TableCell } from "../../components/Table"
-
+    
 export default function CustomerDetailPage() {
   const { id } = useParams()
   const toast = useToast()

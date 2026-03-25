@@ -306,7 +306,7 @@ export default function OrderDetailPage() {
       </div>
 
       {/* ── Status Update Modal ── */}
-      <Modal isOpen={statusModal} onClose={() => setStatusModal(false)} title="Modify Order State">
+      <Modal open={statusModal} onClose={() => setStatusModal(false)} title="Modify Order State">
         <div className="p-8 space-y-8">
             <div className="p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl flex items-center gap-4">
                 <Info className="h-5 w-5 text-yellow-500 shrink-0" />
@@ -333,7 +333,7 @@ export default function OrderDetailPage() {
                         value={statusNote} 
                         onChange={(e) => setStatusNote(e.target.value)}
                         className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all resize-none placeholder:text-neutral-700 font-medium" 
-                        placeholder="e.g. Dispatched via Lagos Express Logistics" 
+                        placeholder="e.g. Dispatched via Accra Express Logistics" 
                     />
                 </div>
             </div>
@@ -352,7 +352,7 @@ export default function OrderDetailPage() {
       </Modal>
 
       {/* ── Tracking Modal ── */}
-      <Modal isOpen={trackModal} onClose={() => setTrackModal(false)} title="Logistics Registry">
+      <Modal open={trackModal} onClose={() => setTrackModal(false)} title="Logistics Registry">
         <div className="p-8 space-y-8">
             <div className="space-y-4">
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block">Carrier Tracking Reference</label>
