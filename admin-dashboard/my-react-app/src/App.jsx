@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
+import { ThemeProvider } from "next-themes"
 import { useAuthStore } from "./context/AuthContext"
 import { ToastProvider } from "./context/ToastContext"
 import Spinner from "./components/Spinner"
@@ -139,10 +140,12 @@ function AppRoutes() {
 ───────────────────────────────────────────── */
 export default function App() {
   return (
-    <BrowserRouter>
-      <ToastProvider>
-        <AppRoutes />
-      </ToastProvider>
-    </BrowserRouter>
+    <ThemeProvider attribute="data-theme" defaultTheme="light" enableSystem={true}>
+      <BrowserRouter>
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   )
 }

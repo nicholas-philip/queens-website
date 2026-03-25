@@ -1,5 +1,52 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* Map Tailwind hardcoded colors to dynamic theme variables to instantly fix all pages */
+@theme {
+  --color-black: var(--color-base-100);
+  --color-white: var(--color-base-content);
+  --color-neutral-950: var(--color-base-100);
+  --color-neutral-900: var(--color-base-200);
+  --color-neutral-800: var(--color-base-300);
+  --color-neutral-700: var(--color-base-300);
+  --color-neutral-600: var(--color-base-content-muted);
+  --color-neutral-500: var(--color-base-content-muted);
+  --color-neutral-400: var(--color-base-content-muted);
+  --color-neutral-300: var(--color-base-content);
+  --color-yellow-500: var(--color-primary);
+  --color-yellow-600: var(--color-primary);
+  --color-amber-500: var(--color-primary);
+  --color-amber-600: var(--color-primary);
+}
+
+:root {
+  --color-primary: #D4AF37;
+  --color-primary-content: #000000;
+}
+
+[data-theme="light"] {
+  --color-base-100: #ffffff;
+  --color-base-200: #f4f4f5;
+  --color-base-300: #e4e4e7;
+  --color-base-content: #000000;
+  --color-base-content-muted: #52525b;
+  --color-primary: #D4AF37;
+  --color-primary-content: #000000;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --color-base-100: #000000;
+  --color-base-200: #0a0a0a;
+  --color-base-300: #171717;
+  --color-base-content: #ffffff;
+  --color-base-content-muted: #a1a1aa;
+  --color-primary: #D4AF37;
+  --color-primary-content: #000000;
+  color-scheme: dark;
+}
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -12,45 +59,41 @@ html {
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #e5e5e5;
   margin: 0;
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
 }
 
-/* Smooth scrollbar */
+/* Smooth Gold Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #171717;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #404040;
+  background: var(--color-primary);
   border-radius: 9999px;
+  opacity: 0.8;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #525252;
+  background: #b5952f;
 }
 
-/* User requirement: All buttons white and no hover effect */
-button {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  transition: none !important;
-  transform: none !important;
+/* Smooth Gold Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
-
-/* button:hover,
-button:active {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: #000000 !important;
-  background-image: none !important;
-  box-shadow: none !important;
-  transition: none !important;
-  transform: none !important;
-} */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 9999px;
+  opacity: 0.8;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b5952f;
+}
