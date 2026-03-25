@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Outlet, Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../context/AuthContext"
-import { Bell, Search, Menu } from "lucide-react"
+import { Bell, Search, Menu, LogOut } from "lucide-react"
 import Sidebar from "../Sidebar"
 
 export default function DashboardLayout() {
@@ -17,7 +17,7 @@ const logout = useAuthStore((s) => s.logout)
   }
 
   return (
-    <div className="min-h-screen bg-black text-neutral-300 font-sans flex overflow-hidden">
+    <div className="min-h-[100dvh] bg-black text-neutral-300 font-sans flex overflow-hidden">
       
       {/* ── Mobile Sidebar Header ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-black border-b border-neutral-800 z-50 flex items-center justify-between px-6">
@@ -26,12 +26,20 @@ const logout = useAuthStore((s) => s.logout)
             <span className="font-bold text-white tracking-tight">Queens Admin</span>
         </div>
 
-        {/* Hide hamburger when sidebar is open */}
-        {!sidebarOpen && (
-          <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors">
-            <Menu className="h-6 w-6" />
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+            {/* Quick Logout for Mobile Header */}
+            <button onClick={handleLogout} className="flex flex-row items-center gap-2 px-3 py-1.5 text-red-500 bg-red-500/10 rounded-lg border border-red-500/20 hover:bg-red-500 hover:text-white transition-all font-bold text-xs shadow-lg">
+                <LogOut className="h-4 w-4" />
+                <span>Logout</span>
+            </button>
+            
+            {/* Hide hamburger when sidebar is open */}
+            {!sidebarOpen && (
+              <button onClick={() => setSidebarOpen(true)} className="p-2 text-neutral-400 hover:text-white transition-colors bg-neutral-900 rounded-lg border border-neutral-800">
+                <Menu className="h-5 w-5" />
+              </button>
+            )}
+        </div>
       </div>
 
       {/* ── Sidebar Overlay ── */}
@@ -46,7 +54,7 @@ const logout = useAuthStore((s) => s.logout)
       <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
       {/* ── Main Canvas ── */}
-      <main className="flex-1 flex flex-col min-w-0 h-screen pt-16 lg:pt-0">
+      <main className="flex-1 flex flex-col min-w-0 h-[100dvh] pt-16 lg:pt-0">
         
         {/* Header (Top bar) */}
         <header className="h-20 border-b border-neutral-900 bg-black/60 backdrop-blur-md sticky top-0 z-30 px-8 hidden lg:flex items-center justify-between flex-shrink-0">

@@ -116,7 +116,7 @@ export default function Sidebar({
 
       {/* ── Sidebar Drawer ── */}
       <aside
-        className={`fixed lg:relative flex flex-col bg-neutral-950 border-r border-neutral-800 h-screen transition-all duration-300 shrink-0 z-50
+        className={`fixed lg:relative flex flex-col bg-neutral-950 border-r border-neutral-800 h-[100dvh] transition-all duration-300 shrink-0 z-50
           ${collapsed ? "lg:w-[72px]" : "lg:w-60"}
           ${mobileOpen ? "translate-x-0 w-72 shadow-2xl shadow-black/60" : "-translate-x-full lg:translate-x-0"}
         `}
@@ -209,18 +209,19 @@ export default function Sidebar({
               <button
                 onClick={logout}
                 title="Logout"
-                className="h-7 w-7 flex items-center justify-center rounded-lg text-neutral-600 hover:text-white hover:bg-neutral-800 transition-all"
+                className="flex items-center justify-center h-9 px-3 gap-2 ml-auto rounded-lg bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 transition-all border border-red-500/20 shadow-md"
               >
-                <LogOut className="h-3.5 w-3.5" />
+                <LogOut className="h-4 w-4" />
+                <span className="text-xs font-bold leading-none hidden sm:block">Logout</span>
               </button>
             </div>
           ) : (
             <button
               onClick={logout}
               title="Logout"
-              className="flex w-full h-9 items-center justify-center rounded-xl text-neutral-600 hover:text-white hover:bg-neutral-900 transition-all"
+              className="flex w-full h-10 items-center justify-center rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 hover:text-white hover:bg-red-500 transition-all shadow-md group"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
             </button>
           )}
         </div>
