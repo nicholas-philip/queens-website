@@ -1,15 +1,16 @@
 // =====================================================
 // models/Admin.js
 //
-// Admin accounts now support:
-//   - Email verification (must verify before logging in)
-//   - Forgot password / reset password via email token
-//   - Firebase UID linking (so Firebase Auth users
-//     can also access the API)
+// Admin accounts with full auth support:
+//   - Email + password (Express JWT)
+//   - Google OAuth (Firebase)
+//   - Email verification before first login
+//   - Forgot / reset password via token + OTP
 //
 // Roles:
 //   SuperAdmin → full access + manage other admins
-//   Manager    → products, orders, invoices only
+//   Manager    → products, orders, invoices
+//   Support    → read-only + customer comms
 // =====================================================
 
 const mongoose = require("mongoose");
@@ -22,6 +23,7 @@ const AdminSchema = new mongoose.Schema(
       type:     String,
       required: [true, "Name is required"],
       trim:     true,
+      maxlength: [80, "Name cannot exceed 80 characters"],
     },
 
     email: {
@@ -30,141 +32,98 @@ const AdminSchema = new mongoose.Schema(
       unique:    true,
       lowercase: true,
       trim:      true,
+      index:     true,
     },
 
-    // select:false → never returned in queries unless you write .select("+password")
+    // select:false → hidden from queries unless .select("+password")
     password: {
       type:      String,
       minlength: [6, "Password must be at least 6 characters"],
       select:    false,
-      // Not required at top level because Firebase admins may have no password
     },
 
     role: {
       type:    String,
-      enum:    ["SuperAdmin", "Manager"],
+      enum:    ["SuperAdmin", "Manager", "Support"],
       default: "Manager",
     },
 
-    avatar:   { type: String,  default: null },
-    phone:    { type: String,  default: null },
-    isActive: { type: Boolean, default: true },
-    lastLogin:{ type: Date,    default: null },
+    avatar:    { type: String,  default: null },
+    phone:     { type: String,  default: null },
+    isActive:  { type: Boolean, default: true },
+    lastLogin: { type: Date,    default: null },
 
-    // ── Auth Provider ───────────────────────────
-    // "local"    → logged in with email + password (Express JWT)
-    // "firebase" → logged in through Firebase Auth (Google, email link, etc.)
-    // "both"     → has both methods linked
+    // ── Auth Provider ─────────────────────────────
+    // "local"    → email + password (JWT)
+    // "firebase" → Firebase / Google
+    // "both"     → both methods linked
     authProvider: {
       type:    String,
       enum:    ["local", "firebase", "both"],
       default: "local",
     },
 
-    // Firebase UID — set when admin logs in via Firebase
-    // Used by verifyFirebaseToken middleware to find this admin record
+    // Firebase UID — linked after first Google sign-in
     firebaseUid: {
-      type:    String,
+      type:   String,
       default: null,
-      sparse:  true, // allows multiple null values (not all admins have Firebase)
-      unique:  true,
+      sparse: true, // allows many accounts to have null
+      unique: true,
     },
 
-    // ── Email Verification ──────────────────────
-    // isEmailVerified: must be true before admin can log in
-    isEmailVerified: {
-      type:    Boolean,
-      default: false,
-    },
+    // ── Email Verification ────────────────────────
+    isEmailVerified: { type: Boolean, default: false },
 
-    // A secure random token sent in the verification email link
-    // e.g. /verify-email?token=abc123
-    emailVerificationToken: {
-      type:   String,
-      select: false, // hidden from normal queries
-    },
+    emailVerificationToken: { type: String, select: false },
+    emailVerificationCode:  { type: String, select: false },
+    emailVerificationExpiry:{ type: Date,   select: false },
 
-    // A 6-digit numeric code for manual verification
-    emailVerificationCode: {
-      type:   String,
-      select: false,
-    },
-
-    // Token expires after 24 hours — admin must re-request if they miss it
-    emailVerificationExpiry: {
-      type:   Date,
-      select: false,
-    },
-
-    // ── Password Reset ──────────────────────────
-    // A secure random token sent in the reset email link
-    // e.g. /reset-password?token=xyz789
-    passwordResetToken: {
-      type:   String,
-      select: false,
-    },
-
-    // A 6-digit numeric code for manual password reset
-    passwordResetCode: {
-      type:   String,
-      select: false,
-    },
-
-    // Token expires after 1 hour for security
-    passwordResetExpiry: {
-      type:   Date,
-      select: false,
-    },
+    // ── Password Reset ────────────────────────────
+    passwordResetToken:  { type: String, select: false },
+    passwordResetCode:   { type: String, select: false },
+    passwordResetExpiry: { type: Date,   select: false },
   },
   { timestamps: true }
 );
 
-// ── Auto-hash password before saving ──────────────
+// ── Indexes ───────────────────────────────────────
+AdminSchema.index({ createdAt: -1 });
+
+// ── Auto-hash password before saving ─────────────
 AdminSchema.pre("save", async function () {
-  // Only hash if the password field was actually changed
   if (!this.isModified("password") || !this.password) return;
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 12); // 12 rounds for production
 });
 
-// ── Compare entered password with stored hash ──────
-// Usage: const ok = await admin.comparePassword("mypass123")
+// ── Compare entered password with stored hash ─────
 AdminSchema.methods.comparePassword = async function (entered) {
   return bcrypt.compare(entered, this.password);
 };
 
-// ── Generate a secure email verification token ─────
-// ── Generate a secure email verification token ─────
-// Creates a random token + a 6-digit numeric code.
-// Returns an object: { plainToken, plainCode }
+// ── Generate email verification token + OTP ───────
 AdminSchema.methods.generateEmailVerificationToken = function () {
-  // 1. Generate the long link token
   const plainToken = crypto.randomBytes(32).toString("hex");
   this.emailVerificationToken  = crypto.createHash("sha256").update(plainToken).digest("hex");
 
-  // 2. Generate a 6-digit numeric verification code (OTP)
   const plainCode = Math.floor(100000 + Math.random() * 900000).toString();
-  this.emailVerificationCode = plainCode;
+  this.emailVerificationCode   = plainCode;
 
-  // 3. Expiry (24 hours for both)
-  this.emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); 
+  // Both expire in 24 hours
+  this.emailVerificationExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
   return { plainToken, plainCode };
 };
 
-// ── Generate a secure password reset token ─────────
-// Creates a random token + a 6-digit numeric code.
-// Returns an object: { plainToken, plainCode }
+// ── Generate password reset token + OTP ───────────
 AdminSchema.methods.generatePasswordResetToken = function () {
-  // 1. Link token (hashed in DB)
   const plainToken = crypto.randomBytes(32).toString("hex");
   this.passwordResetToken  = crypto.createHash("sha256").update(plainToken).digest("hex");
 
-  // 2. Numeric OTP (stored as plain string)
   const plainCode = Math.floor(100000 + Math.random() * 900000).toString();
-  this.passwordResetCode = plainCode;
+  this.passwordResetCode   = plainCode;
 
-  // 3. Expiry (1 hour only)
-  this.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000); 
+  // Expires in 1 hour
+  this.passwordResetExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
   return { plainToken, plainCode };
 };

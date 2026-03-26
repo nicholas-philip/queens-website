@@ -29,38 +29,35 @@ const createAdmin = async (req, res) => {
     return res.status(400).json({ success: false, message: "Email already registered." });
   }
 
-  // Use password from body or a random one (since superadmin usually generates one)
-  const tempPassword = password || Math.random().toString(36).slice(-10);
+  // Use provided password or generate a secure random one
+  const tempPassword = password || Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-2).toUpperCase();
 
-  // Create the admin (unverified by default)
   const admin = await Admin.create({
     name,
     email,
-    password:     tempPassword,
-    role:         role || "Manager",
-    phone,
-    isEmailVerified: false, 
+    password:        tempPassword,
+    role:            role || "Manager",
+    phone:           phone || null,
+    isEmailVerified: false,
   });
 
-  // Generate verification token (link token)
-  const plainToken = admin.generateEmailVerificationToken();
+  // Destructure BOTH token and code from the generator
+  const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
-  // Build verification link
-  const clientUrl = () => process.env.ADMIN_CLIENT_URL || "http://localhost:3000";
-  const verificationUrl = `${clientUrl()}/verify-email?token=${plainToken}`;
+  const clientUrl     = process.env.ADMIN_CLIENT_URL || "http://localhost:3000";
+  const verificationUrl = `${clientUrl}/auth/verify-email?token=${plainToken}`;
 
-  // Send invitation email (using inviter's name)
-  const inviterName = req.admin ? req.admin.name : "System";
-  const { subject, html } = newAdminInviteTemplate(admin.name, inviterName, tempPassword, verificationUrl, plainCode);
+  const inviterName = req.admin?.name || "System";
+  const { subject, html } = newAdminInviteTemplate(admin.name, inviterName, tempPassword, verificationUrl);
   await sendEmail(admin.email, subject, html);
 
-  await logActivity(req, "CREATED_ADMIN", `${admin.name} (${admin.email}) - Role: ${admin.role}`);
+  await logActivity(req, "CREATED_ADMIN", `${admin.name} (${admin.email}) — Role: ${admin.role}`);
 
-  res.status(201).json({ 
-    success: true, 
-    message: `Admin account created! An invitation email with temporary password has been sent to ${admin.email}.`, 
-    admin: { _id: admin._id, name: admin.name, email: admin.email, role: admin.role } 
+  res.status(201).json({
+    success: true,
+    message: `Admin account created! An invitation email has been sent to ${admin.email}.`,
+    admin: { _id: admin._id, name: admin.name, email: admin.email, role: admin.role },
   });
 };
 

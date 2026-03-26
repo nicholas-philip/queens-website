@@ -1,37 +1,38 @@
 // =====================================================
 // utils/selfPing.js
-// Keeps the Render server alive by pinging it every
-// 14 minutes (Render free tier sleeps after 15 min).
+// Keeps the Render free-tier server alive by pinging
+// the /health endpoint every 14 minutes.
+// (Render sleeps after 15 min of inactivity.)
 // =====================================================
 
 const { CronJob } = require("cron");
 const https = require("https");
 
-const SERVER_URL = process.env.RENDER_EXTERNAL_URL || "https://queens-website.onrender.com";
+const SERVER_URL =
+  process.env.RENDER_EXTERNAL_URL || "https://queens-website.onrender.com";
 
-const job = new CronJob("*/14 * * * *", function () {
-  const healthUrl = `${SERVER_URL}/`;
-
-  console.log(`⏰ Cron: Pinging ${healthUrl}`);
-
-  const req = https.get(healthUrl, (res) => {
+const ping = () => {
+  const url = `${SERVER_URL}/health`;
+  const req = https.get(url, (res) => {
     if (res.statusCode === 200) {
-      console.log("✅ Cron: Server is alive");
+      console.log(`⏰  Self-ping OK [${new Date().toISOString()}]`);
     } else {
-      console.log(`⚠️ Cron: Server responded with status ${res.statusCode}`);
+      console.warn(`⚠️  Self-ping got ${res.statusCode} from ${url}`);
     }
+    // Drain response body to free socket
+    res.resume();
   });
-
   req.on("error", (e) => {
-    console.error(`❌ Cron: Error pinging server: ${e.message}`);
+    console.error(`❌  Self-ping failed: ${e.message}`);
   });
-
   req.end();
-});
+};
+
+const job = new CronJob("*/14 * * * *", ping);
 
 const startSelfPing = () => {
   job.start();
-  console.log("⏰ Self-ping cron job started (every 14 minutes)");
+  console.log("⏰  Self-ping started (every 14 min → /health)");
 };
 
 module.exports = { startSelfPing };

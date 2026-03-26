@@ -1,39 +1,62 @@
 // =====================================================
 // utils/filterQuery.js
-// Reusable filtering + pagination for any Mongoose model.
+// Reusable filtering, text search, sorting + pagination.
 //
 // Usage:
-//   const result = await filterQuery(Order, req.query, ["currentStatus"])
+//   const result = await filterQuery(Order, req.query, ["currentStatus", "paymentMethod"])
 //   Returns: { data: [...], pagination: { total, page, ... } }
+//
+// Supported query params:
+//   ?page=2&limit=20
+//   ?sortBy=createdAt&sortOrder=asc
+//   ?startDate=2024-01-01&endDate=2024-12-31
+//   ?search=keyword          → fulltext regex across searchFields
+//   ?status=Active           → any field in allowedFilters
 // =====================================================
 
-const filterQuery = async (Model, queryParams, allowedFilters = []) => {
+const filterQuery = async (
+  Model,
+  queryParams,
+  allowedFilters  = [],
+  searchFields    = [],       // array of field paths to search
+  populateOptions = null      // optional populate config
+) => {
   const filter = {};
 
-  // Date range  →  ?startDate=2024-01-01&endDate=2024-12-31
+  // ── Date range ────────────────────────────────
   if (queryParams.startDate || queryParams.endDate) {
     filter.createdAt = {};
     if (queryParams.startDate) filter.createdAt.$gte = new Date(queryParams.startDate);
     if (queryParams.endDate)   filter.createdAt.$lte = new Date(queryParams.endDate);
   }
 
-  // Field filters  →  ?status=Active&category=abc123
+  // ── Exact field filters ───────────────────────
   allowedFilters.forEach((field) => {
-    if (queryParams[field] !== undefined && queryParams[field] !== "")
-      filter[field] = queryParams[field];
+    const val = queryParams[field];
+    if (val !== undefined && val !== "") filter[field] = val;
   });
 
-  // Pagination
+  // ── Text search (regex across multiple fields) ─
+  if (queryParams.search && searchFields.length > 0) {
+    const regex = { $regex: queryParams.search.trim(), $options: "i" };
+    filter.$or  = searchFields.map((f) => ({ [f]: regex }));
+  }
+
+  // ── Pagination ────────────────────────────────
   const page  = Math.max(parseInt(queryParams.page)  || 1, 1);
-  const limit = Math.min(parseInt(queryParams.limit) || 10, 100);
+  const limit = Math.min(parseInt(queryParams.limit) || 20, 100);
   const skip  = (page - 1) * limit;
 
-  // Sorting  →  ?sortBy=createdAt&sortOrder=desc
+  // ── Sorting ───────────────────────────────────
   const sortField = queryParams.sortBy    || "createdAt";
   const sortDir   = queryParams.sortOrder === "asc" ? 1 : -1;
 
+  // ── Execute ───────────────────────────────────
+  let query = Model.find(filter).sort({ [sortField]: sortDir }).skip(skip).limit(limit);
+  if (populateOptions) query = query.populate(populateOptions);
+
   const [data, total] = await Promise.all([
-    Model.find(filter).sort({ [sortField]: sortDir }).skip(skip).limit(limit),
+    query.lean(),
     Model.countDocuments(filter),
   ]);
 
