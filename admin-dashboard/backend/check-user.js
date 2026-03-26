@@ -1,24 +1,19 @@
-const mongoose = require('mongoose');
-require('dotenv').config({ path: 'c:/Users/phili/OneDrive/Desktop/queens-website/admin-dashboard/backend/.env' });
-const Admin = require('c:/Users/phili/OneDrive/Desktop/queens-website/admin-dashboard/backend/models/Admin.js');
+require("dotenv").config();
+const mongoose = require("mongoose");
+const Admin = require("./models/Admin");
 
-async function checkUser() {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        const admin = await Admin.findOne({ email: 'philipnicholas386@gmail.com' });
-        if (admin) {
-            console.log("LOG: User Found.");
-            console.log("LOG: Verified?", admin.isEmailVerified);
-            console.log("LOG: AuthProvider?", admin.authProvider);
-            console.log("LOG: Has Password?", !!admin.password);
-        } else {
-            console.log("LOG: User Not Found.");
-        }
-    } catch (err) {
-        console.error("ERROR:", err.message);
-    } finally {
-        await mongoose.connection.close();
-        process.exit();
-    }
+async function check() {
+  await mongoose.connect(process.env.MONGO_URI);
+  const user = await Admin.findOne({ email: "emmanuellalodonu@gmail.com" });
+  if (user) {
+    console.log("Found user:", user);
+  } else {
+    console.log("No user found.");
+  }
+  process.exit(0);
 }
-checkUser();
+
+check().catch(err => {
+  console.error(err);
+  process.exit(1);
+});

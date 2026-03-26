@@ -23,9 +23,9 @@ const loginLimiter = rateLimit({
   handler: handler("Too many login attempts. Wait 15 minutes and try again."),
 });
 
-// Register — 5 per hour
+// Register — 50 per hour
 const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, max: 5,
+  windowMs: 60 * 60 * 1000, max: 50,
   standardHeaders: true, legacyHeaders: false,
   handler: handler("Too many registration attempts from this IP."),
 });
