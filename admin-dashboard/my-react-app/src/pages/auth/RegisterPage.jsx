@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { Eye, EyeOff, Mail, Lock, User, Loader2, Globe, AlertCircle } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, Loader2, AlertCircle } from "lucide-react"
+import { FcGoogle } from "react-icons/fc"
 import { useAuthStore } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import { authAPI } from "../../libs/api"
@@ -176,13 +177,13 @@ export default function RegisterPage() {
           <button
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full py-2.5 rounded-xl bg-base-100 hover:bg-base-300 border border-base-300 text-base-content text-sm font-medium flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+            className="w-full py-2.5 rounded-xl bg-base-100 hover:bg-base-300 border border-base-300 text-base-content text-sm font-bold flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-sm group"
           >
             {googleLoading
-              ? <Loader2 className="h-4 w-4 animate-spin text-primary" />
-              : <Globe className="h-4 w-4 text-base-content/50" />
+              ? <Loader2 className="h-5 w-5 animate-spin text-primary" />
+              : <FcGoogle className="h-5 w-5 group-hover:scale-110 transition-transform" />
             }
-            Sign up with Google
+            <span>Sign up with Google</span>
           </button>
 
           <p className="text-center mt-5 text-xs text-base-content/60">

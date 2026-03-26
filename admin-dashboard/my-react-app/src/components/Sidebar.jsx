@@ -64,18 +64,18 @@ function HamburgerButton({ open, onClick }) {
       onClick={onClick}
       aria-label={open ? "Close menu" : "Open menu"}
       aria-expanded={open}
-      className="lg:hidden relative flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-xl border border-neutral-800 bg-neutral-900 transition-all duration-200 hover:border-yellow-500/50 hover:bg-neutral-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500"
+      className={`lg:hidden relative flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-xl border border-base-300 bg-base-200 transition-all duration-200 hover:border-primary/50 hover:bg-base-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
     >
       <span
-        className={`block h-[1.5px] w-5 origin-center rounded-full bg-white transition-all duration-300 ease-in-out
+        className={`block h-[1.5px] w-5 origin-center rounded-full bg-base-content transition-all duration-300 ease-in-out
           ${open ? "translate-y-[6.5px] rotate-45" : ""}`}
       />
       <span
-        className={`block h-[1.5px] rounded-full bg-white transition-all duration-300 ease-in-out
+        className={`block h-[1.5px] rounded-full bg-base-content transition-all duration-300 ease-in-out
           ${open ? "w-0 opacity-0" : "w-3.5 opacity-100"}`}
       />
       <span
-        className={`block h-[1.5px] w-5 origin-center rounded-full bg-white transition-all duration-300 ease-in-out
+        className={`block h-[1.5px] w-5 origin-center rounded-full bg-base-content transition-all duration-300 ease-in-out
           ${open ? "-translate-y-[6.5px] -rotate-45" : ""}`}
       />
     </button>
@@ -116,21 +116,21 @@ export default function Sidebar({
 
       {/* ── Sidebar Drawer ── */}
       <aside
-        className={`fixed lg:relative flex flex-col bg-neutral-950 border-r border-neutral-800 h-[100dvh] transition-all duration-300 shrink-0 z-50
+        className={`fixed lg:relative flex flex-col bg-base-100 border-r border-base-300 h-[100dvh] transition-all duration-300 shrink-0 z-50
           ${collapsed ? "lg:w-[72px]" : "lg:w-60"}
           ${mobileOpen ? "translate-x-0 w-72 shadow-2xl shadow-black/60" : "-translate-x-full lg:translate-x-0"}
         `}
       >
         {/* Logo Section */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-neutral-800 shrink-0">
+        <div className="flex h-16 items-center justify-between px-4 border-b border-base-300 shrink-0">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center overflow-hidden shrink-0">
               <img src={logo} alt="Queens Logo" className="h-full w-full object-contain" />
             </div>
             {(!collapsed || mobileOpen) && (
               <div>
-                <span className="text-white font-black text-sm tracking-widest uppercase">Queens</span>
-                <p className="text-yellow-500 font-bold text-[9px] tracking-widest uppercase leading-none mt-0.5">Admin Panel</p>
+                <span className="text-base-content font-black text-sm tracking-widest uppercase">Queens</span>
+                <p className="text-primary font-bold text-[9px] tracking-widest uppercase leading-none mt-0.5">Admin Panel</p>
               </div>
             )}
           </div>
@@ -139,7 +139,7 @@ export default function Sidebar({
           {mobileOpen && (
             <button
               onClick={closeMobile}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-neutral-800 text-neutral-500 hover:text-white hover:border-neutral-600 transition-all lg:hidden"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-base-300 text-base-content/50 hover:text-base-content hover:border-base-300 transition-all lg:hidden bg-base-200"
               aria-label="Close sidebar"
             >
               {/* X icon drawn inline to avoid an extra import */}
@@ -155,7 +155,7 @@ export default function Sidebar({
           {navGroups.map(({ group, items }) => (
             <div key={group}>
               {(!collapsed || mobileOpen) && (
-                <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-neutral-600">{group}</p>
+                <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-base-content/40">{group}</p>
               )}
               <ul className="space-y-0.5">
                 {items.map(({ to, label, icon: Icon }) => (
@@ -166,7 +166,7 @@ export default function Sidebar({
                       title={collapsed && !mobileOpen ? label : undefined}
                       className={({ isActive }) =>
                         `relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all group
-                        ${isActive ? "bg-yellow-500 text-black" : "text-neutral-500 hover:bg-neutral-900 hover:text-white"}
+                        ${isActive ? "bg-primary text-primary-content shadow-lg shadow-primary/20" : "text-base-content/60 hover:bg-base-200 hover:text-base-content"}
                         ${collapsed && !mobileOpen ? "justify-center px-0" : ""}
                         `
                       }
@@ -196,15 +196,15 @@ export default function Sidebar({
         </nav>
 
         {/* Admin Footer */}
-        <div className="shrink-0 border-t border-neutral-800 p-3">
+        <div className="shrink-0 border-t border-base-300 p-3 bg-base-100/50">
           {(!collapsed || mobileOpen) ? (
             <div className="flex items-center gap-3 px-1">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-800 border border-neutral-700 text-white text-xs font-black">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-base-200 border border-base-300 text-base-content text-xs font-black">
                 {admin ? getInitials(safeAdmin.name) : "?"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-white truncate">{safeAdmin.name || "Loading..."}</p>
-                <p className="text-[10px] text-neutral-500 truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
+                <p className="text-xs font-bold text-base-content truncate">{safeAdmin.name || "Loading..."}</p>
+                <p className="text-[10px] text-primary font-bold uppercase tracking-widest truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
               </div>
               <button
                 onClick={logout}
@@ -229,7 +229,7 @@ export default function Sidebar({
         {/* Desktop Collapse Button */}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex absolute -right-3.5 top-20 h-7 w-7 items-center justify-center rounded-full bg-neutral-900 text-neutral-400 border border-neutral-700 hover:border-yellow-500 hover:text-yellow-500 transition-all z-50"
+          className="hidden lg:flex absolute -right-3.5 top-20 h-7 w-7 items-center justify-center rounded-full bg-base-100 text-base-content/40 border border-base-300 hover:border-primary hover:text-primary transition-all z-50 shadow-sm"
         >
           {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
