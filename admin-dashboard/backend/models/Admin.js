@@ -66,8 +66,7 @@ const AdminSchema = new mongoose.Schema(
     // Firebase UID — linked after first Google sign-in
     firebaseUid: {
       type:   String,
-      default: null,
-      sparse: true, // allows many accounts to have null
+      sparse: true, // allows many accounts to be missing this field
       unique: true,
     },
 

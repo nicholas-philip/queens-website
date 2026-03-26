@@ -7,45 +7,58 @@ import { authAPI } from "../libs/api"
 export const useAuthStore = create(
   persist(
     (set, get) => ({
-      admin: null,
+      admin:           null,
       isAuthenticated: false,
-      loading: true,
+      loading:         true,     // true until init() completes
 
-      /* ── Init (runs once) ── */
+      /* ── Init — call once at app startup ── */
       init: async () => {
         try {
+          // 1. Check if this is a post-redirect Google login (mobile fallback)
           const { getRedirectResult } = await import("firebase/auth")
           const result = await getRedirectResult(auth).catch(() => null)
-          if (result && result.user) {
-            const idToken = await result.user.getIdToken()
+
+          if (result?.user) {
+            // Force-fresh token after redirect
+            const idToken = await result.user.getIdToken(true)
             const { data } = await authAPI.firebaseLogin({ idToken })
-            
-            localStorage.setItem("admin_token", idToken)
-            localStorage.setItem("admin_user", JSON.stringify(data.admin))
-            localStorage.setItem("auth_provider", "firebase")
-            
-            set({
-              admin: data.admin,
-              isAuthenticated: true,
-              loading: false,
-            })
+
+            localStorage.setItem("admin_token",  idToken)
+            localStorage.setItem("admin_user",   JSON.stringify(data.admin))
+            localStorage.setItem("auth_provider","firebase")
+
+            set({ admin: data.admin, isAuthenticated: true, loading: false })
             return
           }
         } catch (err) {
-          console.error("Redirect login failed", err)
+          console.warn("Redirect result error:", err.message)
         }
 
-        const token = localStorage.getItem("admin_token")
-        const raw   = localStorage.getItem("admin_user")
+        // 2. Restore session from localStorage
+        const token    = localStorage.getItem("admin_token")
+        const raw      = localStorage.getItem("admin_user")
+        const provider = localStorage.getItem("auth_provider")
 
         if (token && raw) {
           try {
-            set({
-              admin: JSON.parse(raw),
-              isAuthenticated: true,
-              loading: false,
-            })
+            const saved = JSON.parse(raw)
+
+            if (provider === "firebase") {
+              // Firebase tokens expire after 1 hour — refresh silently
+              try {
+                const freshToken = await auth.currentUser?.getIdToken(true)
+                if (freshToken) {
+                  localStorage.setItem("admin_token", freshToken)
+                }
+              } catch {
+                // currentUser may be null if the page was hard-refreshed
+                // Keep the old token — Firebase middleware will catch expiry
+              }
+            }
+
+            set({ admin: saved, isAuthenticated: true, loading: false })
           } catch {
+            // Corrupt state — clear it
             get().logout()
           }
         } else {
@@ -53,53 +66,47 @@ export const useAuthStore = create(
         }
       },
 
-      /* ── Email login ── */
+      /* ── Email / password login ── */
       login: async (email, password) => {
+        set({ loading: true })
         try {
-          set({ loading: true })
-
           const { data } = await authAPI.login({ email, password })
 
           localStorage.setItem("admin_token", data.token)
-          localStorage.setItem("admin_user", JSON.stringify(data.admin))
+          localStorage.setItem("admin_user",  JSON.stringify(data.admin))
           localStorage.removeItem("auth_provider")
 
-          set({
-            admin: data.admin,
-            isAuthenticated: true,
-            loading: false,
-          })
+          set({ admin: data.admin, isAuthenticated: true, loading: false })
         } catch (err) {
           set({ loading: false })
           throw err
         }
       },
 
-      /* ── Google login ── */
+      /* ── Google / Firebase login ── */
       loginWithGoogle: async () => {
+        set({ loading: true })
         try {
-          set({ loading: true })
-
           const result  = await signInWithPopup(auth, provider)
           const idToken = await result.user.getIdToken()
 
           const { data } = await authAPI.firebaseLogin({ idToken })
 
-          localStorage.setItem("admin_token", idToken)
-          localStorage.setItem("admin_user", JSON.stringify(data.admin))
-          localStorage.setItem("auth_provider", "firebase")
+          localStorage.setItem("admin_token",  idToken)
+          localStorage.setItem("admin_user",   JSON.stringify(data.admin))
+          localStorage.setItem("auth_provider","firebase")
 
-          set({
-            admin: data.admin,
-            isAuthenticated: true,
-            loading: false,
-          })
+          set({ admin: data.admin, isAuthenticated: true, loading: false })
         } catch (err) {
-          if (err.code === "auth/popup-blocked" || err.code === "auth/popup-closed-by-user" || err.message?.includes("Cross-Origin")) {
-            // Trigger redirect login for restrictive Android webviews
+          // Popup blocked or closed — fall back to redirect (works in all mobile browsers)
+          if (
+            err.code === "auth/popup-blocked" ||
+            err.code === "auth/popup-closed-by-user" ||
+            err.message?.includes("Cross-Origin-Opener-Policy")
+          ) {
             const { signInWithRedirect } = await import("firebase/auth")
             await signInWithRedirect(auth, provider)
-            // It will redirect the page, so no need to stop loading
+            // Page will redirect — no need to update loading state
             return
           }
           set({ loading: false })
@@ -113,34 +120,46 @@ export const useAuthStore = create(
         localStorage.removeItem("admin_user")
         localStorage.removeItem("auth_provider")
 
-        set({
-          admin: null,
-          isAuthenticated: false,
-          loading: false,
-        })
+        // Sign out of Firebase if applicable
+        auth.signOut?.().catch(() => {})
+
+        set({ admin: null, isAuthenticated: false, loading: false })
       },
 
-      /* ── Refresh admin ── */
+      /* ── Refresh admin profile from server ── */
       refreshAdmin: async () => {
         try {
           const { data } = await authAPI.me()
-
           localStorage.setItem("admin_user", JSON.stringify(data.admin))
-
           set({ admin: data.admin })
         } catch (err) {
-          console.error("Failed to refresh admin", err)
+          console.warn("Could not refresh admin profile:", err.message)
         }
+      },
+
+      /* ── Update admin locally (e.g. after settings save) ── */
+      updateAdmin: (patch) => {
+        const current = get().admin
+        if (!current) return
+        const updated = { ...current, ...patch }
+        localStorage.setItem("admin_user", JSON.stringify(updated))
+        set({ admin: updated })
       },
     }),
     {
-      name: "auth-store",
+      name: "queens-auth",
 
-      /* Only persist safe fields */
+      // Only persist safe, non-sensitive fields
       partialize: (state) => ({
-        admin: state.admin,
+        admin:           state.admin,
         isAuthenticated: state.isAuthenticated,
+        // Do NOT persist `loading` — always starts from `true` to prevent flash
       }),
+
+      // After rehydration ensure loading is reset correctly
+      onRehydrateStorage: () => (state) => {
+        if (state) state.loading = true
+      },
     }
   )
 )

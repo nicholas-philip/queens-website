@@ -25,6 +25,7 @@ const schemas = {
     email,
     password,
     role:     Joi.string().valid("SuperAdmin", "Manager", "Support").default("Manager"),
+    phone:    Joi.string().trim().optional(),
   }),
 
   verifyEmail: Joi.object({
@@ -38,7 +39,7 @@ const schemas = {
 
   login: Joi.object({
     email,
-    password: Joi.string().required(), // no min on login — just check presence
+    password: Joi.string().min(1).required(),
   }),
 
   forgotPassword: Joi.object({

@@ -1,22 +1,22 @@
 // =====================================================
 // controllers/authController.js
 //
-// Handles ALL admin authentication:
+// 🔐 ALL admin authentication in one place:
 //
 // EXPRESS JWT FLOW (email + password):
-//   POST /api/auth/register          → create account + send verification email
-//   POST /api/auth/verify-email      → verify email with token from link
-//   POST /api/auth/resend-verification → resend the verification email
-//   POST /api/auth/login             → login → get JWT token
-//   POST /api/auth/forgot-password   → send reset link to email
-//   POST /api/auth/reset-password    → set new password using reset token
-//   POST /api/auth/change-password   → change password while logged in
-//   GET  /api/auth/me                → get logged-in admin profile
-//   POST /api/auth/logout            → log action (JWT is stateless)
+//   POST /auth/register          → create account + send verification email
+//   POST /auth/verify-email      → verify email with token or 6-digit code
+//   POST /auth/resend-verification → resend verification email
+//   POST /auth/login             → login → return JWT token
+//   POST /auth/forgot-password   → send password reset link
+//   POST /auth/reset-password    → set new password using token or code
+//   POST /auth/change-password   → change password while logged in
+//   GET  /auth/me                → get logged-in admin profile
+//   POST /auth/logout            → log action (JWT is stateless)
 //
 // FIREBASE FLOW:
-//   POST /api/auth/firebase-login    → verify Firebase token → return admin profile
-//   POST /api/auth/firebase-link     → link Firebase to existing local account
+//   POST /auth/firebase-login    → verify Firebase token → return admin profile
+//   POST /auth/firebase-link     → link Firebase to existing local account
 // =====================================================
 
 const jwt      = require("jsonwebtoken");
@@ -32,28 +32,29 @@ const {
 } = require("../utils/authEmailTemplates");
 const { verifyFirebaseIdToken } = require("../utils/firebase");
 
+const IS_DEV = process.env.NODE_ENV !== "production";
+
 // ── Generate Express JWT ───────────────────────────
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
   });
 
-// ── Build the frontend URL for email links ─────────
-const clientUrl = () => process.env.ADMIN_CLIENT_URL || "http://localhost:3000";
+// ── Build production-safe URL for email links ──────
+const clientUrl = () =>
+  process.env.ADMIN_CLIENT_URL ||
+  (IS_DEV ? "http://localhost:5173" : "https://queens-website-three.vercel.app");
 
 
 // =====================================================
 // REGISTER
-// POST /api/auth/register
-//
-// Creates a new admin account and sends a
-// verification email. Admin CANNOT log in until
-// they click the link in the email.
+// POST /auth/register
+// Creates account + sends verification email.
+// Admin CANNOT log in until email is verified.
 // =====================================================
 const registerAdmin = async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  // Check email is not already registered
   const exists = await Admin.findOne({ email: email.toLowerCase() });
   if (exists) {
     return res.status(400).json({
@@ -62,42 +63,35 @@ const registerAdmin = async (req, res) => {
     });
   }
 
-  // Create the admin (password is hashed by pre-save hook in Admin model)
   const admin = await Admin.create({
     name,
     email,
     password,
     role:            role || "Manager",
-    isEmailVerified: false, // must verify before login
+    isEmailVerified: false,
     authProvider:    "local",
   });
 
-  // Generate verification token (link) AND code (6-digit OTP)
   const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
-  // Build the link the admin clicks in their email
   const verificationUrl = `${clientUrl()}/auth/verify-email?token=${plainToken}`;
-
-  // Send the verification email (Template should be updated to include code)
   const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
   await sendEmail(admin.email, subject, html);
 
   res.status(201).json({
     success: true,
-    message: `Account created! A verification email has been sent to ${admin.email}. Use the link in the email or the 6-digit code: ${plainCode} (shown here for dev/testing).`,
+    message: `Account created! A verification email has been sent to ${admin.email}. Please check your inbox and verify before logging in.`,
+    // Only expose the code in development for easy testing
+    ...(IS_DEV && { devCode: plainCode }),
   });
 };
 
 
 // =====================================================
 // VERIFY EMAIL
-// POST /api/auth/verify-email
-// Body: { token: "abc123..." }
-//
-// The frontend gets the token from the URL query
-// e.g. /verify-email?token=abc123
-// and sends it here.
+// POST /auth/verify-email
+// Body: { token } or { code }
 // =====================================================
 const verifyEmail = async (req, res) => {
   const { token, code } = req.body;
@@ -105,53 +99,51 @@ const verifyEmail = async (req, res) => {
   if (!token && !code) {
     return res.status(400).json({
       success: false,
-      message: "Verification token or code is required.",
+      message: "A verification token or 6-digit code is required.",
     });
   }
 
   let admin;
 
   if (token) {
-    // Hash the incoming plain token to compare with what's stored in DB
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     admin = await Admin.findOne({
       emailVerificationToken:  hashedToken,
       emailVerificationExpiry: { $gt: Date.now() },
-    }).select("+emailVerificationToken +emailVerificationExpiry");
+    }).select("+emailVerificationToken +emailVerificationCode +emailVerificationExpiry");
   } else if (code) {
-    // Check for 6-digit numeric code
     admin = await Admin.findOne({
       emailVerificationCode:   code,
       emailVerificationExpiry: { $gt: Date.now() },
-    }).select("+emailVerificationCode +emailVerificationExpiry");
+    }).select("+emailVerificationToken +emailVerificationCode +emailVerificationExpiry");
   }
 
   if (!admin) {
     return res.status(400).json({
       success: false,
-      message: "Verification link or code is invalid or has expired.",
+      message: "Verification link or code is invalid or has expired. Please request a new one.",
     });
   }
 
-  // Mark email as verified and clear verification fields
+  // Activate the account
   admin.isEmailVerified        = true;
   admin.emailVerificationToken  = undefined;
   admin.emailVerificationCode   = undefined;
   admin.emailVerificationExpiry = undefined;
   await admin.save({ validateBeforeSave: false });
 
-  // Send the welcome email
-  const loginUrl = `${clientUrl()}/login`;
+  // Send welcome email (non-blocking)
+  const loginUrl = `${clientUrl()}/auth/login`;
   const { subject, html } = welcomeTemplate(admin.name, loginUrl);
-  await sendEmail(admin.email, subject, html);
+  sendEmail(admin.email, subject, html).catch(() => {});
 
-  // Log in automatically after verification
+  // Auto-login after verification
   const jwtToken = generateToken(admin._id);
 
   res.status(200).json({
     success: true,
-    message: "Email verified successfully! Your account is now active.",
-    token:   jwtToken,
+    message:  "Email verified! Your account is now active.",
+    token:    jwtToken,
     admin: {
       _id:   admin._id,
       name:  admin.name,
@@ -164,27 +156,21 @@ const verifyEmail = async (req, res) => {
 
 // =====================================================
 // RESEND VERIFICATION EMAIL
-// POST /api/auth/resend-verification
-// Body: { email: "admin@store.com" }
-//
-// If admin didn't get the email or it expired,
-// they can request a new one.
+// POST /auth/resend-verification
+// Body: { email }
 // =====================================================
 const resendVerification = async (req, res) => {
   const { email } = req.body;
+  // Vague success response to prevent email enumeration
+  const successMsg = `If ${email} is registered and unverified, a new verification email has been sent.`;
 
   const admin = await Admin.findOne({ email: email.toLowerCase() })
     .select("+emailVerificationToken +emailVerificationExpiry");
-
-  // Always return success even if email not found
-  // (security: don't reveal whether email exists)
-  const successMsg = `If ${email} is registered and unverified, a new verification email has been sent.`;
 
   if (!admin || admin.isEmailVerified) {
     return res.status(200).json({ success: true, message: successMsg });
   }
 
-  // Generate a fresh token and code
   const { plainToken, plainCode } = admin.generateEmailVerificationToken();
   await admin.save({ validateBeforeSave: false });
 
@@ -192,26 +178,26 @@ const resendVerification = async (req, res) => {
   const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
   await sendEmail(admin.email, subject, html);
 
-  res.status(200).json({ success: true, message: successMsg + ` Code: ${plainCode} (dev)` });
+  res.status(200).json({
+    success: true,
+    message: successMsg,
+    ...(IS_DEV && { devCode: plainCode }),
+  });
 };
 
 
 // =====================================================
 // LOGIN
-// POST /api/auth/login
+// POST /auth/login
 // Body: { email, password }
-//
-// Returns a JWT token. Token must go in every
-// subsequent request as:
-//   Authorization: Bearer <token>
+// Returns JWT token. Use in: Authorization: Bearer <token>
 // =====================================================
 const loginAdmin = async (req, res) => {
   const { email, password } = req.body;
 
-  // .select("+password") is needed because password has select:false in schema
   const admin = await Admin.findOne({ email: email.toLowerCase() }).select("+password");
 
-  // Use vague error — don't tell attackers whether the email exists
+  // Deliberately vague — don't tell attackers if the email exists
   const invalidMsg = "Invalid email or password.";
 
   if (!admin || !admin.password) {
@@ -221,16 +207,15 @@ const loginAdmin = async (req, res) => {
   if (!admin.isActive) {
     return res.status(403).json({
       success: false,
-      message: "Your account has been deactivated. Contact a SuperAdmin.",
+      message: "Your account has been deactivated. Please contact a SuperAdmin.",
     });
   }
 
-  // Must verify email before logging in
   if (!admin.isEmailVerified) {
     return res.status(403).json({
       success: false,
       message: "Please verify your email address first. Check your inbox for the verification link.",
-      action:  "VERIFY_EMAIL", // frontend can use this to show "Resend" button
+      action:  "VERIFY_EMAIL", // frontend uses this to show "Resend" button
     });
   }
 
@@ -239,15 +224,14 @@ const loginAdmin = async (req, res) => {
     return res.status(401).json({ success: false, message: invalidMsg });
   }
 
-  // Update last login time
   admin.lastLogin = new Date();
   await admin.save({ validateBeforeSave: false });
 
-  const token = generateToken(admin._id);
-
-  // Set req.admin temporarily for the activity log
+  // Temporarily attach admin to req for activity logger
   req.admin = admin;
-  await logActivity(req, "ADMIN_LOGIN", `Logged in via email/password`);
+  await logActivity(req, "ADMIN_LOGIN", "Logged in via email/password");
+
+  const token = generateToken(admin._id);
 
   res.status(200).json({
     success: true,
@@ -268,15 +252,11 @@ const loginAdmin = async (req, res) => {
 
 // =====================================================
 // FORGOT PASSWORD
-// POST /api/auth/forgot-password
-// Body: { email: "admin@store.com" }
-//
-// Sends a password reset link to the email.
+// POST /auth/forgot-password
+// Body: { email }
 // =====================================================
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
-
-  // Always return success — don't reveal if email exists
   const successMsg = `If ${email} is registered, a password reset link has been sent.`;
 
   const admin = await Admin.findOne({ email: email.toLowerCase() });
@@ -290,18 +270,15 @@ const forgotPassword = async (req, res) => {
     return res.status(200).json({ success: true, message: successMsg });
   }
 
-  // Generate reset token (link) AND code (OTP)
   const { plainToken, plainCode } = admin.generatePasswordResetToken();
   await admin.save({ validateBeforeSave: false });
 
-  // Build the reset link
   const resetUrl = `${clientUrl()}/auth/reset-password?token=${plainToken}`;
-
   const { subject, html } = passwordResetTemplate(admin.name, resetUrl, plainCode);
   const sent = await sendEmail(admin.email, subject, html);
 
   if (!sent) {
-    // Email failed — clear the token/code
+    // Email delivery failed — clear the tokens so they can try again
     admin.passwordResetToken  = undefined;
     admin.passwordResetCode   = undefined;
     admin.passwordResetExpiry = undefined;
@@ -313,17 +290,18 @@ const forgotPassword = async (req, res) => {
     });
   }
 
-  res.status(200).json({ success: true, message: successMsg + ` Code: ${plainCode} (dev)` });
+  res.status(200).json({
+    success: true,
+    message: successMsg,
+    ...(IS_DEV && { devCode: plainCode }),
+  });
 };
 
 
 // =====================================================
 // RESET PASSWORD
-// POST /api/auth/reset-password
-// Body: { token: "xyz789...", newPassword: "myNewPass123" }
-//
-// The frontend gets the token from the URL and
-// sends it along with the new password.
+// POST /auth/reset-password
+// Body: { token, newPassword } or { code, newPassword }
 // =====================================================
 const resetPassword = async (req, res) => {
   const { token, code, newPassword } = req.body;
@@ -331,7 +309,7 @@ const resetPassword = async (req, res) => {
   if ((!token && !code) || !newPassword) {
     return res.status(400).json({
       success: false,
-      message: "Token/code and new password are required.",
+      message: "A reset token/code and a new password are required.",
     });
   }
 
@@ -345,44 +323,41 @@ const resetPassword = async (req, res) => {
   let admin;
 
   if (token) {
-    // Hash the incoming token to compare with stored hash
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     admin = await Admin.findOne({
       passwordResetToken:  hashedToken,
       passwordResetExpiry: { $gt: Date.now() },
-    }).select("+passwordResetToken +passwordResetExpiry");
+    }).select("+passwordResetToken +passwordResetCode +passwordResetExpiry");
   } else if (code) {
-    // Check 6-digit numeric OTP
     admin = await Admin.findOne({
       passwordResetCode:   code,
       passwordResetExpiry: { $gt: Date.now() },
-    }).select("+passwordResetCode +passwordResetExpiry");
+    }).select("+passwordResetToken +passwordResetCode +passwordResetExpiry");
   }
 
   if (!admin) {
     return res.status(400).json({
       success: false,
-      message: "Password reset link or code is invalid or has expired.",
+      message: "This reset link or code is invalid or has expired. Please request a new one.",
     });
   }
 
-  // Set the new password (pre-save hook will hash it)
-  admin.password           = newPassword;
+  admin.password           = newPassword; // pre-save hook hashes this
   admin.passwordResetToken  = undefined;
   admin.passwordResetCode   = undefined;
   admin.passwordResetExpiry = undefined;
   await admin.save();
 
-  // Send security alert email
+  // Security alert email (non-blocking)
   const { subject, html } = passwordChangedTemplate(admin.name);
-  await sendEmail(admin.email, subject, html);
+  sendEmail(admin.email, subject, html).catch(() => {});
 
-  // Log them in automatically after reset
+  // Auto-login after reset
   const jwtToken = generateToken(admin._id);
 
   res.status(200).json({
     success: true,
-    message: "Password reset successfully! You are now logged in.",
+    message: "Password reset successfully! You are now signed in.",
     token:   jwtToken,
   });
 };
@@ -390,9 +365,8 @@ const resetPassword = async (req, res) => {
 
 // =====================================================
 // CHANGE PASSWORD  (must be logged in)
-// POST /api/auth/change-password
+// POST /auth/change-password
 // Body: { currentPassword, newPassword }
-// Headers: Authorization: Bearer <token>
 // =====================================================
 const changePassword = async (req, res) => {
   const { currentPassword, newPassword } = req.body;
@@ -400,7 +374,7 @@ const changePassword = async (req, res) => {
   if (!currentPassword || !newPassword) {
     return res.status(400).json({
       success: false,
-      message: "Current password and new password are required.",
+      message: "Current password and new password are both required.",
     });
   }
 
@@ -411,13 +385,19 @@ const changePassword = async (req, res) => {
     });
   }
 
+  if (currentPassword === newPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "New password must be different from your current password.",
+    });
+  }
+
   const admin = await Admin.findById(req.admin._id).select("+password");
 
-  // Firebase-only accounts may not have a local password
   if (!admin.password) {
     return res.status(400).json({
       success: false,
-      message: "Your account uses Firebase login. Set a password from the settings page.",
+      message: "Your account uses Google/Firebase login. Set a password from Settings.",
     });
   }
 
@@ -432,9 +412,9 @@ const changePassword = async (req, res) => {
   admin.password = newPassword;
   await admin.save();
 
-  // Security alert
+  // Security alert email (non-blocking)
   const { subject, html } = passwordChangedTemplate(admin.name);
-  await sendEmail(admin.email, subject, html);
+  sendEmail(admin.email, subject, html).catch(() => {});
 
   await logActivity(req, "CHANGED_PASSWORD", `Admin: ${admin.name}`);
 
@@ -443,40 +423,41 @@ const changePassword = async (req, res) => {
 
 
 // =====================================================
-// GET MY PROFILE  (must be logged in)
-// GET /api/auth/me
+// GET MY PROFILE (must be logged in)
+// GET /auth/me
 // =====================================================
 const getMyProfile = async (req, res) => {
-  // req.admin is set by verifyAdmin middleware
+  // req.admin is populated by verifyAdmin middleware
   res.status(200).json({ success: true, admin: req.admin });
 };
 
 
 // =====================================================
 // LOGOUT
-// POST /api/auth/logout
-//
-// JWT is stateless — the real logout happens on
-// the frontend by deleting the token from storage.
-// We just log the action here.
+// POST /auth/logout
+// JWT is stateless — real logout is done client-side
+// by deleting the stored token.
 // =====================================================
 const logoutAdmin = async (req, res) => {
-  await logActivity(req, "ADMIN_LOGOUT", `Logged out`);
+  await logActivity(req, "ADMIN_LOGOUT", "Logged out");
   res.status(200).json({
     success: true,
-    message: "Logged out successfully. Delete your token on the client.",
+    message: "Logged out successfully.",
   });
 };
 
 
 // =====================================================
 // FIREBASE LOGIN
-// POST /api/auth/firebase-login
+// POST /auth/firebase-login
 // Body: { idToken: "<firebase_id_token_from_frontend>" }
 //
-// The frontend signs in via Firebase (e.g. Google),
-// gets a Firebase ID Token, and sends it here.
-// We verify it and return the admin's full profile.
+// 🔒 SECURITY POLICY:
+// Google sign-in only works if the email already has
+// an admin account created by a SuperAdmin.
+// We do NOT auto-create accounts from Google Sign-In.
+// (Exception: if zero admins exist, first Google user
+// becomes SuperAdmin to bootstrap the system.)
 // =====================================================
 const firebaseLogin = async (req, res) => {
   const { idToken } = req.body;
@@ -488,7 +469,6 @@ const firebaseLogin = async (req, res) => {
     });
   }
 
-  // Verify the token with Firebase Admin SDK
   const decoded = await verifyFirebaseIdToken(idToken);
   if (!decoded) {
     return res.status(401).json({
@@ -497,56 +477,59 @@ const firebaseLogin = async (req, res) => {
     });
   }
 
-  // Find admin by Firebase UID first, then by email
+  // Look up the admin by Firebase UID first (fastest path after first login)
   let admin = await Admin.findOne({ firebaseUid: decoded.uid });
 
+  // Not found by UID — try by email (first time using Google on an existing account)
   if (!admin && decoded.email) {
     admin = await Admin.findOne({ email: decoded.email.toLowerCase() });
 
     if (admin) {
-      // First time using Firebase — link the UID to this admin account
+      // Link this Google account to the existing admin record
       admin.firebaseUid  = decoded.uid;
       admin.authProvider = admin.authProvider === "local" ? "both" : "firebase";
-      // Auto-verify email since Firebase already verified it
-      if (!admin.isEmailVerified) {
-        admin.isEmailVerified = true;
-      }
+      if (!admin.isEmailVerified) admin.isEmailVerified = true; // Google has already verified it
       await admin.save({ validateBeforeSave: false });
     }
   }
 
+  // ── Bootstrap: first admin ever ───────────────────
   if (!admin) {
-    // If no admin found by UID or Email, check if this is the first admin EVER
     const adminCount = await Admin.countDocuments();
-    
-    admin = await Admin.create({
-      name:            decoded.name || "New Admin",
-      email:           decoded.email.toLowerCase(),
-      // First person to log in becomes SuperAdmin, others are Managers
-      role:            adminCount === 0 ? "SuperAdmin" : "Manager",
-      firebaseUid:     decoded.uid,
-      authProvider:    "firebase",
-      isEmailVerified: true, // Firebase already verified the Google email
-      isActive:        true,
-      avatar:          decoded.picture || null,
-    });
-
-    console.log(`🆕 Auto-created ${admin.role} via Google: ${admin.email}`);
+    if (adminCount === 0) {
+      // First person to ever sign in becomes SuperAdmin
+      admin = await Admin.create({
+        name:            decoded.name || "Super Admin",
+        email:           decoded.email.toLowerCase(),
+        role:            "SuperAdmin",
+        firebaseUid:     decoded.uid,
+        authProvider:    "firebase",
+        isEmailVerified: true,
+        isActive:        true,
+        avatar:          decoded.picture || null,
+      });
+      console.log(`🆕 Bootstrap: SuperAdmin created via Google → ${admin.email}`);
+    } else {
+      // Unknown Google account — reject
+      return res.status(401).json({
+        success: false,
+        message: "No admin account found for this Google address. Ask your SuperAdmin to create your account first.",
+      });
+    }
   }
 
   if (!admin.isActive) {
     return res.status(403).json({
       success: false,
-      message: "Your account has been deactivated.",
+      message: "Your account has been deactivated. Contact a SuperAdmin.",
     });
   }
 
-  // Update last login
   admin.lastLogin = new Date();
   await admin.save({ validateBeforeSave: false });
 
   req.admin = admin;
-  await logActivity(req, "ADMIN_LOGIN", `Logged in via Firebase`);
+  await logActivity(req, "ADMIN_LOGIN", "Logged in via Google/Firebase");
 
   res.status(200).json({
     success: true,
@@ -560,20 +543,17 @@ const firebaseLogin = async (req, res) => {
       authProvider: admin.authProvider,
       lastLogin:    admin.lastLogin,
     },
-    // No JWT here — frontend uses Firebase token for subsequent requests
-    // and sends X-Auth-Provider: firebase header
+    // No JWT returned — frontend uses Firebase token with X-Auth-Provider: firebase header
   });
 };
 
 
 // =====================================================
 // FIREBASE LINK
-// POST /api/auth/firebase-link
+// POST /auth/firebase-link
 // Body: { idToken: "<firebase_id_token>" }
-// Headers: Authorization: Bearer <jwt_token>
-//
-// Links a Firebase account to an existing local account.
 // Admin must already be logged in via JWT.
+// Links Google account to their existing local account.
 // =====================================================
 const firebaseLink = async (req, res) => {
   const { idToken } = req.body;
@@ -583,26 +563,26 @@ const firebaseLink = async (req, res) => {
     return res.status(401).json({ success: false, message: "Invalid Firebase token." });
   }
 
-  // Check if this Firebase UID is already linked to another account
+  // Make sure this Google account isn't already linked to a different admin
   const alreadyLinked = await Admin.findOne({ firebaseUid: decoded.uid });
   if (alreadyLinked && alreadyLinked._id.toString() !== req.admin._id.toString()) {
     return res.status(400).json({
       success: false,
-      message: "This Firebase account is already linked to a different admin.",
+      message: "This Google account is already linked to a different admin.",
     });
   }
 
-  // Link the Firebase UID to the currently logged-in admin
   const admin        = await Admin.findById(req.admin._id);
   admin.firebaseUid  = decoded.uid;
-  admin.authProvider = "both"; // now supports both login methods
+  admin.authProvider = "both";
+  if (decoded.picture && !admin.avatar) admin.avatar = decoded.picture;
   await admin.save({ validateBeforeSave: false });
 
-  await logActivity(req, "LINKED_FIREBASE", `Firebase UID linked to account`);
+  await logActivity(req, "LINKED_FIREBASE", "Google account linked");
 
   res.status(200).json({
     success: true,
-    message: "Firebase account linked successfully. You can now sign in with either method.",
+    message: "Google account linked successfully! You can now sign in with either method.",
     authProvider: admin.authProvider,
   });
 };
