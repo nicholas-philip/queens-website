@@ -83,7 +83,7 @@ function AppRoutes() {
       {/* ── Auth (unauthenticated) Routes ── */}
       <Route path="/auth">
         <Route path="login"           element={<AuthRoute><LoginPage /></AuthRoute>} />
-        <Route path="register"        element={<AuthRoute><RegisterPage /></AuthRoute>} />
+        {/* <Route path="register"        element={<AuthRoute><RegisterPage /></AuthRoute>} /> */}
         <Route path="forgot-password" element={<ForgotPasswordPage />} />
         <Route path="reset-password"  element={<ResetPasswordPage />} />
         {/* Both /auth/verify and /auth/verify-email work (email links use verify-email) */}

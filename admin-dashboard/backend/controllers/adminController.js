@@ -38,7 +38,8 @@ const createAdmin = async (req, res) => {
     password:        tempPassword,
     role:            role || "Manager",
     phone:           phone || null,
-    isEmailVerified: false,
+    isEmailVerified: true, // Auto-verify manually created admins for immediate access
+    isActive:        true,
   });
 
   // Destructure BOTH token and code from the generator

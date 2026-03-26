@@ -23,8 +23,21 @@ export default function RegisterPage() {
     setLoading(true)
     try {
       const { data: res } = await authAPI.register(data)
-      toast.success(res.message || "Account created! Please verify your email.")
-      navigate("/auth/login")
+      
+      // Save credentials to localStorage for auto-login
+      localStorage.setItem("admin_token", res.token)
+      localStorage.setItem("admin_user",  JSON.stringify(res.admin))
+      localStorage.removeItem("auth_provider")
+
+      // Update Zustand store so the entire app knows we are authenticated
+      useAuthStore.setState({ 
+        admin:           res.admin, 
+        isAuthenticated: true, 
+        loading:         false 
+      })
+
+      toast.success(res.message || "Account created!")
+      navigate("/dashboard")
     } catch (err) {
       toast.error(err.response?.data?.message || "Registration failed")
     } finally {

@@ -46,7 +46,8 @@ const { getDashboardStats } = require("../controllers/dashboardController");
 // AUTH — Express JWT flows
 // =====================================================
 // Register → sends verification email
-router.post("/auth/register",             registerLimiter,           validate(schemas.register),           registerAdmin);
+// DISABLE PUBLIC REGISTRATION (Admins should be created from within the dashboard by a SuperAdmin)
+// router.post("/auth/register",             registerLimiter,           validate(schemas.register),           registerAdmin);
 // Verify email with token from the link
 router.post("/auth/verify-email",                                    validate(schemas.verifyEmail),         verifyEmail);
 // Resend verification email if it expired

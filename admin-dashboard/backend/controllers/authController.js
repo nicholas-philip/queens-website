@@ -68,22 +68,25 @@ const registerAdmin = async (req, res) => {
     email,
     password,
     role:            role || "Manager",
-    isEmailVerified: false,
+    isEmailVerified: true, // Auto-verify to allow immediate dashboard access
     authProvider:    "local",
+    isActive:        true,
   });
 
-  const { plainToken, plainCode } = admin.generateEmailVerificationToken();
-  await admin.save({ validateBeforeSave: false });
-
-  const verificationUrl = `${clientUrl()}/auth/verify-email?token=${plainToken}`;
-  const { subject, html } = verifyEmailTemplate(admin.name, verificationUrl, plainCode);
-  await sendEmail(admin.email, subject, html);
+  // Generate token for auto-login after registration
+  const token = generateToken(admin._id);
 
   res.status(201).json({
     success: true,
-    message: `Account created! A verification email has been sent to ${admin.email}. Please check your inbox and verify before logging in.`,
-    // Only expose the code in development for easy testing
-    ...(IS_DEV && { devCode: plainCode }),
+    message: "Welcome to the Queens Admin Dashboard!",
+    token,
+    admin: {
+      _id:          admin._id,
+      name:         admin.name,
+      email:        admin.email,
+      role:         admin.role,
+      authProvider: admin.authProvider,
+    },
   });
 };
 

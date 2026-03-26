@@ -216,11 +216,9 @@ export default function LoginPage() {
             <span>Sign in with Google</span>
           </button>
 
-          <p className="mt-5 text-center text-xs text-base-content/60">
-            Don't have an account?{" "}
-            <Link to="/auth/register" className="text-primary hover:text-primary/80 font-medium transition-colors">
-              Contact your SuperAdmin
-            </Link>
+          <p className="mt-5 text-center text-xs text-base-content/60 leading-relaxed">
+            Don't have an account or lost your credentials? <br />
+            <span className="text-primary/70 font-semibold italic">Contact your SuperAdmin for an invitation.</span>
           </p>
         </div>
       </div>
