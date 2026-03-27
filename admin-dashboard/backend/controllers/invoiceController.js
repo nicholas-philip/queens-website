@@ -61,8 +61,8 @@ const updateInvoiceStatus = async (req, res) => {
   const invoice = await Invoice.findByIdAndUpdate(req.params.id, { status }, { new: true, runValidators: true });
   if (!invoice) return res.status(404).json({ success: false, message: "Invoice not found." });
 
-  await logActivity(req, "UPDATED_INVOICE_STATUS", `Invoice: ${invoice.invoiceId}`, `→ ${status}`);
-  res.status(200).json({ success: true, message: `Invoice ${invoice.invoiceId} marked "${status}".`, invoice });
+  await logActivity(req, "UPDATED_INVOICE_STATUS", `Invoice: ${invoice.invoiceNumber}`, `→ ${status}`);
+  res.status(200).json({ success: true, message: `Invoice ${invoice.invoiceNumber} marked "${status}".`, invoice });
 };
 
 module.exports = { getAllInvoices, getInvoiceSummary, getOverdueInvoices, getInvoiceById, updateInvoiceStatus };

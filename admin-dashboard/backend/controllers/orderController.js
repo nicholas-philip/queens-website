@@ -74,18 +74,25 @@ const createOrder = catchAsync(async (req, res) => {
 
   // 3. Deduct stock (since order was successfully created)
   for (const item of enrichedItems) {
+    const product = await Product.findById(item.productId);
+    if (!product) continue;
+
     if (!item.variantId) {
-      await Product.findByIdAndUpdate(item.productId, {
-        $inc: { stockQuantity: -item.quantity, totalSold: item.quantity }
-      });
+      product.stockQuantity -= item.quantity;
+      if (product.stockQuantity <= 0) {
+        product.stockQuantity = 0;
+        product.status = "Out of Stock";
+      }
     } else {
-      // Deduct from variant
-      const product = await Product.findById(item.productId);
       const variant = product.variants.id(item.variantId);
-      variant.stockQuantity -= item.quantity;
-      product.totalSold     += item.quantity;
-      await product.save();
+      if (variant) {
+        variant.stockQuantity -= item.quantity;
+        const totalStock = product.variants.reduce((acc, v) => acc + (v.stockQuantity || 0), 0);
+        if (totalStock <= 0) product.status = "Out of Stock";
+      }
     }
+    product.totalSold += item.quantity;
+    await product.save();
   }
 
   // 4. Send confirmation email (non-blocking)
@@ -100,7 +107,7 @@ const createOrder = catchAsync(async (req, res) => {
 
 // ── GET /admin/orders ─────────────────────────────
 const getAllOrders = catchAsync(async (req, res) => {
-  const result = await filterQuery(Order, req.query, ["status", "paymentMethod"]);
+  const result = await filterQuery(Order, req.query, ["currentStatus", "paymentStatus", "paymentMethod"]);
   res.status(200).json({ success: true, ...result });
 });
 
@@ -148,6 +155,28 @@ const updateOrderStatus = catchAsync(async (req, res) => {
   });
 });
 
+// ── PATCH /admin/orders/:id/payment ────────────────
+const updateOrderPayment = catchAsync(async (req, res) => {
+  const { paymentStatus, note } = req.body;
+
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+
+  order.paymentStatus = paymentStatus;
+  
+  if (Array.isArray(order.statusHistory)) {
+    order.statusHistory.push({
+      status:    order.currentStatus,
+      note:      note || `Payment status manually updated to: ${paymentStatus}`,
+      changedBy: req.admin?.name || "Admin",
+      changedAt: new Date(),
+    });
+  }
+
+  await order.save();
+  res.status(200).json({ success: true, message: "Payment status updated.", order });
+});
+
 // ── PATCH /admin/orders/:id/tracking ─────────────
 const addTrackingNumber = catchAsync(async (req, res) => {
   const { trackingNumber, carrier } = req.body;
@@ -156,22 +185,31 @@ const addTrackingNumber = catchAsync(async (req, res) => {
     return res.status(400).json({ success: false, message: "trackingNumber is required." });
   }
 
-  const order = await Order.findByIdAndUpdate(
-    req.params.id,
-    { trackingNumber, carrier: carrier || "" },
-    { new: true }
-  );
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ success: false, message: "Order not found." });
 
-  if (!order) {
-    return res.status(404).json({ success: false, message: "Order not found." });
+  order.trackingNumber = trackingNumber;
+  order.carrier        = carrier || "";
+  
+  // Automate status change to Shipped
+  if (order.currentStatus === "Processing" || order.currentStatus === "Pending") {
+    order.currentStatus = "Shipped";
+    if (Array.isArray(order.statusHistory)) {
+        order.statusHistory.push({
+            status: "Shipped",
+            note:   `Tracking info added: ${trackingNumber}`,
+            changedBy: req.admin?.name || "Admin",
+            changedAt: new Date()
+        });
+    }
   }
 
+  await order.save();
   await logActivity(req, "ADDED_TRACKING", `Order: ${order._id}`, `Tracking: ${trackingNumber}`);
 
   res.status(200).json({
     success: true,
-    message: "Tracking number added.",
-    trackingNumber: order.trackingNumber,
+    message: "Tracking number added and order marked as Shipped.",
     order,
   });
 });
@@ -212,4 +250,5 @@ module.exports = {
   addTrackingNumber,
   updateAdminNotes,
   deleteOrder,
+  updateOrderPayment,
 };// TS file system cache invalidation

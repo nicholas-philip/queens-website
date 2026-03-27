@@ -1,24 +1,47 @@
 // =====================================================
 // models/Invoice.js
 // Permanent billing record for an order.
+// Shared between Admin Dashboard and Buyer Storefront.
 // =====================================================
 
 const mongoose = require("mongoose");
 
-const InvoiceSchema = new mongoose.Schema({
-  invoiceId: { type: String, required: true, unique: true },
-  orderRef: { type: mongoose.Schema.Types.ObjectId, ref: "Order" },
-  customerName: { type: String, required: true },
-  amount: { type: Number, required: true },
-  status: { type: String, default: "Unpaid" }, // Paid, Unpaid
-}, { timestamps: true });
+const InvoiceSchema = new mongoose.Schema(
+  {
+    invoiceNumber: { type: String, unique: true }, // Unified field for invoice number
+    orderRef:      { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
+    
+    customerName:  { type: String, required: true },
+    customerEmail: { type: String, default: "" },
+    
+    items: [{
+      title:     { type: String },
+      SKU:       { type: String },
+      quantity:  { type: Number },
+      price:     { type: Number },
+      lineTotal: { type: Number },
+    }],
+    
+    subtotal:        { type: Number, required: true },
+    discount:        { type: Number, default: 0 },
+    tax:             { type: Number, default: 0 },
+    shippingCharge:  { type: Number, default: 0 },
+    amount:          { type: Number, required: true },
+    
+    couponCode:    { type: String, default: null, uppercase: true },
+    status:        { type: String, enum: ["Paid", "Unpaid", "Cancelled", "Overdue"], default: "Unpaid" },
+    paymentMethod: { type: String, default: "Card" },
+    paidAt:        { type: Date,   default: null },
+  },
+  { timestamps: true }
+);
 
-// Auto-generate a professional invoice ID (e.g. INV-2024-0001)
-InvoiceSchema.pre("validate", async function () {
-  if (this.isNew) {
+// Auto-generate professional invoice ID
+InvoiceSchema.pre("save", async function () {
+  if (this.isNew && !this.invoiceNumber) {
     const count = await mongoose.model("Invoice").countDocuments();
     const year = new Date().getFullYear();
-    this.invoiceId = `INV-${year}-${String(count + 1).padStart(4, "0")}`;
+    this.invoiceNumber = `INV-${year}-${1001 + count}`;
   }
 });
 

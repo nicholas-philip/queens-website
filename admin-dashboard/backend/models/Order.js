@@ -50,11 +50,15 @@ const OrderSchema = new mongoose.Schema(
     tax:           { type: Number, default: 0, min: 0 },
     shipping:      { type: Number, default: 0, min: 0 },
     total:         { type: Number, required: true, min: 0 },
+    currency:      { type: String, default: "GHS" },
 
     couponCode:     { type: String, default: null, uppercase: true, trim: true },
     trackingNumber: { type: String, default: null },
     carrier:        { type: String, default: null },
-    paymentMethod:  { type: String, default: null },
+
+    paymentMethod:  { type: String, default: "Card" },
+    paymentStatus:  { type: String, enum: ["Unpaid", "Paid", "Refunded"], default: "Unpaid" },
+    paystackReference: { type: String, default: null },
 
     currentStatus: {
       type:    String,

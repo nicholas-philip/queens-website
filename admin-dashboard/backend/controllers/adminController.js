@@ -365,7 +365,7 @@ const exportInvoices = async (req, res) => {
   const invoices = await Invoice3.find(buildDateFilter(req.query)).sort({ createdAt: -1 }).lean();
   const headers  = ["Invoice ID","Date Issued","Due Date","Customer","Subtotal","Discount","Tax","Shipping","Total","Coupon","Status"];
   const rows     = invoices.map((i) => ({
-    "Invoice ID": i.invoiceId, "Date Issued": new Date(i.issuedDate).toLocaleDateString(),
+    "Invoice ID": i.invoiceNumber, "Date Issued": new Date(i.issuedDate).toLocaleDateString(),
     "Due Date": new Date(i.dueDate).toLocaleDateString(), "Customer": i.customerName,
     "Subtotal": i.subtotal, "Discount": i.discount || 0, "Tax": i.tax || 0,
     "Shipping": i.shippingCharge || 0, "Total": i.amount, "Coupon": i.couponCode || "", "Status": i.status,
@@ -414,7 +414,7 @@ const globalSearch = async (req, res) => {
     Product4.find({ $or: [{ title: regex }, { SKU: regex }, { tags: regex }] }).limit(maxRes).select("title SKU price status images stockQuantity").populate("category","name"),
     Order4.find({ $or: [{ orderNumber: regex }, { "customerDetails.name": regex }, { "customerDetails.phone": regex }] }).limit(maxRes).select("orderNumber customerDetails.name customerDetails.phone total currentStatus createdAt"),
     Customer4.find({ $or: [{ name: regex }, { phone: regex }, { email: regex }] }).limit(maxRes).select("name phone email totalOrders totalSpent lastOrderDate"),
-    Invoice4.find({ $or: [{ invoiceId: regex }, { customerName: regex }] }).limit(maxRes).select("invoiceId customerName amount status issuedDate"),
+    Invoice4.find({ $or: [{ invoiceNumber: regex }, { customerName: regex }] }).limit(maxRes).select("invoiceNumber customerName amount status issuedDate"),
     Coupon4.find({ code: regex }).limit(maxRes).select("code discountType discountValue isActive expiryDate usedCount"),
   ]);
 

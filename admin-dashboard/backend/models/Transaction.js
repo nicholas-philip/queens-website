@@ -1,32 +1,34 @@
 // =====================================================
 // models/Transaction.js
-// One record per payment attempt (success or fail).
-// One order can have multiple transactions.
+// Payment records for both Storefront & Admin.
 // =====================================================
 
 const mongoose = require("mongoose");
 
 const TransactionSchema = new mongoose.Schema(
   {
-    transactionId: { type: String, required: [true, "Transaction ID required"], unique: true },
+    transactionId: { type: String, required: true, unique: true },
     orderRef:      { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
 
     paymentMethod: {
       type:    String,
-      enum:    ["Card","Bank Transfer","USSD","Cash on Delivery","Wallet","Mobile Money","Other"],
+      enum:    ["Card", "Bank Transfer", "USSD", "Cash on Delivery", "Wallet", "Mobile Money", "Other"],
       default: "Card",
     },
 
-    isMember: { type: Boolean, default: false },
-    amount:   { type: Number, required: [true, "Amount required"], min: 0 },
+    amount:   { type: Number, required: true },
+    currency: { type: String, default: "GHS" },
 
     status: {
       type:    String,
-      enum:    ["Success","Failed","Pending","Refunded"],
+      enum:    ["Success", "Failed", "Pending", "Refunded", "Reversed"],
       default: "Pending",
     },
 
-    gatewayResponse: { type: Object, default: null }, // raw gateway payload for debugging
+    gatewayResponse: { type: Object, default: null }, // raw data for debugging
+    customerName:    { type: String, default: "" },
+    customerEmail:   { type: String, default: "" },
+
     refundReason:    { type: String, default: null },
     refundedAt:      { type: Date,   default: null },
   },
