@@ -1,0 +1,30 @@
+# Local secrets and env
+.env
+.env.local
+.env.*
+!.env.example
+
+# Dependency directories
+**/node_modules/
+jspm_packages/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build directories
+dist/
+build/
+.next/
+out/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
