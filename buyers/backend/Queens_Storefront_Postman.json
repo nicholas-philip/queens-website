@@ -1,0 +1,335 @@
+{
+  "info": {
+    "name": "Queens Storefront API",
+    "description": "Endpoints to test the Storefront Backend on Port 5001.\n\n**HOW TO TEST ORDERS & PAYMENTS:**\n1. Run 'All Products' first — it auto-saves the first product's _id as {{productId}}\n2. Run 'Submit Order Checkout' — it auto-saves the new order's _id as {{orderId}}\n3. Run 'Initialize Payment' — it uses {{orderId}} to get a Paystack auth URL",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5001",
+      "type": "string"
+    },
+    {
+      "key": "productId",
+      "value": "",
+      "description": "Auto-filled when you run 'All Products'.",
+      "type": "string"
+    },
+    {
+      "key": "orderId",
+      "value": "",
+      "description": "Auto-filled when you run 'Submit Order Checkout'.",
+      "type": "string"
+    },
+    {
+      "key": "paymentRef",
+      "value": "",
+      "description": "Auto-filled when you initialize a payment.",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Products & Categories",
+      "item": [
+        {
+          "name": "All Products  ← Run this first to set {{productId}}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "const products = res.products || res.data || res.products || [];",
+                  "if (Array.isArray(products) && products.length > 0) {",
+                  "  const id = products[0]._id;",
+                  "  pm.collectionVariables.set('productId', id);",
+                  "  console.log('✅ productId set to:', id);",
+                  "} "
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Featured Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/featured",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "featured"]
+            }
+          }
+        },
+        {
+          "name": "All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "categories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Orders & Leads",
+      "item": [
+        {
+          "name": "Capture Checkout Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ama Mansa\",\n  \"email\": \"ama@example.com\",\n  \"phone\": \"+233550000000\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/leads",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "leads"]
+            }
+          }
+        },
+        {
+          "name": "Submit Order Checkout  ← Sets {{orderId}}",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.order && res.order._id) {",
+                  "  pm.collectionVariables.set('orderId', res.order._id);",
+                  "  console.log('✅ orderId set to:', res.order._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerDetails\": {\n    \"name\": \"Ama Mansa\",\n    \"phone\": \"+233550000000\",\n    \"email\": \"ama@example.com\",\n    \"address\": {\n      \"street\": \"123 Osu Avenue\",\n      \"city\": \"Accra\",\n      \"state\": \"Greater Accra\"\n    }\n  },\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 1\n    }\n  ],\n  \"shipping\": 15\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Payments (Paystack Ghana)",
+      "item": [
+        {
+          "name": "Initialize Payment (Mobile Money)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.success && res.reference) {",
+                  "  pm.collectionVariables.set('paymentRef', res.reference);",
+                  "  console.log('✅ paymentRef set to:', res.reference);",
+                  "  console.log('🔗 AUTH URL:', res.authorization_url);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"channel\": \"mobile_money\",\n  \"mobileProvider\": \"mtn\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/initialize",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "initialize"]
+            }
+          }
+        },
+        {
+          "name": "Initialize Payment (Card)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"channel\": \"card\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/initialize",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "initialize"]
+            }
+          }
+        },
+        {
+          "name": "Verify Payment  ← Uses {{paymentRef}}",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/verify/{{paymentRef}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "verify", "{{paymentRef}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Store Info & Collections",
+      "item": [
+        {
+          "name": "Get Homepage Layout",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/store/homepage",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "store", "homepage"]
+            }
+          }
+        },
+        {
+          "name": "Browse Lookbooks & Collections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/collections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "collections"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Customer Service",
+      "item": [
+        {
+          "name": "Join Newsletter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"beauty@example.com\",\n  \"firstName\": \"BeautyQueen\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contact/join",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contact", "join"]
+            }
+          }
+        },
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah\",\n  \"email\": \"sarah@example.com\",\n  \"subject\": \"Order Inquiry\",\n  \"message\": \"I haven't received my package yet, can you help me track it?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/contact/send",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "contact", "send"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
