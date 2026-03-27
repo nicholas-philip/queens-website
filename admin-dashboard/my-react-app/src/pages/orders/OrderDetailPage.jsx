@@ -17,14 +17,20 @@ export default function OrderDetailPage() {
   const [loading,     setLoading]     = useState(true)
   const [statusModal, setStatusModal] = useState(false)
   const [trackModal,  setTrackModal]  = useState(false)
+  const [payModal,    setPayModal]    = useState(false)
   const [newStatus,   setNewStatus]   = useState("")
   const [statusNote,  setStatusNote]  = useState("")
+  const [newPayStat,  setNewPayStat]  = useState("")
   const [tracking,    setTracking]    = useState("")
   const [saving,      setSaving]      = useState(false)
 
   useEffect(() => {
     ordersAPI.getById(id)
-      .then(({ data }) => { setOrder(data.order); setNewStatus(data.order.currentStatus) })
+      .then(({ data }) => { 
+        setOrder(data.order); 
+        setNewStatus(data.order.currentStatus);
+        setNewPayStat(data.order.paymentStatus || "Unpaid");
+      })
       .catch(() => toast.error("Error", "Order not found."))
       .finally(() => setLoading(false))
   }, [id, toast])
@@ -45,10 +51,21 @@ export default function OrderDetailPage() {
     setSaving(true)
     try {
       const { data } = await ordersAPI.addTracking(id, { trackingNumber: tracking })
-      setOrder((p) => ({ ...p, trackingNumber: data.trackingNumber, currentStatus: data.currentStatus }))
+      setOrder((p) => ({ ...p, trackingNumber: data.order.trackingNumber, currentStatus: data.order.currentStatus }))
       toast.success("Tracking Added", `Reference: ${tracking}`)
       setTrackModal(false); setTracking("")
     } catch (err) { toast.error("Error", err.response?.data?.message || "Failed to add tracking") }
+    finally { setSaving(false) }
+  }
+
+  const updatePayment = async () => {
+    setSaving(true)
+    try {
+      const { data } = await ordersAPI.updatePayment(id, { paymentStatus: newPayStat })
+      setOrder(data.order)
+      toast.success("Updated", "Payment status updated.")
+      setPayModal(false)
+    } catch (err) { toast.error("Error", "Failed to update payment.") }
     finally { setSaving(false) }
   }
 
@@ -288,18 +305,36 @@ export default function OrderDetailPage() {
 
             {/* Payment Context */}
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
-                <div className="flex items-center gap-3 pb-4 border-b border-neutral-800/50 mb-6">
-                    <CreditCard className="h-5 w-5 text-yellow-500/70" />
-                    <h3 className="text-sm font-bold text-white uppercase tracking-widest">Payment Context</h3>
+                <div className="flex items-center justify-between pb-4 border-b border-neutral-800/50 mb-6">
+                    <div className="flex items-center gap-3">
+                        <CreditCard className="h-5 w-5 text-yellow-500/70" />
+                        <h3 className="text-sm font-bold text-white uppercase tracking-widest">Payment Context</h3>
+                    </div>
+                    {order.paymentStatus !== 'Paid' && (
+                        <button onClick={() => setPayModal(true)} className="text-[10px] font-bold text-yellow-500 hover:text-yellow-400 uppercase tracking-widest bg-yellow-500/10 px-2 py-1 rounded-lg transition-colors">Manage</button>
+                    )}
                 </div>
-                <div className="flex items-center justify-between">
-                    <div>
-                        <p className="text-sm font-bold text-white">Secure Gateway</p>
-                        <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Paystack Checkout</p>
+                
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-bold text-white tracking-tight">{order.paystackReference ? 'Paystack Gateway' : (order.paymentMethod || 'Manual Entry')}</p>
+                            <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Status Registry</p>
+                        </div>
+                        <div className={cn(
+                            "px-3 py-1 rounded-lg border",
+                            order.paymentStatus === 'Paid' ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-neutral-800 border-neutral-700 text-neutral-500"
+                        )}>
+                            <span className="text-[10px] font-bold uppercase tracking-widest">{order.paymentStatus || 'Unpaid'}</span>
+                        </div>
                     </div>
-                    <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 rounded-lg">
-                        <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest">Settled</span>
-                    </div>
+
+                    {order.paystackReference && (
+                        <div className="pt-4 border-t border-neutral-800/50">
+                            <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1.5">Gateway Reference</p>
+                            <p className="text-xs font-mono text-neutral-400 bg-black/40 p-2 rounded-lg border border-neutral-800/50 break-all">{order.paystackReference}</p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
@@ -351,6 +386,7 @@ export default function OrderDetailPage() {
         </div>
       </Modal>
 
+
       {/* ── Tracking Modal ── */}
       <Modal open={trackModal} onClose={() => setTrackModal(false)} title="Logistics Registry">
         <div className="p-8 space-y-8">
@@ -376,6 +412,38 @@ export default function OrderDetailPage() {
                     className="px-10 py-3 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-xl shadow-yellow-500/20 transition-all disabled:opacity-50"
                 >
                     {saving ? <Spinner size="sm" /> : "Attach Reference"}
+                </button>
+            </div>
+        </div>
+      </Modal>
+
+      {/* ── Payment Modal ── */}
+      <Modal open={payModal} onClose={() => setPayModal(false)} title="Update Ledger Status">
+        <div className="p-8 space-y-8">
+            <div className="space-y-6">
+                <div>
+                    <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 mb-2 block">Settlement Status</label>
+                    <select 
+                        value={newPayStat} 
+                        onChange={(e) => setNewPayStat(e.target.value)} 
+                        className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
+                    >
+                        <option value="Unpaid">Unpaid (Awaiting Funds)</option>
+                        <option value="Paid">Paid (Funds Confirmed)</option>
+                        <option value="Refunded">Refunded (Returned)</option>
+                    </select>
+                </div>
+                <p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5">Use this to manually override the payment status if a customer pays via bank transfer or cash.</p>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 pt-4">
+                <button onClick={() => setPayModal(false)} className="px-6 py-2.5 rounded-xl text-xs font-bold text-neutral-500 hover:text-white transition-colors">Discard</button>
+                <button 
+                    onClick={updatePayment} 
+                    disabled={saving} 
+                    className="px-10 py-3 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-xl shadow-yellow-500/20 transition-all disabled:opacity-50"
+                >
+                    {saving ? <Spinner size="sm" /> : "Confirm Settlement"}
                 </button>
             </div>
         </div>

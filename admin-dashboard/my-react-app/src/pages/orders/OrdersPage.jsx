@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link, useSearchParams }             from "react-router-dom"
-import { Search, Download, Filter, Eye, ShoppingBag } from "lucide-react"
+import { Search, Download, Filter, Eye, ShoppingBag, CreditCard } from "lucide-react"
 import { ordersAPI, exportAPI }               from "../../libs/api"
 import { formatCurrency, getStatusBadge, downloadCSV, formatDate, cn } from "../../libs/utils"
 import { useToast }                           from "../../context/ToastContext"
@@ -18,18 +18,19 @@ export default function OrdersPage() {
   const [search,     setSearch]     = useState(searchParams.get("search") || "")
   const [status,     setStatus]     = useState(searchParams.get("status") || "")
   const [page,       setPage]       = useState(1)
+  const [payment,    setPayment]    = useState("")
   const [exporting,  setExporting]  = useState(false)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const params = { page, limit: 15, search, status }
+      const params = { page, limit: 15, search, status, paymentStatus: payment }
       const { data } = await ordersAPI.getAll(params)
       setOrders(data.data)
       setPagination(data.pagination)
     } catch { toast.error("Error", "Failed to load orders") }
     finally { setLoading(false) }
-  }, [page, search, status, toast])
+  }, [page, search, status, payment, toast])
 
   useEffect(() => { load() }, [load])
 
@@ -91,16 +92,30 @@ export default function OrdersPage() {
                     <option value="Cancelled">Cancelled</option>
                 </select>
             </div>
+
+            <div className="relative flex-1 md:w-48">
+                <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600" />
+                <select 
+                    value={payment} 
+                    onChange={(e) => { setPayment(e.target.value); setPage(1) }}
+                    className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-8 py-2.5 text-sm text-white appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500/50 cursor-pointer"
+                >
+                    <option value="">All Payments</option>
+                    <option value="Paid">Paid</option>
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Refunded">Refunded</option>
+                </select>
+            </div>
         </div>
       </div>
 
       {/* ── Orders Table ── */}
       <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
         <Table>
-          <TableHead headers={["Order Info", "Customer", "Date", "Total", "Status", "Actions"]} />
+          <TableHead headers={["Order Info", "Customer", "Date", "Total", "Payment", "Status", "Actions"]} />
           <TableBody>
             {loading ? (
-              <TableLoading cols={6} rows={10} />
+              <TableLoading cols={7} rows={10} />
             ) : orders.length === 0 ? (
               <TableEmpty message="No orders found. Once customers start buying, they'll appear here!" />
             ) : (
@@ -137,6 +152,17 @@ export default function OrdersPage() {
                   {/* Total */}
                   <TableCell>
                     <span className="font-bold text-white">{formatCurrency(o.total)}</span>
+                  </TableCell>
+
+                  {/* Payment */}
+                  <TableCell>
+                    <span className={cn(
+                        "px-2 py-1 rounded text-[10px] font-bold uppercase",
+                        o.paymentStatus === 'Paid' ? "text-green-500 bg-green-500/10" : "text-neutral-500 bg-neutral-800"
+                    )}>
+                        {o.paymentStatus || 'Unpaid'}
+                    </span>
+                    <p className="text-[9px] text-neutral-600 mt-1 font-medium">{o.paymentMethod || '—'}</p>
                   </TableCell>
 
                   {/* Status */}

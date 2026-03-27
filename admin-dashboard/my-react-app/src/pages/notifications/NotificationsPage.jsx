@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Bell, Trash2, CheckCheck, X, Loader2,
   ShoppingCart, Package, AlertTriangle, Star,
@@ -21,11 +22,14 @@ const TYPE_MAP = {
   REFUND_PROCESSED: { icon: DollarSign,     color: "text-neutral-300" },
   OVERDUE_INVOICE:  { icon: FileText,       color: "text-white" },
   PAYMENT_FAILED:   { icon: XCircle,        color: "text-neutral-400" },
+  PAYMENT_RECEIVED: { icon: DollarSign,     color: "text-green-500" },
+  CRM_ALERT:        { icon: Bell,           color: "text-yellow-500" },
   SYSTEM:           { icon: Settings,       color: "text-neutral-500" },
 }
 
 export default function NotificationsPage() {
   const toast = useToast()
+  const navigate = useNavigate()
 
   const [notifs, setNotifs] = useState([])
   const [pagination, setPagination] = useState(null)
@@ -62,6 +66,11 @@ export default function NotificationsPage() {
       await notificationsAPI.delete(id)
       setNotifs((p) => p.filter((n) => n._id !== id))
     } catch { toast.error("Error", "Delete failed.") }
+  }
+
+  const handleClick = (n) => {
+    if (!n.isRead) markOne(n._id)
+    if (n.path) navigate(n.path)
   }
 
   const markAllRead = async () => {
@@ -152,7 +161,7 @@ export default function NotificationsPage() {
             return (
               <div
                 key={n._id}
-                onClick={() => !n.isRead && markOne(n._id)}
+                onClick={() => handleClick(n)}
                 className={`relative flex items-start gap-4 px-5 py-4 transition-colors cursor-pointer group
                   ${!n.isRead ? "bg-neutral-900/60 hover:bg-neutral-900" : "bg-transparent hover:bg-neutral-900/30 opacity-60 hover:opacity-100"}`}
               >

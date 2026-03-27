@@ -72,10 +72,11 @@ export const productsAPI = {
 export const ordersAPI = {
   getAll:       (p)     => api.get("/admin/orders", { params: p }),
   getById:      (id)    => api.get(`/admin/orders/${id}`),
-  updateStatus: (id, d) => api.patch(`/admin/orders/${id}/status`, d),
-  addTracking:  (id, d) => api.patch(`/admin/orders/${id}/tracking`, d),
-  updateNotes:  (id, d) => api.patch(`/admin/orders/${id}/notes`, d),
-  delete:       (id)    => api.delete(`/admin/orders/${id}`),
+  updateStatus:  (id, d) => api.patch(`/admin/orders/${id}/status`, d),
+  updatePayment: (id, d) => api.patch(`/admin/orders/${id}/payment`, d),
+  addTracking:   (id, d) => api.patch(`/admin/orders/${id}/tracking`, d),
+  updateNotes:   (id, d) => api.patch(`/admin/orders/${id}/notes`, d),
+  delete:        (id)    => api.delete(`/admin/orders/${id}`),
 }
 
 export const customersAPI = {
