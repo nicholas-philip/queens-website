@@ -65,9 +65,10 @@ const AdminSchema = new mongoose.Schema(
 
     // Firebase UID — linked after first Google sign-in
     firebaseUid: {
-      type:   String,
-      sparse: true, // allows many accounts to be missing this field
-      unique: true,
+      type:    String,
+      unique:  true,
+      sparse:  true, // Allows documents to NOT have this field
+      default: undefined,
     },
 
     // ── Email Verification ────────────────────────

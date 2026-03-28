@@ -23,7 +23,7 @@ const schemas = {
   register: Joi.object({
     name:     Joi.string().trim().min(2).max(80).required(),
     email,
-    password,
+    password: Joi.string().min(6).allow("").optional(),
     role:     Joi.string().valid("SuperAdmin", "Manager", "Support").default("Manager"),
     phone:    Joi.string().trim().optional(),
   }),

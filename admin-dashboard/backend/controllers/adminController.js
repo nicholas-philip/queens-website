@@ -42,22 +42,21 @@ const createAdmin = async (req, res) => {
     isActive:        true,
   });
 
-  // Destructure BOTH token and code from the generator
-  const { plainToken, plainCode } = admin.generateEmailVerificationToken();
-  await admin.save({ validateBeforeSave: false });
-
+  // ── Activation link ──────────────────────────────
   const clientUrl     = process.env.ADMIN_CLIENT_URL || "http://localhost:3000";
-  const verificationUrl = `${clientUrl}/auth/verify-email?token=${plainToken}`;
+  const loginUrl      = `${clientUrl}/auth/login`;
 
   const inviterName = req.admin?.name || "System";
-  const { subject, html } = newAdminInviteTemplate(admin.name, inviterName, tempPassword, verificationUrl);
-  await sendEmail(admin.email, subject, html);
+  const { subject, html } = newAdminInviteTemplate(admin.name, inviterName, tempPassword, loginUrl);
+  const sent = await sendEmail(admin.email, subject, html);
 
   await logActivity(req, "CREATED_ADMIN", `${admin.name} (${admin.email}) — Role: ${admin.role}`);
 
   res.status(201).json({
     success: true,
-    message: `Admin account created! An invitation email has been sent to ${admin.email}.`,
+    message: sent 
+      ? `Admin account created! An invitation email has been sent to ${admin.email}.`
+      : `Admin account created! (Note: Invite email failed to send, please provide credentials manually).`,
     admin: { _id: admin._id, name: admin.name, email: admin.email, role: admin.role },
   });
 };

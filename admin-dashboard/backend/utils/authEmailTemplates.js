@@ -82,21 +82,21 @@ const passwordChangedTemplate = (adminName) => ({
 });
 
 // ── 5. NEW ADMIN INVITATION ───────────────────────
-const newAdminInviteTemplate = (adminName, inviterName, tempPassword, verificationUrl) => ({
+const newAdminInviteTemplate = (adminName, inviterName, tempPassword, loginUrl) => ({
   subject: "You've been invited to Queens Admin Dashboard",
   html: wrap("Admin Invitation 👑", `
     <h2>Welcome to the Team, ${adminName}!</h2>
     <p style="text-align:center">
       <strong>${inviterName}</strong> has added you as an admin on the Queens Dashboard.
-      Your temporary credentials are below — please verify your email to activate your account.
+      Your account is already active and you can sign in immediately with the credentials below:
     </p>
-    <div style="background-color: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 16px; padding: 24px; margin: 30px 0;">
-      <p style="margin-bottom: 8px; color: ${THEME.muted}; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Temporary Password</p>
-      <p style="font-size: 22px; font-weight: 800; color: ${THEME.primary}; letter-spacing: 4px; margin: 0;">${tempPassword}</p>
-      <p style="font-size: 11px; color: ${THEME.muted}; margin-top: 12px;">Change this password immediately after your first login.</p>
+    <div style="background-color: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 20px; padding: 24px; margin: 30px 0;">
+      <p style="margin-bottom: 8px; color: ${THEME.muted}; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; text-align:center;">Temporary Password</p>
+      <p style="font-size: 24px; font-weight: 800; color: ${THEME.primary}; letter-spacing: 4px; margin: 0; text-align:center;">${tempPassword}</p>
+      <p style="font-size: 11px; color: ${THEME.muted}; margin-top: 16px; text-align:center;">Important: Change your password from Settings as soon as you log in.</p>
     </div>
     <div style="text-align: center; margin: 30px 0;">
-      <a href="${verificationUrl}" class="btn">Verify Email &amp; Activate Account</a>
+      <a href="${loginUrl}" class="btn">Launch Dashboard &amp; Log In</a>
     </div>
   `),
 });
