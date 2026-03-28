@@ -48,15 +48,15 @@ const createAdmin = async (req, res) => {
 
   const inviterName = req.admin?.name || "System";
   const { subject, html } = newAdminInviteTemplate(admin.name, inviterName, tempPassword, loginUrl);
-  const sent = await sendEmail(admin.email, subject, html);
+  
+  // Send email asynchronously to prevent UI freeze
+  sendEmail(admin.email, subject, html).catch(err => console.error("Admin invite email failure:", err));
 
   await logActivity(req, "CREATED_ADMIN", `${admin.name} (${admin.email}) — Role: ${admin.role}`);
 
   res.status(201).json({
     success: true,
-    message: sent 
-      ? `Admin account created! An invitation email has been sent to ${admin.email}.`
-      : `Admin account created! (Note: Invite email failed to send, please provide credentials manually).`,
+    message: `Admin account created! An invitation email is being sent to ${admin.email}.`,
     admin: { _id: admin._id, name: admin.name, email: admin.email, role: admin.role },
   });
 };
