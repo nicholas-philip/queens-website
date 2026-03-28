@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { DollarSign, ShoppingCart, Users, Package, AlertCircle, TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { dashboardAPI, analyticsAPI } from "../../libs/api"
+import { useAuthStore } from "../../context/AuthContext"
 import { formatCurrency } from "../../libs/utils"
 import Spinner from "../../components/Spinner"
 import {
@@ -57,6 +58,9 @@ function StatCard({ title, value, isCurrency, icon: Icon, growth }) {
 }
 
 export default function DashboardPage() {
+  const admin = useAuthStore((s) => s.admin)
+  const isSuperAdmin = admin?.role === "SuperAdmin"
+
   const [stats, setStats] = useState(null)
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -183,7 +187,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         {/* Recent Orders */}
-        <div className="border border-neutral-800 rounded-2xl overflow-hidden">
+        <div className={`border border-neutral-800 rounded-2xl overflow-hidden ${!isSuperAdmin ? "xl:col-span-2" : ""}`}>
           <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
             <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Recent Orders</h3>
             <Link to="/orders" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View all</Link>
@@ -220,35 +224,37 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Activity */}
-        <div className="border border-neutral-800 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800">
-            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Recent Activity</h3>
-            <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View logs</Link>
-          </div>
-          <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-            {(s.recentActivity || []).map((log) => (
-              <div key={log._id} className="flex gap-3 py-2 border-b border-neutral-800/50 last:border-0">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-yellow-500 text-xs font-bold">
-                  {log.adminName?.[0]?.toUpperCase() || "A"}
+        {isSuperAdmin && (
+          <div className="border border-neutral-800 rounded-2xl p-6">
+            <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800">
+              <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Recent Activity</h3>
+              <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View logs</Link>
+            </div>
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
+              {(s.recentActivity || []).map((log) => (
+                <div key={log._id} className="flex gap-3 py-2 border-b border-neutral-800/50 last:border-0">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-yellow-500 text-xs font-bold">
+                    {log.adminName?.[0]?.toUpperCase() || "A"}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-neutral-300 leading-snug">
+                      <b className="font-bold text-white">{log.adminName || "System"}</b>
+                      {" · "}
+                      <span className="text-neutral-500 text-xs">{log.action.replace(/_/g, " ").toLowerCase()}</span>
+                    </p>
+                    {log.target && <p className="font-medium text-neutral-500 text-xs mt-0.5 truncate">{log.target}</p>}
+                    <p className="text-[10px] font-mono text-neutral-700 mt-1 uppercase tracking-widest">
+                      {formatRelativeTime(log.createdAt)}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-neutral-300 leading-snug">
-                    <b className="font-bold text-white">{log.adminName || "System"}</b>
-                    {" · "}
-                    <span className="text-neutral-500 text-xs">{log.action.replace(/_/g, " ").toLowerCase()}</span>
-                  </p>
-                  {log.target && <p className="font-medium text-neutral-500 text-xs mt-0.5 truncate">{log.target}</p>}
-                  <p className="text-[10px] font-mono text-neutral-700 mt-1 uppercase tracking-widest">
-                    {formatRelativeTime(log.createdAt)}
-                  </p>
-                </div>
-              </div>
-            ))}
-            {(!s.recentActivity || s.recentActivity.length === 0) && (
-              <div className="py-8 text-center text-sm text-neutral-600">No recent activity</div>
-            )}
+              ))}
+              {(!s.recentActivity || s.recentActivity.length === 0) && (
+                <div className="py-8 text-center text-sm text-neutral-600">No recent activity</div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

@@ -22,7 +22,7 @@ const getAdminById = async (req, res) => {
 };
 
 const createAdmin = async (req, res) => {
-  const { name, email, password, role, phone } = req.body;
+  const { name, email, password, role, phone, permissions } = req.body;
 
   const exists = await Admin.findOne({ email: email.toLowerCase() });
   if (exists) {
@@ -38,6 +38,7 @@ const createAdmin = async (req, res) => {
     password:        tempPassword,
     role:            role || "Manager",
     phone:           phone || null,
+    permissions:     permissions || [],
     isEmailVerified: true, // Auto-verify manually created admins for immediate access
     isActive:        true,
   });
@@ -67,7 +68,9 @@ const updateAdmin = async (req, res) => {
   if (!isSelf && !isSuperAdmin) return res.status(403).json({ success: false, message: "You can only update your own profile." });
 
   const allowed = ["name","phone"];
-  if (isSuperAdmin) allowed.push("role");
+  if (isSuperAdmin) {
+    allowed.push("role", "permissions");
+  }
   const updates = {};
   allowed.forEach((f) => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
   if (req.file) updates.avatar = await uploadToCloudinary(req.file.buffer, "avatars");

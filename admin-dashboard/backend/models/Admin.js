@@ -48,6 +48,7 @@ const AdminSchema = new mongoose.Schema(
       default: "Manager",
     },
 
+    permissions: [{ type: String }],
     avatar:    { type: String,  default: null },
     phone:     { type: String,  default: null },
     isActive:  { type: Boolean, default: true },

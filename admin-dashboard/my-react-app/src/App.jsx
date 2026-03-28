@@ -69,6 +69,31 @@ const AuthRoute = ({ children }) => {
   return children
 }
 
+const PermissionRoute = ({ permission, children }) => {
+  const admin = useAuthStore((s) => s.admin)
+  
+  if (admin?.role === "SuperAdmin") return children
+  
+  if (!admin?.permissions?.includes(permission)) {
+    if (permission === "Dashboard") {
+      return (
+        <div className="flex-1 flex flex-col items-center justify-center h-[80vh] text-center">
+          <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+            <span className="text-2xl">🔒</span>
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Access Denied</h2>
+          <p className="text-sm text-neutral-500 max-w-sm">
+            You do not have permission to view this page. Please contact your SuperAdmin to request access.
+          </p>
+        </div>
+      )
+    }
+    return <Navigate to="/dashboard" replace />
+  }
+
+  return children
+}
+
 /* ─────────────────────────────────────────────
    Routes
 ───────────────────────────────────────────── */
@@ -102,37 +127,37 @@ function AppRoutes() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
 
-        <Route path="dashboard"     element={<DashboardPage />} />
-        <Route path="analytics"     element={<AnalyticsPage />} />
+        <Route path="dashboard"     element={<PermissionRoute permission="Dashboard"><DashboardPage /></PermissionRoute>} />
+        <Route path="analytics"     element={<PermissionRoute permission="Analytics"><AnalyticsPage /></PermissionRoute>} />
 
         {/* Inventory */}
-        <Route path="products"          element={<ProductsPage />} />
-        <Route path="products/new"      element={<ProductFormPage />} />
-        <Route path="products/:id"      element={<ProductDetailPage />} />
-        <Route path="products/:id/edit" element={<ProductFormPage />} />
-        <Route path="categories"        element={<CategoriesPage />} />
-        <Route path="coupons"           element={<CouponsPage />} />
+        <Route path="products"          element={<PermissionRoute permission="Products"><ProductsPage /></PermissionRoute>} />
+        <Route path="products/new"      element={<PermissionRoute permission="Products"><ProductFormPage /></PermissionRoute>} />
+        <Route path="products/:id"      element={<PermissionRoute permission="Products"><ProductDetailPage /></PermissionRoute>} />
+        <Route path="products/:id/edit" element={<PermissionRoute permission="Products"><ProductFormPage /></PermissionRoute>} />
+        <Route path="categories"        element={<PermissionRoute permission="Categories"><CategoriesPage /></PermissionRoute>} />
+        <Route path="coupons"           element={<PermissionRoute permission="Coupons"><CouponsPage /></PermissionRoute>} />
 
         {/* Orders */}
-        <Route path="orders"     element={<OrdersPage />} />
-        <Route path="orders/:id" element={<OrderDetailPage />} />
+        <Route path="orders"     element={<PermissionRoute permission="Orders"><OrdersPage /></PermissionRoute>} />
+        <Route path="orders/:id" element={<PermissionRoute permission="Orders"><OrderDetailPage /></PermissionRoute>} />
 
         {/* Customers */}
-        <Route path="customers"     element={<CustomersPage />} />
-        <Route path="customers/:id" element={<CustomerDetailPage />} />
+        <Route path="customers"     element={<PermissionRoute permission="Customers"><CustomersPage /></PermissionRoute>} />
+        <Route path="customers/:id" element={<PermissionRoute permission="Customers"><CustomerDetailPage /></PermissionRoute>} />
 
         {/* Financial */}
-        <Route path="transactions"   element={<TransactionsPage />} />
-        <Route path="invoices"       element={<InvoicesPage />} />
-        <Route path="invoices/:id"   element={<InvoiceDetailPage />} />
+        <Route path="transactions"   element={<PermissionRoute permission="Transactions"><TransactionsPage /></PermissionRoute>} />
+        <Route path="invoices"       element={<PermissionRoute permission="Invoices"><InvoicesPage /></PermissionRoute>} />
+        <Route path="invoices/:id"   element={<PermissionRoute permission="Invoices"><InvoiceDetailPage /></PermissionRoute>} />
 
         {/* Community */}
-        <Route path="reviews"       element={<ReviewsPage />} />
-        <Route path="notifications" element={<NotificationsPage />} />
+        <Route path="reviews"       element={<PermissionRoute permission="Reviews"><ReviewsPage /></PermissionRoute>} />
+        <Route path="notifications" element={<PermissionRoute permission="Notifications"><NotificationsPage /></PermissionRoute>} />
 
         {/* System */}
-        <Route path="accounts" element={<AccountsPage />} />
-        <Route path="settings" element={<SettingsPage />} />
+        <Route path="accounts" element={<PermissionRoute permission="Accounts"><AccountsPage /></PermissionRoute>} />
+        <Route path="settings" element={<PermissionRoute permission="Settings"><SettingsPage /></PermissionRoute>} />
       </Route>
 
       {/* Fallback */}

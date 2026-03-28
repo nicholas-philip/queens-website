@@ -13,6 +13,12 @@ const getInitials = (name) => {
   return name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
 }
 
+const AVAILABLE_PERMISSIONS = [
+  "Dashboard", "Analytics", "Products", "Categories", "Coupons", 
+  "Orders", "Customers", "Transactions", "Invoices", 
+  "Reviews", "Notifications", "Accounts", "Settings"
+]
+
 const formatRelativeTime = (dateString) => {
   if (!dateString) return "Never"
   const date = new Date(dateString)
@@ -56,8 +62,17 @@ export default function AccountsPage() {
   const [deacting, setDeacting] = useState(false)
   const [showPass, setShowPass] = useState(false)
 
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "Manager", phone: "" })
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", role: "Manager", phone: "", permissions: [] })
   const [passData, setPassData] = useState({ currentPassword: "", newPassword: "", confirm: "" })
+
+  const togglePermission = (perm) => {
+    setFormData(prev => ({
+      ...prev,
+      permissions: prev.permissions.includes(perm)
+        ? prev.permissions.filter(p => p !== perm)
+        : [...prev.permissions, perm]
+    }))
+  }
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -75,13 +90,13 @@ export default function AccountsPage() {
 
   const openCreate = () => {
     setEditing(null)
-    setFormData({ name: "", email: "", password: "", role: "Manager", phone: "" })
+    setFormData({ name: "", email: "", password: "", role: "Manager", phone: "", permissions: ["Dashboard", "Orders", "Products"] })
     setFormOpen(true)
   }
 
   const openEdit = (account) => {
     setEditing(account)
-    setFormData({ name: account.name, email: account.email || "", password: "", role: account.role || "Manager", phone: account.phone || "" })
+    setFormData({ name: account.name, email: account.email || "", password: "", role: account.role || "Manager", phone: account.phone || "", permissions: account.permissions || [] })
     setFormOpen(true)
   }
 
@@ -101,7 +116,7 @@ export default function AccountsPage() {
     setSubmitting(true)
     try {
       if (editing) {
-        await adminAccountsAPI.update(editing._id, { name: formData.name, phone: formData.phone, role: formData.role })
+        await adminAccountsAPI.update(editing._id, { name: formData.name, phone: formData.phone, role: formData.role, permissions: formData.permissions })
         toast.success("Updated", `${formData.name}'s account updated.`)
       } else {
         await adminAccountsAPI.create(formData)
@@ -306,7 +321,26 @@ export default function AccountsPage() {
                 <option value="Manager">Manager</option>
                 <option value="SuperAdmin">SuperAdmin</option>
               </select>
-              <p className="mt-2 text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">Managers cannot access Admin Accounts or change settings.</p>
+              <p className="mt-2 text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">Managers have customizable access, SuperAdmins have full access.</p>
+            </div>
+          )}
+
+          {isSuperAdmin && formData.role === "Manager" && (
+            <div className="pt-2 border-t border-neutral-800">
+              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-3">Page Permissions</label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 ml-1">
+                {AVAILABLE_PERMISSIONS.map(p => (
+                  <label key={p} className="flex items-center gap-2 text-sm text-neutral-300 font-medium cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.permissions.includes(p)} 
+                      onChange={() => togglePermission(p)} 
+                      className="rounded bg-neutral-900 border-neutral-700 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-neutral-900"
+                    />
+                    {p}
+                  </label>
+                ))}
+              </div>
             </div>
           )}
 

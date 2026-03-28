@@ -92,6 +92,7 @@ export default function Sidebar({
   const [collapsed, setCollapsed] = useState(false)
 
   const safeAdmin = admin || {}
+  const filteredNavGroups = admin?.role === "SuperAdmin" ? navGroups : navGroups.filter(g => g.group !== "Admin")
 
   /* Lock body scroll when mobile drawer is open */
   useEffect(() => {
@@ -152,7 +153,7 @@ export default function Sidebar({
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
-          {navGroups.map(({ group, items }) => (
+          {filteredNavGroups.map(({ group, items }) => (
             <div key={group}>
               {(!collapsed || mobileOpen) && (
                 <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-base-content/40">{group}</p>
