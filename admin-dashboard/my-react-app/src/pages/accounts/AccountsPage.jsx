@@ -94,7 +94,7 @@ export default function AccountsPage() {
     if (!editing && (!formData.email)) {
       return toast.error("Error", "Valid email address is required.")
     }
-    if (!editing && formData.password && formData.password.length < 6) {
+    if (!editing && (!formData.password || formData.password.length < 6)) {
       return toast.error("Error", "Password must be at least 6 characters.")
     }
 
@@ -286,8 +286,8 @@ export default function AccountsPage() {
                 <input type="email" name="email" value={formData.email} onChange={handleFormChange} required placeholder="admin@store.com" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
               </div>
               <div>
-                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Password (Optional)</label>
-                <input type="password" name="password" value={formData.password} onChange={handleFormChange} minLength={6} placeholder="Leave blank to auto-generate" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Password *</label>
+                <input type="password" name="password" value={formData.password} onChange={handleFormChange} required minLength={6} placeholder="Initial password for this admin" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
               </div>
             </>
           )}
