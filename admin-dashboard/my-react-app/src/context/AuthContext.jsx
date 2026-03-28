@@ -44,19 +44,23 @@ export const useAuthStore = create(
             const saved = JSON.parse(raw)
 
             if (provider === "firebase") {
-              // Firebase tokens expire after 1 hour — refresh silently
               try {
                 const freshToken = await auth.currentUser?.getIdToken(true)
-                if (freshToken) {
-                  localStorage.setItem("admin_token", freshToken)
-                }
-              } catch {
-                // currentUser may be null if the page was hard-refreshed
-                // Keep the old token — Firebase middleware will catch expiry
-              }
+                if (freshToken) localStorage.setItem("admin_token", freshToken)
+              } catch {}
             }
 
-            set({ admin: saved, isAuthenticated: true, loading: false })
+            // Optimistic auth state
+            set({ admin: saved, isAuthenticated: true })
+
+            // Fetch fresh profile from DB to synchronize RBAC permissions
+            try {
+              const { data } = await authAPI.me()
+              localStorage.setItem("admin_user", JSON.stringify(data.admin))
+              set({ admin: data.admin, loading: false })
+            } catch (err) {
+              set({ loading: false })
+            }
           } catch {
             // Corrupt state — clear it
             get().logout()
