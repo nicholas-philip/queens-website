@@ -92,7 +92,14 @@ export default function Sidebar({
   const [collapsed, setCollapsed] = useState(false)
 
   const safeAdmin = admin || {}
-  const filteredNavGroups = admin?.role === "SuperAdmin" ? navGroups : navGroups.filter(g => g.group !== "Admin")
+  const permissions = safeAdmin.permissions || []
+
+  const filteredNavGroups = safeAdmin.role === "SuperAdmin" 
+    ? navGroups 
+    : navGroups.map(group => ({
+        ...group,
+        items: group.items.filter(item => permissions.includes(item.label))
+      })).filter(group => group.items.length > 0)
 
   /* Lock body scroll when mobile drawer is open */
   useEffect(() => {
