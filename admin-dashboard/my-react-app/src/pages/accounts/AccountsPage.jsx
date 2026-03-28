@@ -273,7 +273,7 @@ export default function AccountsPage() {
 
       {/* Form Modal */}
       <Modal open={formOpen} onClose={() => setFormOpen(false)} title={editing ? `Edit: ${editing.name}` : "New Admin Account"}>
-        <form onSubmit={onSubmit} className="p-6 space-y-6">
+        <form onSubmit={onSubmit} className="space-y-6 pb-2">
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Full Name *</label>
             <input name="name" value={formData.name} onChange={handleFormChange} required placeholder="John Doe" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
@@ -321,7 +321,7 @@ export default function AccountsPage() {
 
       {/* Password Modal */}
       <Modal open={!!passModal} onClose={() => setPassModal(null)} title="Change Password">
-        <form onSubmit={submitPassword} className="p-6 space-y-6">
+        <form onSubmit={submitPassword} className="space-y-6 pb-2">
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Current Password</label>
             <input type="password" name="currentPassword" value={passData.currentPassword} onChange={handlePassChange} required placeholder="Your current password" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
@@ -351,7 +351,7 @@ export default function AccountsPage() {
 
       {/* Activity Logs Modal */}
       <Modal open={!!logsModal} onClose={() => setLogsModal(null)} title={`Activity Log: ${logsModal?.name}`}>
-        <div className="p-6 pt-0">
+        <div className="pb-2">
           {logsLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-yellow-500" /></div>
           ) : logs.length === 0 ? (
@@ -382,7 +382,7 @@ export default function AccountsPage() {
 
       {/* Deactivate Confirm */}
       <Modal open={!!deactItem} onClose={() => setDeactItem(null)} title="Deactivate Admin">
-        <div className="p-6">
+        <div className="pb-2">
           <p className="text-sm text-neutral-400 mb-8 leading-relaxed">
             Deactivate <b className="text-white">{deactItem?.name}</b>? They will not be able to log in to the dashboard anymore, but their activity history is preserved.
           </p>
@@ -397,7 +397,7 @@ export default function AccountsPage() {
 
       {/* Delete Confirm */}
       <Modal open={!!deleteItem} onClose={() => setDeleteItem(null)} title="Delete Admin">
-        <div className="p-6">
+        <div className="pb-2">
           <p className="text-sm text-neutral-400 mb-8 leading-relaxed">
             Permanently delete <b className="text-white">{deleteItem?.name}</b>'s account? This action is <b className="text-red-500">irreversible</b> and deletes all personal account state.
           </p>
