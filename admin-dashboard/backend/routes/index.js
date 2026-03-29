@@ -15,6 +15,7 @@ const {
   forgotPasswordLimiter, resendVerificationLimiter,
 } = require("../middleware/Ratelimiter");
 const { upload }                         = require("../utils/Cloudinaryupload");
+const { verifyPaystackWebhook } = require("../middleware/verifyWebhook");
 
 // ── Controllers ───────────────────────────────────
 const {
@@ -31,9 +32,9 @@ const { getAllCustomers, getCustomerStats, getCustomerById, updateCustomerTags, 
 const { createTransaction, getAllTransactions, getTransactionSummary, getTransactionsByOrder, getTransactionById, refundTransaction } = require("../controllers/transactionController");
 const { getAllInvoices, getInvoiceSummary, getOverdueInvoices, getInvoiceById, updateInvoiceStatus } = require("../controllers/invoiceController");
 
-const { categoryController: cat }     = require("../controllers/categoryController");
-const { couponController: coup }       = require("../controllers/categoryController");
-const { reviewController: rev }        = require("../controllers/categoryController");
+const cat  = require("../controllers/categoryController");
+const coup = require("../controllers/couponController");
+const rev  = require("../controllers/reviewController");
 const { adminController: adm,
         notificationController: notif,
         settingsController: sett,
@@ -130,9 +131,10 @@ router.delete("/admin/customers/:id",      verifyAdmin, deleteCustomer);
 
 // =====================================================
 // TRANSACTIONS
-// POST /transactions is public — payment gateway webhook
+// POST /transactions — payment gateway webhook (Paystack only)
+// Guarded by HMAC signature verification to prevent fake "Success" posts.
 // =====================================================
-router.post  ("/transactions",                          createTransaction);
+router.post  ("/transactions",                          verifyPaystackWebhook, createTransaction);
 router.get   ("/admin/transactions/summary",            verifyAdmin, getTransactionSummary);
 router.get   ("/admin/transactions/order/:orderId",     verifyAdmin, getTransactionsByOrder);
 router.get   ("/admin/transactions",                    verifyAdmin, getAllTransactions);

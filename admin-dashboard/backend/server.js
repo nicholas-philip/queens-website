@@ -58,7 +58,17 @@ app.options("*", cors());
 app.use(compression());
 
 // ── Body parsing ─────────────────────────────────
-app.use(express.json({ limit: "10mb" }));
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      // Capture raw body for Paystack signature check on the webhook route
+      if (req.originalUrl === "/transactions") {
+        req.rawBody = buf.toString();
+      }
+    },
+    limit: "10mb",
+  })
+);
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // ── HTTP request logging ──────────────────────────

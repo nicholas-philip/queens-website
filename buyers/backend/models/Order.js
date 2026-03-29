@@ -62,10 +62,17 @@ const OrderSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-OrderSchema.pre("save", async function () {
-  if (this.isNew) {
-    const count = await mongoose.model("Order").countDocuments();
-    this.orderNumber = `#QN-${1001 + count}`;
+// ── Collision-safe order number ────────────────────
+// countDocuments()+offset is NOT safe when two backends share one DB —
+// two simultaneous inserts can compute the same number and one will
+// throw a duplicate-key error mid-checkout.
+// Instead: prefix QN + yyMMdd + 6 random hex chars → astronomically unique.
+OrderSchema.pre("save", function () {
+  if (this.isNew && !this.orderNumber) {
+    const now  = new Date();
+    const date = `${String(now.getFullYear()).slice(-2)}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+    const rand = Math.random().toString(16).slice(2, 8).toUpperCase();
+    this.orderNumber = `#QN-${date}-${rand}`;
   }
 });
 

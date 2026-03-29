@@ -1,0 +1,126 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&family=Outfit:wght@100..900&family=Inter:wght@400;700;900&display=swap');
+
+@plugin "daisyui" {
+  themes: false;
+}
+
+/* =====================================================
+   QUEENS — Custom Light Theme (White & Gold)
+   ===================================================== */
+[data-theme="queens-light"] {
+  --color-base-100: #FFFFFF;
+  --color-base-200: #F8F5EE;
+  --color-base-300: #EDE8DC;
+  --color-base-content: #1C1A18;
+
+  --color-primary: #C9A84C;
+  --color-primary-content: #1C1A18;
+
+  --color-secondary: #8A6F3B;
+  --color-secondary-content: #FFFFFF;
+
+  --color-accent: #D4AF37;
+  --color-accent-content: #1C1A18;
+
+  --color-neutral: #2A2720;
+  --color-neutral-content: #F8F5EE;
+
+  --color-info: #3B82F6;
+  --color-info-content: #FFFFFF;
+  --color-success: #22C55E;
+  --color-success-content: #FFFFFF;
+  --color-warning: #F59E0B;
+  --color-warning-content: #1C1A18;
+  --color-error: #EF4444;
+  --color-error-content: #FFFFFF;
+
+  color-scheme: light;
+}
+
+/* =====================================================
+   QUEENS — Custom Dark Theme (Black & Gold)
+   ===================================================== */
+[data-theme="queens-dark"] {
+  --color-base-100: #151311;
+  --color-base-200: #1C1A17;
+  --color-base-300: #252218;
+  --color-base-content: #F0E6C8;
+
+  --color-primary: #C9A84C;
+  --color-primary-content: #151311;
+
+  --color-secondary: #8A6F3B;
+  --color-secondary-content: #F0E6C8;
+
+  --color-accent: #D4AF37;
+  --color-accent-content: #151311;
+
+  --color-neutral: #F0E6C8;
+  --color-neutral-content: #151311;
+
+  --color-info: #60A5FA;
+  --color-info-content: #151311;
+  --color-success: #4ADE80;
+  --color-success-content: #151311;
+  --color-warning: #FBBF24;
+  --color-warning-content: #151311;
+  --color-error: #F87171;
+  --color-error-content: #151311;
+
+  color-scheme: dark;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* High-End Luxury Palette */
+  --color-gold: #C9A84C;
+  --color-gold-light: #F1D592;
+  --color-gold-dim: #8A6F3B;
+  --color-gold-glimmer: #D4AF37;
+  --color-black-rich: #0A0908;
+}
+
+@layer base {
+  body {
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+  }
+}
+
+/* Custom Utilities */
+.font-heading { font-family: 'Outfit', sans-serif; }
+.font-serif { font-family: 'Playfair Display', serif; }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: 200%;
+  animation: marquee 20s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background-color: var(--color-black-rich, #0a0a0a); }
+::-webkit-scrollbar-thumb { background-color: #C9A84C66; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background-color: #C9A84C; }

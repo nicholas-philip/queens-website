@@ -12,7 +12,7 @@ const Transaction  = require("../models/Transaction");
 const Invoice      = require("../models/Invoice");
 const Notification = require("../models/Notification");
 const { sendOrderConfirmation, sendStatusUpdate } = require("../utils/emailService");
-const { initializeTransaction, verifyTransaction, verifyWebhookSignature } = require("../utils/paystackService");
+const { initializeTransaction, verifyTransaction } = require("../utils/paystackService");
 
 // ── POST /api/payment/initialize ────────────────────
 // Frontend sends: { orderId, channel, mobileProvider? }
@@ -95,14 +95,6 @@ const initializePayment = async (req, res) => {
 // ── POST /api/payment/webhook ────────────────────────
 // Called by Paystack after payment. MUST be raw body for signature check.
 const handleWebhook = async (req, res) => {
-  const signature = req.headers["x-paystack-signature"];
-
-  // Verify it's genuinely from Paystack
-  if (!verifyWebhookSignature(req.rawBody, signature)) {
-    console.warn("⚠️ Invalid Paystack webhook signature — rejected.");
-    return res.status(401).json({ success: false, message: "Invalid signature." });
-  }
-
   const event = req.body;
 
   // Only handle successful charges

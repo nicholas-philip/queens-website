@@ -29,4 +29,9 @@ NotificationSchema.statics.push = async function (type, title, message, path = n
   }
 };
 
+// Legacy helper (for backward compatibility / cross-backend alignment)
+NotificationSchema.statics.notify = async function (type, message) {
+  return await this.create({ type, title: type, message });
+};
+
 module.exports = mongoose.models.Notification || mongoose.model("Notification", NotificationSchema);

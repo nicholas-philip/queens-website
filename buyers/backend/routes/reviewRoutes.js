@@ -5,9 +5,7 @@
 
 const express = require("express");
 const router = express.Router();
-const { 
-  reviewController: { submitReview, getProductReviews } 
-} = require("../controllers/reviewController");
+const { submitReview, getProductReviews } = require("../controllers/reviewController");
 
 const { reviewLimiter } = require("../middleware/rateLimiter");
 

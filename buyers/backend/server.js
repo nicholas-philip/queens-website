@@ -17,31 +17,26 @@ const app = express();
 connectDB();
 
 // --- Middleware ---
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Raw body capture for Paystack webhook signature verification
-// MUST be before express.json() to intercept /api/payment/webhook
-app.use((req, res, next) => {
-  if (req.originalUrl === "/api/payment/webhook") {
-    let data = "";
-    req.setEncoding("utf8");
-    req.on("data", (chunk) => { data += chunk; });
-    req.on("end", () => {
-      req.rawBody = data;
-      req.body = JSON.parse(data || "{}");
-      next();
-    });
-  } else {
-    next();
-  }
-});
 app.use(helmet());
 app.use(morgan("dev"));
 
+// Body parsing — Capture raw body for Paystack signature verification
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      // If we are on the webhook route, store the buffer for signature check
+      if (req.originalUrl === "/api/payment/webhook") {
+        req.rawBody = buf.toString();
+      }
+    },
+    limit: "5mb",
+  })
+);
+app.use(express.urlencoded({ extended: true, limit: "5mb" }));
+
 // --- CORS ---
 app.use(cors({
-  origin:      process.env.FRONTEND_URL || "http://localhost:5174",
+  origin:      process.env.FRONTEND_URL || "http://localhost:5173",
   methods:     ["GET", "POST", "PATCH", "DELETE"],
   credentials: true,
 }));

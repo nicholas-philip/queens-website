@@ -5,10 +5,8 @@
 
 const express = require("express");
 const router = express.Router();
-const { 
-  contactController: { sendMessage },
-  newsletterController: { subscribe, unsubscribe }
-} = require("../controllers/reviewController");
+const { sendMessage } = require("../controllers/contactController");
+const { subscribe, unsubscribe } = require("../controllers/newsletterController");
 
 const { contactLimiter, newsletterLimiter } = require("../middleware/rateLimiter");
 

@@ -156,6 +156,7 @@ module.exports = {
   sendEmail,
   sendOrderConfirmation,
   sendOrderStatusUpdate,
+  sendStatusUpdate: sendOrderStatusUpdate, // alias to match buyer backend naming
   sendRefundConfirmation,
   sendLowStockAlert,
 };

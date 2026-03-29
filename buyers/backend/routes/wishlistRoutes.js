@@ -5,9 +5,7 @@
 
 const express = require("express");
 const router = express.Router();
-const { 
-  wishlistController: { getWishlist, toggleWishlist, clearWishlist } 
-} = require("../controllers/reviewController");
+const { getWishlist, toggleWishlist, clearWishlist } = require("../controllers/wishlistController");
 
 // --- WISHLIST DATA ---
 router.get("/:id",    getWishlist);    // View saved items

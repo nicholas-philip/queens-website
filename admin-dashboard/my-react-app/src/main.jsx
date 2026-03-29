@@ -4,10 +4,15 @@ import './index.css'
 import App from './App.jsx'
 import { useAuthStore } from "./context/AuthContext"
 
+import ErrorBoundary from './components/ErrorBoundary'
+
 /* 🔥 Initialize auth state (restore session) */
 useAuthStore.getState().init()
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </StrictMode>
 )

@@ -24,7 +24,8 @@ const CouponSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Check if coupon is still valid for a specific total
-CouponSchema.methods.isValidStatus = function (total = 0) {
+// Named `isValid` to match the buyer backend's Coupon model (both share the same DB).
+CouponSchema.methods.isValid = function (total = 0) {
   const isExpired = new Date() > this.expiryDate;
   const isInactive = !this.isActive;
   const reachedLimit = this.maxUses !== null && this.usedCount >= this.maxUses;

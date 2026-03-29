@@ -1,17 +1,36 @@
-import { useState } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Outlet, Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../context/AuthContext"
 import { Bell, Search, Menu, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
 import Sidebar from "../Sidebar"
+import api from "../../libs/api"
 
 export default function DashboardLayout() {
   const admin  = useAuthStore((s) => s.admin)
   const logout = useAuthStore((s) => s.logout)
+  const token  = useAuthStore((s) => s.token)
   const { theme, setTheme } = useTheme()
 
   const navigate = useNavigate()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
+
+  const fetchUnread = useCallback(async () => {
+    if (!token) return
+    try {
+      const { data } = await api.get("/admin/notifications/unread-count")
+      setUnreadCount(data.count || 0)
+    } catch (err) {
+      console.warn("Notification poll failed", err.message)
+    }
+  }, [token])
+
+  useEffect(() => {
+    fetchUnread()
+    const interval = setInterval(fetchUnread, 30000) // Poll every 30s
+    return () => clearInterval(interval)
+  }, [fetchUnread])
 
   const handleLogout = () => {
     logout()
@@ -82,7 +101,9 @@ export default function DashboardLayout() {
                 </button>
                 <Link to="/notifications" className="relative p-2 text-base-content/70 hover:text-base-content transition-colors group">
                     <Bell className="h-5 w-5 group-hover:scale-110 transition-transform" />
-                    <span className="absolute top-2 right-[2px] w-2.5 h-2.5 rounded-full bg-primary border-2 border-base-100 shadow-[0_0_10px_rgba(212,175,55,1)]" />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-2 right-[2px] w-2.5 h-2.5 rounded-full bg-primary border-2 border-base-100 shadow-[0_0_10px_rgba(212,175,55,1)] animate-pulse" />
+                    )}
                 </Link>
                 <div className="h-8 w-px bg-base-300" />
                 <div className="flex items-center gap-3">
