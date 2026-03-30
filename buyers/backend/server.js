@@ -35,8 +35,19 @@ app.use(
 app.use(express.urlencoded({ extended: true, limit: "5mb" }));
 
 // --- CORS ---
+const buyerOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin:      process.env.FRONTEND_URL || "http://localhost:5173",
+  origin: (origin, callback) => {
+    if (!origin || buyerOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: Origin "${origin}" not allowed.`));
+  },
   methods:     ["GET", "POST", "PATCH", "DELETE"],
   credentials: true,
 }));

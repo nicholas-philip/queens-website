@@ -31,10 +31,11 @@ app.use(helmet({
 // ── CORS ──────────────────────────────────────────
 const allowedOrigins = [
   "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:5175",
+  "http://localhost:5176",
   "http://localhost:3000",
   "https://queens-website-three.vercel.app",
-  "https://queens-admin-frontend.onrender.com",
-  "https://queens-portal-ui.onrender.com",
   process.env.FRONTEND_URL,
   process.env.ADMIN_CLIENT_URL,
 ].filter(Boolean);
@@ -117,7 +118,7 @@ const startServer = () => {
   const server = app.listen(PORT, () => {
     console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
     if (process.env.NODE_ENV === "production") {
-      startSelfPing();
+      // startSelfPing(); // ⚠️ Disabled for local development
     }
   });
 

@@ -31,8 +31,8 @@ const ping = () => {
 const job = new CronJob("*/14 * * * *", ping);
 
 const startSelfPing = () => {
-  job.start();
-  console.log("⏰  Self-ping started (every 14 min → /health)");
+  // job.start(); // ⚠️ Disabled for local development
+  console.log("⏰  Self-ping disabled (Local Mode)");
 };
 
 module.exports = { startSelfPing };
