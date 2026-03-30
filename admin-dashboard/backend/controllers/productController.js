@@ -56,9 +56,14 @@ const createProduct = catchAsync(async (req, res) => {
     );
   }
 
-  // Handle tags (support comma-separated string from frontend)
   if (typeof req.body.tags === "string") {
     req.body.tags = req.body.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  if (typeof req.body.sizes === "string") {
+    req.body.sizes = req.body.sizes.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  if (typeof req.body.colors === "string") {
+    req.body.colors = req.body.colors.split(",").map((t) => t.trim()).filter(Boolean);
   }
 
   const product = await Product.create({ ...req.body, images });
@@ -95,6 +100,12 @@ const updateProduct = catchAsync(async (req, res) => {
 
   if (typeof req.body.tags === "string") {
     req.body.tags = req.body.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  if (typeof req.body.sizes === "string") {
+    req.body.sizes = req.body.sizes.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+  if (typeof req.body.colors === "string") {
+    req.body.colors = req.body.colors.split(",").map((t) => t.trim()).filter(Boolean);
   }
 
   let keptImages = [];

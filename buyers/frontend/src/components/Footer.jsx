@@ -15,13 +15,13 @@ const Footer = () => {
       { name: 'Best Sellers', path: '/shop' },
       { name: 'All Collections', path: '/shop' },
       { name: 'Track My Order', path: '/track' },
-      { name: 'Queens Rewards', path: '/rewards' },
+      // { name: 'Queens Rewards', path: '/rewards' }, // Temporarily deactivated
     ],
     concierge: [
       { name: 'Shipping Policy', path: '/shipping' },
       { name: 'Returns & Exchanges', path: '/returns' },
       { name: 'Help & FAQ', path: '/faq' },
-      { name: 'Beauty Blog', path: '/blog' },
+      { name: 'Fashion & Beauty Blog', path: '/blog' },
       { name: 'Contact Us', path: '/contact' },
     ],
     legal: [
@@ -45,7 +45,7 @@ const Footer = () => {
               </div>
            </Link>
            <p className="text-base-content/60 text-sm leading-relaxed max-w-xs font-medium">
-             Elevating everyday moments with curated luxury beauty and signature craftsmanship. Based in Accra, serving Queens worldwide.
+             Elevating your style with curated luxury dresses, authentic sneakers, signature perfumes, and essential beauty items. Based in Accra, serving Queens worldwide.
            </p>
            <div className="flex gap-4 text-base-content/40">
              <a href="#" className="w-10 h-10 rounded-full bg-base-100 flex items-center justify-center shadow-sm hover:text-primary hover:shadow-md transition-all duration-300 transform hover:-translate-y-1"><Instagram size={18} strokeWidth={2} /></a>
@@ -108,7 +108,7 @@ const Footer = () => {
 
       {/* Copyright Bar */}
       <div className="max-w-[1440px] mx-auto mt-24 pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-6 text-[12px] font-bold tracking-wider text-base-content/40">
-        <p>© {currentYear} Queens Cosmetics & Jewelry. All Rights Reserved.</p>
+        <p>© {currentYear} Queens Premium Fashion & Beauty. All Rights Reserved.</p>
         <div className="flex gap-8">
            {footerLinks.legal.map(link => (
              <Link key={link.name} to={link.path} className="hover:text-primary transition-colors uppercase">{link.name}</Link>

@@ -28,8 +28,8 @@
 
 [data-theme="light"] {
   --color-base-100: #ffffff;
-  --color-base-200: #f4f4f5;
-  --color-base-300: #e4e4e7;
+  --color-base-200: #fafafa;
+  --color-base-300: #f4f4f5;
   --color-base-content: #000000;
   --color-base-content-muted: #52525b;
   --color-primary: #D4AF37;
@@ -38,12 +38,12 @@
 }
 
 [data-theme="dark"] {
-  --color-base-100: #000000;
-  --color-base-200: #0a0a0a;
-  --color-base-300: #171717;
+  --color-base-100: #050505;
+  --color-base-200: #0A0A0A;
+  --color-base-300: #121212;
   --color-base-content: #ffffff;
   --color-base-content-muted: #a1a1aa;
-  --color-primary: #D4AF37;
+  --color-primary: #C9A84C;
   --color-primary-content: #000000;
   color-scheme: dark;
 }
@@ -64,22 +64,6 @@ body {
   color: var(--color-base-content);
 }
 
-/* Smooth Gold Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 9999px;
-  opacity: 0.8;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #b5952f;
-}
 
 /* Smooth Gold Scrollbar */
 ::-webkit-scrollbar {
@@ -90,7 +74,7 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4AF37;
+  background: var(--color-primary);
   border-radius: 9999px;
   opacity: 0.8;
 }

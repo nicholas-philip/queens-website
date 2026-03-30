@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link, useSearchParams }             from "react-router-dom"
-import { Search, Download, Filter, User, Mail, Phone, Calendar, Star, ShieldAlert } from "lucide-react"
+import { Search, Download, Filter, User, Mail, Phone, Calendar, Star, MapPin, Loader2 } from "lucide-react"
 import { customersAPI, exportAPI }            from "../../libs/api"
 import { formatCurrency, getStatusBadge, downloadCSV, formatDate, cn, getInitials } from "../../libs/utils"
 import { useToast }                           from "../../context/ToastContext"
@@ -62,7 +62,7 @@ export default function CustomersPage() {
             disabled={exporting} 
             className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-white hover:bg-neutral-800 transition-all disabled:opacity-50"
           >
-            {exporting ? <Spinner size="sm" /> : <Download className="h-4 w-4" />}
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Export Directory
           </button>
         </div>
@@ -73,7 +73,7 @@ export default function CustomersPage() {
         <StatCard title="Total Customers" value={stats?.total || 0} icon={User} color="yellow" growth={stats?.growthPercent} />
         <StatCard title="New This Month"  value={stats?.newThisMonth || 0} icon={Calendar} color="green" />
         <StatCard title="Avg. Order Value" value={stats?.avgSpend || 0} icon={Star} color="blue" isCurrency />
-        <StatCard title="Blocked Users"   value={stats?.blockedCount || 0} icon={ShieldAlert} color="red" />
+        <StatCard title="Top City"      value={stats?.topCities?.[0]?.city || "—"} icon={MapPin} color="yellow" />
       </div>
 
       {/* ── Search Bar ── */}

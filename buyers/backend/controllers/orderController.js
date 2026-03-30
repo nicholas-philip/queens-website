@@ -48,27 +48,33 @@ const placeOrder = async (req, res) => {
       const variant = product.variants.id(item.variantId);
       if (!variant || !variant.isActive)         return res.status(400).json({ success: false, message: `Variant not available.` });
       if (variant.stockQuantity < item.quantity) return res.status(400).json({ success: false, message: `Not enough stock for "${product.title}".` });
-      validated.push({ product, variant, quantity: item.quantity });
+      validated.push({ product, variant, quantity: item.quantity, selectedSize: item.selectedSize, selectedColor: item.selectedColor });
     } else {
       if (product.stockQuantity < item.quantity) return res.status(400).json({ success: false, message: `Not enough stock for "${product.title}". Only ${product.stockQuantity} left.` });
-      validated.push({ product, variant: null, quantity: item.quantity });
+      validated.push({ product, variant: null, quantity: item.quantity, selectedSize: item.selectedSize, selectedColor: item.selectedColor });
     }
   }
 
   // Build items + subtotal
   const orderItems = [];
   let subtotal = 0;
-  for (const { product, variant, quantity } of validated) {
+  for (const { product, variant, quantity, selectedSize, selectedColor } of validated) {
     const base      = product.discountPrice !== null ? product.discountPrice : product.price;
     const unitPrice = variant ? base + (variant.priceAdjustment || 0) : base;
     const lineTotal = unitPrice * quantity;
     subtotal += lineTotal;
+    
+    // Combine existing variant attributes and new UI options
+    const attributes = variant?.attributes || {};
+    if (selectedSize) attributes.Size = selectedSize;
+    if (selectedColor) attributes.Color = selectedColor;
+
     orderItems.push({
       productId:  product._id,
       variantId:  variant?._id || null,
       title:      product.title,
       SKU:        variant ? variant.SKU : product.SKU,
-      attributes: variant?.attributes || null,
+      attributes: Object.keys(attributes).length > 0 ? attributes : null,
       price:      unitPrice,
       quantity,
       lineTotal,

@@ -16,7 +16,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // Phase 1 Essential Pages
 import TrackOrder from './pages/TrackOrder';
-import Rewards from './pages/Rewards';
+// import Rewards from './pages/Rewards'; // Temporarily deactivated
 import Blog from './pages/Blog';
 
 // Phase 2 Interactive Extensibility Pages
@@ -51,7 +51,7 @@ const App = () => {
 
             {/* Phase 1 Core Feature Routes */}
             <Route path="/track" element={<TrackOrder />} />
-            <Route path="/rewards" element={<Rewards />} />
+            {/* <Route path="/rewards" element={<Rewards />} /> */} {/* Deactivated */}
             <Route path="/blog" element={<Blog />} />
 
             {/* Phase 2 Interactive Extensibility Routes */}

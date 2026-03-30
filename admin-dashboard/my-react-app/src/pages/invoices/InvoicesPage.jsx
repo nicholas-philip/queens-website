@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { useSearchParams, Link }               from "react-router-dom"
-import { Search, Download, Filter, FileText, ArrowUpRight, CheckCircle2, AlertCircle, Clock, Printer } from "lucide-react"
+import { Search, Download, Filter, FileText, ArrowUpRight, CheckCircle2, AlertCircle, Clock, Printer, Loader2 } from "lucide-react"
 import { invoicesAPI, exportAPI }               from "../../libs/api"
 import { formatCurrency, formatDate, downloadCSV, cn, getStatusBadge } from "../../libs/utils"
 import { useToast }                           from "../../context/ToastContext"
@@ -54,16 +54,16 @@ export default function InvoicesPage() {
       {/* ── Page Header ── */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Billing & Invoices</h1>
-          <p className="text-sm text-neutral-500 mt-1">Generate and track customer invoices and billing history.</p>
+          <h1 className="text-2xl font-bold text-base-content tracking-tight">Billing & Invoices</h1>
+          <p className="text-sm text-base-content/50 mt-1">Generate and track customer invoices and billing history.</p>
         </div>
         <div className="flex items-center gap-3">
           <button 
             onClick={handleExport} 
             disabled={exporting} 
-            className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-white hover:bg-neutral-800 transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-base-200 border border-base-300 rounded-xl text-xs font-bold text-base-content hover:bg-base-300 transition-all disabled:opacity-50"
           >
-            {exporting ? <Spinner size="sm" /> : <Download className="h-4 w-4" />}
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Export Directory
           </button>
         </div>
@@ -71,21 +71,21 @@ export default function InvoicesPage() {
 
        {/* ── Billing Summary ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard title="Overall Revenue" value={stats?.totalPaid || 0} icon={FileText} color="yellow" isCurrency />
+        <StatCard title="Overall Revenue" value={stats?.paidTotal || 0} icon={FileText} color="yellow" isCurrency />
         <StatCard title="Paid Invoices"   value={stats?.paidCount || 0} icon={CheckCircle2} color="green" />
         <StatCard title="Unpaid Items"    value={stats?.unpaidCount || 0} icon={Clock} color="red" />
         <StatCard title="Overdue"        value={stats?.overdueCount || 0} icon={AlertCircle} color="red" />
       </div>
 
       {/* ── Filters Bar ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+      <div className="bg-base-100 border border-base-300 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 shadow-sm">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50" />
           <input 
             value={search} 
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search invoice number, customer name..."
-            className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-medium placeholder:text-neutral-700" 
+            className="w-full bg-base-200 border border-base-300 rounded-xl pl-11 pr-4 py-2.5 text-sm text-base-content focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all font-medium placeholder:text-base-content/30" 
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function InvoicesPage() {
             <select 
                 value={status} 
                 onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-                className="bg-black/40 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 cursor-pointer w-full md:w-40 appearance-none"
+                className="bg-base-200 border border-base-300 rounded-xl px-4 py-2.5 text-sm text-base-content focus:outline-none focus:ring-1 focus:ring-primary/50 cursor-pointer w-full md:w-40 appearance-none"
             >
                 <option value="">All Statuses</option>
                 <option value="Paid">Paid</option>
@@ -105,7 +105,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* ── Invoices Table ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
+      <div className="bg-base-100 border border-base-300 rounded-3xl overflow-hidden shadow-sm">
         <Table>
           <TableHead headers={["Invoice #", "Recipient", "Order", "Total Amount", "Issue Date", "Status", "Actions"]} />
           <TableBody>
@@ -118,7 +118,7 @@ export default function InvoicesPage() {
                 <TableRow key={i._id}>
                   {/* Invoice ID */}
                   <TableCell>
-                    <Link to={`/invoices/${i._id}`} className="font-bold text-yellow-500 hover:text-yellow-400">
+                    <Link to={`/invoices/${i._id}`} className="font-bold text-primary hover:text-primary transition-all">
                         {i.invoiceNumber || `INV-${i._id.slice(-6).toUpperCase()}`}
                     </Link>
                   </TableCell>
@@ -126,27 +126,27 @@ export default function InvoicesPage() {
                   {/* Customer Info */}
                   <TableCell>
                     <div className="flex flex-col">
-                        <span className="font-bold text-neutral-300">{i.customerDetails?.name || "Guest Customer"}</span>
-                        <span className="text-[10px] text-neutral-600 font-bold uppercase tracking-tight">{i.customerDetails?.phone}</span>
+                        <span className="font-bold text-base-content/80">{i.customerName || "Guest Customer"}</span>
+                        <span className="text-[10px] text-base-content/40 font-bold uppercase tracking-tight">{i.customerPhone}</span>
                     </div>
                   </TableCell>
 
                   {/* Order Link */}
                   <TableCell>
-                    <Link to={`/orders/${i.orderId}`} className="font-bold text-neutral-400 hover:text-white flex items-center gap-1 group">
-                        #{i.orderNumber}
+                    <Link to={`/orders/${i.orderRef?._id || i.orderRef}`} className="font-bold text-base-content/60 hover:text-base-content transition-all flex items-center gap-1 group">
+                        #{i.orderRef?.orderNumber || "—"}
                         <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
                   </TableCell>
 
                   {/* Amount */}
                   <TableCell>
-                    <span className="font-bold text-white">{formatCurrency(i.total)}</span>
+                    <span className="font-bold text-base-content">{formatCurrency(i.amount)}</span>
                   </TableCell>
 
                   {/* Date */}
                   <TableCell>
-                    <span className="text-xs font-medium text-neutral-500">{formatDate(i.createdAt)}</span>
+                    <span className="text-xs font-medium text-base-content/50">{formatDate(i.createdAt)}</span>
                   </TableCell>
 
                   {/* Status Badge */}
@@ -166,7 +166,7 @@ export default function InvoicesPage() {
                     <div className="flex items-center gap-2">
                         <Link 
                             to={`/invoices/${i._id}`}
-                            className="p-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-500 hover:text-white hover:border-neutral-700 transition-all group shadow-inner"
+                            className="p-2.5 bg-base-200 border border-base-300 rounded-xl text-base-content/50 hover:text-primary transition-all group shadow-inner"
                         >
                             <Printer className="h-4 w-4 group-hover:scale-110 transition-transform" />
                         </Link>

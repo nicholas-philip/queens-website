@@ -1,28 +1,75 @@
-import React, { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Search, X } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { Search, X, Loader2, ChevronDown } from "lucide-react";
 import api from "../api";
 import ProductCard from "../components/ProductCard";
-import CategoryBar from "../components/CategoryBar";
 
 const Shop = () => {
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const { data: products, isLoading } = useQuery({
-    queryKey: ["products", activeCategory],
-    queryFn: async () => {
-      const params = activeCategory !== "all" ? { category: activeCategory } : {};
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // URL-driven states
+  const activeCategory = searchParams.get("category") || "all";
+  const searchQuery = searchParams.get("search") || "";
+  
+  // Fetch products with infinite scroll/pagination
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    refetch
+  } = useInfiniteQuery({
+    queryKey: ["products", activeCategory, searchQuery],
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = {
+        page: pageParam,
+        limit: 15,
+        ...(activeCategory !== "all" && { category: activeCategory }),
+        ...(searchQuery && { search: searchQuery }),
+      };
       const { data } = await api.get("/products", { params });
-      return data.data || data;
+      return data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.hasNext) {
+        return lastPage.pagination.page + 1;
+      }
+      return undefined;
     },
   });
 
-  const filteredProducts = products?.filter(
-    (p) =>
-      p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Fetch category info for the dynamic title
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data } = await api.get("/products/categories");
+      return data.categories || [];
+    }
+  });
+
+  const currentCategory = categories?.find(c => c.slug === activeCategory || c._id === activeCategory);
+  const displayTitle = currentCategory ? currentCategory.name : "Collection";
+
+  const allProducts = data?.pages.flatMap((page) => page.data) || [];
+  const totalFound = data?.pages[0]?.pagination.total || 0;
+
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchParams(prev => {
+      if (val) prev.set("search", val);
+      else prev.delete("search");
+      return prev;
+    });
+  };
+
+  const clearSearch = () => {
+    setSearchParams(prev => {
+      prev.delete("search");
+      return prev;
+    });
+  };
 
   return (
     <div className="bg-base-100 min-h-screen pt-28 font-sans text-base-content">
@@ -30,21 +77,12 @@ const Shop = () => {
       {/* HERO HEADER */}
       <div className="max-w-[1440px] mx-auto px-6 md:px-10 text-center md:text-left mb-10">
         <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
-          Our <span className="text-primary">Collection</span>
+          Our <span className="text-primary">{displayTitle}</span>
         </h1>
 
         <p className="mt-4 text-base-content/60 text-lg max-w-2xl">
-          Explore our full range of jewelry, beauty essentials, and premium
-          gifts. Each piece is curated to elevate your everyday style.
+          {currentCategory?.description || "Explore our premium range of essentials, curated to elevate your everyday style."}
         </p>
-      </div>
-
-      {/* CATEGORY BAR */}
-      <div className="max-w-[1440px] mx-auto px-6 md:px-10 mb-10">
-        <CategoryBar
-          activeCategory={activeCategory}
-          onCategoryChange={setActiveCategory}
-        />
       </div>
 
       {/* TOOLBAR */}
@@ -61,13 +99,13 @@ const Shop = () => {
             type="text"
             placeholder="Search products..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleSearchChange}
             className="w-full bg-base-200 border border-base-300 rounded-full py-3.5 pl-12 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition shadow-sm"
           />
 
           {searchQuery && (
             <button
-              onClick={() => setSearchQuery("")}
+              onClick={clearSearch}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
             >
               <X size={16} />
@@ -75,10 +113,12 @@ const Shop = () => {
           )}
         </div>
 
-        {/* PRODUCT COUNT */}
-        <p className="text-sm font-semibold text-base-content/60">
-          {filteredProducts?.length || 0} Products Found
-        </p>
+        {/* PRODUCT COUNT & STATUS */}
+        <div className="flex items-center gap-4">
+          <p className="text-sm font-semibold text-base-content/60">
+            {totalFound} Products Available
+          </p>
+        </div>
       </div>
 
       {/* PRODUCTS GRID */}
@@ -95,7 +135,7 @@ const Shop = () => {
                 />
               ))}
             </div>
-          ) : filteredProducts?.length === 0 ? (
+          ) : allProducts.length === 0 ? (
 
             /* EMPTY STATE */
             <div className="flex flex-col items-center justify-center py-32 gap-5 text-center">
@@ -108,22 +148,41 @@ const Shop = () => {
               </h2>
 
               <p className="text-sm text-base-content/50">
-                Try searching with another keyword.
+                Try searching with another keyword or checking another category.
               </p>
             </div>
           ) : (
 
             /* PRODUCT GRID */
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {filteredProducts?.map((product) => (
-                <div
-                  key={product._id}
-                  className="transition transform hover:-translate-y-1 hover:scale-[1.02]"
-                >
-                  <ProductCard product={product} />
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {allProducts.map((product) => (
+                  <div
+                    key={product._id}
+                    className="transition transform hover:-translate-y-1 hover:scale-[1.02]"
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+
+              {/* LOAD MORE */}
+              {hasNextPage && (
+                <div className="mt-16 flex justify-center">
+                  <button
+                    onClick={() => fetchNextPage()}
+                    disabled={isFetchingNextPage}
+                    className="btn btn-primary btn-wide rounded-full shadow-lg shadow-primary/20 flex items-center gap-2"
+                  >
+                    {isFetchingNextPage ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      "Load More"
+                    )}
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
           )}
         </div>
       </section>

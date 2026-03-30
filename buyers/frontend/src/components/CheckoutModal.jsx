@@ -198,6 +198,8 @@ const CheckoutModal = () => {
         items: cartItems.map(item => ({
           productId: item.product._id,
           quantity:  item.quantity,
+          selectedSize: item.product.selectedSize,
+          selectedColor: item.product.selectedColor,
         })),
         shipping:   shippingMethod.price,
         couponCode: couponCode.trim() || undefined,
@@ -283,7 +285,7 @@ const CheckoutModal = () => {
                 ) : (
                   <div className="space-y-3">
                     {cartItems.map((item) => (
-                      <div key={item.product._id} className="flex gap-3 p-3 bg-white/3 rounded-2xl border border-white/6 hover:border-white/10 transition-colors">
+                      <div key={item.cartItemId || item.product._id} className="flex gap-3 p-3 bg-white/3 rounded-2xl border border-white/6 hover:border-white/10 transition-colors">
                         <div className="w-18 h-18 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 w-[72px] h-[72px]">
                           {item.product.images?.[0] ? (
                             <img
@@ -306,10 +308,16 @@ const CheckoutModal = () => {
                               GHS {(item.product.price * item.quantity).toFixed(2)}
                             </p>
                           )}
+                          {item.product.selectedSize && (
+                            <p className="text-white/50 text-xs mt-0.5">Size: {item.product.selectedSize}</p>
+                          )}
+                          {item.product.selectedColor && (
+                            <p className="text-white/50 text-xs mt-0.5">Color: {item.product.selectedColor}</p>
+                          )}
                           <div className="flex items-center gap-3 mt-2">
                             <div className="flex items-center border border-white/10 rounded-lg overflow-hidden">
                               <button
-                                onClick={() => updateQuantity(item.product._id, item.quantity - 1)}
+                                onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity - 1)}
                                 className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors"
                               >
                                 <Minus size={12} />
@@ -318,14 +326,14 @@ const CheckoutModal = () => {
                                 {item.quantity}
                               </span>
                               <button
-                                onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                                onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity + 1)}
                                 className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors"
                               >
                                 <Plus size={12} />
                               </button>
                             </div>
                             <button
-                              onClick={() => removeFromCart(item.product._id)}
+                              onClick={() => removeFromCart(item.cartItemId || item.product._id)}
                               className="text-white/20 hover:text-red-400 transition-colors"
                             >
                               <Trash2 size={14} />

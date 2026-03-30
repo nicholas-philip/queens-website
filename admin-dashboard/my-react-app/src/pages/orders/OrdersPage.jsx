@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link, useSearchParams }             from "react-router-dom"
-import { Search, Download, Filter, Eye, ShoppingBag, CreditCard } from "lucide-react"
+import { Search, Download, Filter, Eye, ShoppingBag, CreditCard, Loader2 } from "lucide-react"
 import { ordersAPI, exportAPI }               from "../../libs/api"
 import { formatCurrency, getStatusBadge, downloadCSV, formatDate, cn } from "../../libs/utils"
 import { useToast }                           from "../../context/ToastContext"
@@ -58,7 +58,7 @@ export default function OrdersPage() {
             disabled={exporting} 
             className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-white hover:bg-neutral-800 transition-all disabled:opacity-50"
           >
-            {exporting ? <Spinner size="sm" /> : <Download className="h-4 w-4" />}
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Export CSV
           </button>
         </div>

@@ -12,6 +12,9 @@ const CategorySchema = new mongoose.Schema({
   slug: { type: String, unique: true }, // URL friendly version of name
   description: { type: String },
   image: { type: String }, // Cloudinary URL
+  isActive: { type: Boolean, default: true },
+  productCount: { type: Number, default: 0 },
+  sortOrder: { type: Number, default: 0 },
 }, { timestamps: true });
 
 // Auto-create a slug (e.g. "Lip Balm" -> "lip-balm")

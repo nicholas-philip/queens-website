@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { Outlet, Link, useNavigate } from "react-router-dom"
 import { useAuthStore } from "../../context/AuthContext"
-import { Bell, Search, Menu, Moon, Sun } from "lucide-react"
+import { Bell, Search, Menu, Moon, Sun, X, Package, ShoppingCart, User as UserIcon, Loader2 } from "lucide-react"
 import { useTheme } from "next-themes"
 import Sidebar from "../Sidebar"
 import api from "../../libs/api"
+import { useDebounce } from "../../libs/useDebounce"
 
 export default function DashboardLayout() {
   const admin  = useAuthStore((s) => s.admin)
@@ -16,11 +17,19 @@ export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
 
+  // ── Global Search State ──
+  const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState(null)
+  const [isSearching, setIsSearching] = useState(false)
+  const [showResults, setShowResults] = useState(false)
+  const debouncedSearch = useDebounce(searchQuery, 400)
+  const searchRef = useRef(null)
+
   const fetchUnread = useCallback(async () => {
     if (!token) return
     try {
       const { data } = await api.get("/admin/notifications/unread-count")
-      setUnreadCount(data.count || 0)
+      setUnreadCount(data.unreadCount || 0)
     } catch (err) {
       console.warn("Notification poll failed", err.message)
     }
@@ -32,9 +41,51 @@ export default function DashboardLayout() {
     return () => clearInterval(interval)
   }, [fetchUnread])
 
+  // ── Global Search Fetch ──
+  useEffect(() => {
+    if (!debouncedSearch.trim()) {
+      setSearchResults(null)
+      setShowResults(false)
+      return
+    }
+
+    const performSearch = async () => {
+      setIsSearching(true)
+      setShowResults(true)
+      try {
+        const { data } = await api.get(`/admin/search?q=${encodeURIComponent(debouncedSearch)}`)
+        setSearchResults(data.results)
+      } catch (err) {
+        console.error("Search failed", err)
+      } finally {
+        setIsSearching(false)
+      }
+    }
+    performSearch()
+  }, [debouncedSearch])
+
+  // Click outside to close search results
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowResults(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
   const handleLogout = () => {
     logout()
     navigate("/auth/login")
+  }
+
+  const navigateToResult = (type, id) => {
+    setShowResults(false)
+    setSearchQuery("")
+    if (type === "product") navigate(`/products/${id}`)
+    if (type === "order") navigate(`/orders/${id}`)
+    if (type === "customer") navigate(`/customers/${id}`)
   }
 
   return (
@@ -81,13 +132,99 @@ export default function DashboardLayout() {
         {/* Header (Top bar) */}
         <header className="h-20 border-b border-base-300 bg-base-100/80 backdrop-blur-md sticky top-0 z-30 px-8 hidden lg:flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-4 flex-1">
-                <div className="relative w-full max-w-md hidden md:block group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 group-focus-within:text-primary transition-colors" />
-                    <input 
-                        type="text" 
-                        placeholder="Search for orders, products..."
-                        className="w-full bg-base-200/60 border border-base-300 rounded-2xl pl-12 pr-4 py-3 text-sm text-base-content font-medium focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner"
-                    />
+                <div className="relative w-full max-w-md hidden md:block group" ref={searchRef}>
+                    <div className="relative">
+                      <Search className={`absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 transition-colors ${isSearching ? 'text-primary' : 'text-base-content/50 group-focus-within:text-primary'}`} />
+                      <input 
+                          type="text" 
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onFocus={() => searchQuery && setShowResults(true)}
+                          placeholder="Search for orders, products..."
+                          className="w-full bg-base-200/60 border border-base-300 rounded-2xl pl-12 pr-10 py-3 text-sm text-base-content font-medium focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/50 transition-all shadow-inner"
+                      />
+                      {searchQuery && (
+                        <button 
+                          onClick={() => setSearchQuery("")}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 p-0.5 hover:bg-base-300 rounded-full text-base-content/30 hover:text-base-content transition-all"
+                        >
+                          <X size={14} />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Search Results Dropdown */}
+                    <AnimatePresence>
+                      {showResults && (
+                        <div className="absolute top-full left-0 right-0 mt-2 bg-base-100 border border-base-300 rounded-2xl shadow-2xl overflow-hidden z-50 py-2">
+                           {isSearching ? (
+                             <div className="p-10 flex flex-col items-center justify-center gap-3">
+                               <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                               <span className="text-xs font-bold text-base-content/40 uppercase tracking-widest">Searching...</span>
+                             </div>
+                           ) : searchResults ? (
+                             <div className="max-h-[400px] overflow-auto">
+                               {searchResults.products?.length > 0 && (
+                                 <div>
+                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Products</div>
+                                   {searchResults.products.map(p => (
+                                     <button key={p._id} onClick={() => navigateToResult('product', p._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
+                                       <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden">
+                                          {p.images?.[0] ? <img src={p.images[0]} className="h-full w-full object-cover" /> : <Package className="h-4 w-4 text-base-content/30" />}
+                                       </div>
+                                       <div>
+                                          <div className="text-xs font-bold text-base-content">{p.title}</div>
+                                          <div className="text-[10px] text-base-content/40 font-mono uppercase">{p.SKU}</div>
+                                       </div>
+                                     </button>
+                                   ))}
+                                 </div>
+                               )}
+
+                               {searchResults.orders?.length > 0 && (
+                                 <div className="border-t border-base-300/50">
+                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Orders</div>
+                                   {searchResults.orders.map(o => (
+                                     <button key={o._id} onClick={() => navigateToResult('order', o._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
+                                       <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center">
+                                          <ShoppingCart className="h-4 w-4 text-base-content/40" />
+                                       </div>
+                                       <div>
+                                          <div className="text-xs font-bold text-base-content">{o.orderNumber}</div>
+                                          <div className="text-[10px] text-base-content/40 uppercase font-bold">{o.customerDetails?.name} · {o.currentStatus}</div>
+                                       </div>
+                                     </button>
+                                   ))}
+                                 </div>
+                               )}
+
+                               {searchResults.customers?.length > 0 && (
+                                 <div className="border-t border-base-300/50">
+                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Customers</div>
+                                   {searchResults.customers.map(c => (
+                                     <button key={c._id} onClick={() => navigateToResult('customer', c._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
+                                       <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center">
+                                          <UserIcon className="h-4 w-4 text-base-content/40" />
+                                       </div>
+                                       <div>
+                                          <div className="text-xs font-bold text-base-content">{c.name}</div>
+                                          <div className="text-[10px] text-base-content/40 uppercase font-bold">{c.email || c.phone}</div>
+                                       </div>
+                                     </button>
+                                   ))}
+                                 </div>
+                               )}
+                               
+                               {!searchResults.products?.length && !searchResults.orders?.length && !searchResults.customers?.length && (
+                                 <div className="p-8 text-center">
+                                   <p className="text-xs font-bold text-base-content/30 uppercase tracking-widest italic">No matches found</p>
+                                 </div>
+                               )}
+                             </div>
+                           ) : null}
+                        </div>
+                      )}
+                    </AnimatePresence>
                 </div>
             </div>
 

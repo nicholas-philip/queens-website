@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link, useSearchParams }             from "react-router-dom"
-import { Plus, Search, Download, Filter, Pencil, Trash2, Eye, LayoutGrid, List } from "lucide-react"
+import { Plus, Search, Download, Filter, Pencil, Trash2, Eye, LayoutGrid, List, Loader2 } from "lucide-react"
 import { productsAPI, exportAPI }            from "../../libs/api"
 import { formatCurrency, getStatusBadge, downloadCSV, truncate, cn } from "../../libs/utils"
 import { useToast }                          from "../../context/ToastContext"
@@ -83,7 +83,7 @@ export default function ProductsPage() {
             disabled={exporting} 
             className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-white hover:bg-neutral-800 transition-all disabled:opacity-50"
           >
-            {exporting ? <Spinner size="sm" /> : <Download className="h-4 w-4" />}
+            {exporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
             Export CSV
           </button>
           <Link to="/products/new" className="flex items-center gap-2 px-5 py-2.5 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 transition-all">
@@ -257,7 +257,7 @@ export default function ProductsPage() {
                     disabled={deleting}
                     className="px-8 py-2.5 rounded-xl bg-red-500 text-xs font-bold text-white hover:bg-red-400 shadow-lg shadow-red-500/20 transition-all disabled:opacity-50"
                 >
-                    {deleting ? <Spinner size="sm" /> : "Delete Forever"}
+                    {deleting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "Delete Forever"}
                 </button>
             </div>
         </div>

@@ -29,7 +29,7 @@ const Cart = () => {
           <div className="lg:w-2/3 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <div className="space-y-6">
               {cartItems.map((item) => (
-                <div key={item.product._id} className="flex flex-col sm:flex-row gap-6 p-4 border border-gray-100 rounded-lg relative hover:shadow-md transition-shadow">
+                <div key={item.cartItemId || item.product._id} className="flex flex-col sm:flex-row gap-6 p-4 border border-gray-100 rounded-lg relative hover:shadow-md transition-shadow">
                   <div className="w-full sm:w-32 aspect-square bg-gray-100 rounded-md overflow-hidden shrink-0">
                     <img 
                       src={item.product.images?.[0] || 'https://via.placeholder.com/150'} 
@@ -47,23 +47,35 @@ const Cart = () => {
                           GHS {(item.product.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
-                      <p className="text-sm text-gray-500 mb-4">{item.product.category}</p>
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                        <p className="text-sm text-gray-500">{item.product.category?.name || item.product.category}</p>
+                        {item.product.selectedSize && (
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full font-medium border border-gray-200 uppercase">
+                            Size: {item.product.selectedSize}
+                          </span>
+                        )}
+                        {item.product.selectedColor && (
+                          <span className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full font-medium border border-gray-200 capitalize">
+                            Color: {item.product.selectedColor}
+                          </span>
+                        )}
+                      </div>
                     </div>
                     
                     <div className="flex justify-between items-center mt-auto">
                       <div className="flex items-center border border-gray-300 rounded-md">
                         <button 
-                          onClick={() => updateQuantity(item.product._id, Math.max(1, item.quantity - 1))}
+                          onClick={() => updateQuantity(item.cartItemId || item.product._id, Math.max(1, item.quantity - 1))}
                           className="px-3 py-1 text-gray-600 hover:bg-gray-50 rounded-l-md font-medium"
                         >-</button>
                         <span className="px-3 py-1 text-center w-10 font-medium border-x border-gray-300">{item.quantity}</span>
                         <button 
-                          onClick={() => updateQuantity(item.product._id, item.quantity + 1)}
+                          onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity + 1)}
                           className="px-3 py-1 text-gray-600 hover:bg-gray-50 rounded-r-md font-medium"
                         >+</button>
                       </div>
                       <button 
-                        onClick={() => removeFromCart(item.product._id)}
+                        onClick={() => removeFromCart(item.cartItemId || item.product._id)}
                         className="text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-red-50"
                         title="Remove item"
                       >

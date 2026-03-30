@@ -1,6 +1,6 @@
 import { useEffect, useState }           from "react"
 import { useParams, Link }               from "react-router-dom"
-import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2 } from "lucide-react"
+import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2, Loader2 } from "lucide-react"
 import { ordersAPI }                     from "../../libs/api"
 import { formatCurrency, formatDateTime, getStatusBadge, cn } from "../../libs/utils"
 import { useToast }                      from "../../context/ToastContext"
@@ -380,7 +380,7 @@ export default function OrderDetailPage() {
                     disabled={saving} 
                     className="px-10 py-3 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-xl shadow-yellow-500/20 transition-all disabled:opacity-50"
                 >
-                    {saving ? <Spinner size="sm" /> : "Commit Change"}
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : "Commit Change"}
                 </button>
             </div>
         </div>
@@ -411,7 +411,7 @@ export default function OrderDetailPage() {
                     disabled={saving} 
                     className="px-10 py-3 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-xl shadow-yellow-500/20 transition-all disabled:opacity-50"
                 >
-                    {saving ? <Spinner size="sm" /> : "Attach Reference"}
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : "Attach Reference"}
                 </button>
             </div>
         </div>
@@ -443,7 +443,7 @@ export default function OrderDetailPage() {
                     disabled={saving} 
                     className="px-10 py-3 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-xl shadow-yellow-500/20 transition-all disabled:opacity-50"
                 >
-                    {saving ? <Spinner size="sm" /> : "Confirm Settlement"}
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin text-black" /> : "Confirm Settlement"}
                 </button>
             </div>
         </div>

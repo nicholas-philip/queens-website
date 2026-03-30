@@ -213,7 +213,7 @@ export default function CustomerDetailPage() {
                     </h4>
                     <div className="bg-black/40 border border-neutral-800 rounded-2xl p-6 transition-all group-hover:border-red-500/20">
                         <p className="text-xs text-neutral-400 font-medium leading-relaxed mb-6">
-                            Restrict this partner from placing new orders or accessing the customer loyalty programs.
+                            Restrict this partner from placing new orders on the storefront.
                         </p>
                         <button className="w-full py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-[10px] font-bold text-red-500 uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
                             Restrict Partner Access

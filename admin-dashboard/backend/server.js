@@ -105,7 +105,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ── Connect to MongoDB then start server ──────────
-const PORT     = process.env.PORT || 5000;
+const PORT      = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -113,18 +113,44 @@ if (!MONGO_URI) {
   process.exit(1);
 }
 
-mongoose
-  .connect(MONGO_URI)
-  .then(() => {
-    console.log("✅  MongoDB connected");
-    app.listen(PORT, () => {
-      console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
-      if (process.env.NODE_ENV === "production") {
-        startSelfPing();
-      }
-    });
-  })
-  .catch((err) => {
-    console.error("❌  MongoDB connection error:", err.message);
-    process.exit(1);
+const startServer = () => {
+  const server = app.listen(PORT, () => {
+    console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
+    if (process.env.NODE_ENV === "production") {
+      startSelfPing();
+    }
   });
+
+  server.on("error", (err) => {
+    if (err.code === "EADDRINUSE") {
+      console.error(`❌  Port ${PORT} is already in use. Retrying in 5s...`);
+      setTimeout(startServer, 5000);
+    } else {
+      console.error("❌  Server error:", err.message);
+    }
+  });
+};
+
+const connectWithRetry = async (retryCount = 0) => {
+  const delay = Math.min(5_000 * 2 ** retryCount, 30_000);
+  try {
+    await mongoose.connect(MONGO_URI, {
+      serverSelectionTimeoutMS: 15_000,
+      socketTimeoutMS:          45_000,
+    });
+    console.log("✅  MongoDB connected");
+
+    mongoose.connection.on("disconnected", () => {
+      console.warn("⚠️   MongoDB disconnected — reconnecting...");
+      setTimeout(() => connectWithRetry(0), 5_000);
+    });
+
+    startServer();
+  } catch (err) {
+    console.error(`❌  MongoDB connection error (attempt ${retryCount + 1}):`, err.message);
+    console.log(`⏳  Retrying in ${delay / 1000}s...`);
+    setTimeout(() => connectWithRetry(retryCount + 1), delay);
+  }
+};
+
+connectWithRetry();

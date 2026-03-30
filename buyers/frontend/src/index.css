@@ -10,28 +10,28 @@
    ===================================================== */
 [data-theme="queens-light"] {
   --color-base-100: #FFFFFF;
-  --color-base-200: #F8F5EE;
-  --color-base-300: #EDE8DC;
-  --color-base-content: #1C1A18;
+  --color-base-200: #FBF9F4;
+  --color-base-300: #F2EFE6;
+  --color-base-content: #000000;
 
   --color-primary: #C9A84C;
-  --color-primary-content: #1C1A18;
+  --color-primary-content: #FFFFFF;
 
   --color-secondary: #8A6F3B;
   --color-secondary-content: #FFFFFF;
 
   --color-accent: #D4AF37;
-  --color-accent-content: #1C1A18;
+  --color-accent-content: #000000;
 
-  --color-neutral: #2A2720;
-  --color-neutral-content: #F8F5EE;
+  --color-neutral: #151311;
+  --color-neutral-content: #FFFFFF;
 
   --color-info: #3B82F6;
   --color-info-content: #FFFFFF;
   --color-success: #22C55E;
   --color-success-content: #FFFFFF;
   --color-warning: #F59E0B;
-  --color-warning-content: #1C1A18;
+  --color-warning-content: #000000;
   --color-error: #EF4444;
   --color-error-content: #FFFFFF;
 
@@ -42,31 +42,31 @@
    QUEENS — Custom Dark Theme (Black & Gold)
    ===================================================== */
 [data-theme="queens-dark"] {
-  --color-base-100: #151311;
-  --color-base-200: #1C1A17;
-  --color-base-300: #252218;
-  --color-base-content: #F0E6C8;
+  --color-base-100: #050505;
+  --color-base-200: #0A0A0A;
+  --color-base-300: #121212;
+  --color-base-content: #FFFFFF;
 
-  --color-primary: #C9A84C;
-  --color-primary-content: #151311;
+  --color-primary: #D4AF37;
+  --color-primary-content: #050505;
 
   --color-secondary: #8A6F3B;
-  --color-secondary-content: #F0E6C8;
+  --color-secondary-content: #FFFFFF;
 
-  --color-accent: #D4AF37;
-  --color-accent-content: #151311;
+  --color-accent: #C9A84C;
+  --color-accent-content: #050505;
 
-  --color-neutral: #F0E6C8;
-  --color-neutral-content: #151311;
+  --color-neutral: #FFFFFF;
+  --color-neutral-content: #050505;
 
   --color-info: #60A5FA;
-  --color-info-content: #151311;
+  --color-info-content: #050505;
   --color-success: #4ADE80;
-  --color-success-content: #151311;
+  --color-success-content: #050505;
   --color-warning: #FBBF24;
-  --color-warning-content: #151311;
+  --color-warning-content: #050505;
   --color-error: #F87171;
-  --color-error-content: #151311;
+  --color-error-content: #050505;
 
   color-scheme: dark;
 }
@@ -79,7 +79,7 @@
   --color-gold-light: #F1D592;
   --color-gold-dim: #8A6F3B;
   --color-gold-glimmer: #D4AF37;
-  --color-black-rich: #0A0908;
+  --color-black-rich: #050505;
 }
 
 @layer base {
@@ -88,6 +88,7 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
+    @apply text-base-content bg-base-100;
   }
   
   h1, h2, h3, h4, .font-heading {
@@ -121,6 +122,6 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background-color: var(--color-black-rich, #0a0a0a); }
+::-webkit-scrollbar-track { background-color: #050505; }
 ::-webkit-scrollbar-thumb { background-color: #C9A84C66; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background-color: #C9A84C; }

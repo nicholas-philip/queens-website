@@ -31,12 +31,12 @@ const Home = () => {
             transition={{ duration: 0.6 }}
             className="z-10 text-center lg:text-left"
           >
-            <span className="text-primary font-bold tracking-wider uppercase text-sm md:text-base mb-4 block">New Collection</span>
+            <span className="text-primary font-bold tracking-wider uppercase text-sm md:text-base mb-4 block">New Arrivals</span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-base-content mb-6 leading-tight tracking-tight">
-              Discover True <br className="hidden md:block" /> <span className="text-primary">Elegance.</span>
+              Elevate Your <br className="hidden md:block" /> <span className="text-primary">Style.</span>
             </h1>
             <p className="text-base-content/70 text-lg md:text-xl mb-10 max-w-lg mx-auto lg:mx-0">
-              Shop our latest collection of premium beauty products and exquisite jewelry designed to enhance your natural glow.
+              Shop our curated collection of luxury dresses, signature perfumes, authentic sneakers, chic slides, and premium beauty essentials designed for you.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                <Link to="/shop" className="px-8 py-3.5 bg-primary text-primary-content font-bold rounded-lg hover:brightness-110 transition-all shadow-lg active:scale-95 text-center">
@@ -50,7 +50,7 @@ const Home = () => {
 
           {/* Clean Hero Image */}
           <div className="relative h-[400px] lg:h-[550px] w-full hidden md:block rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
-             <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover" />
+             <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover" alt="Luxury Perfume" />
           </div>
         </div>
       </section>
@@ -135,11 +135,11 @@ const Home = () => {
 
       {/* Standard Promo Banner */}
       <section className="py-20 max-w-[1440px] mx-auto px-4 md:px-8">
-         <div className="bg-neutral rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl border flex border-neutral-content/20 relative overflow-hidden bg-[url('https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=2000')] bg-cover bg-center bg-blend-overlay">
+         <div className="bg-neutral rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl border flex border-neutral-content/20 relative overflow-hidden bg-[url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center bg-blend-overlay">
             <div className="absolute inset-0 bg-neutral/80 mix-blend-multiply z-0"></div>
             <div className="z-10 text-center md:text-left max-w-xl">
-               <h2 className="text-4xl md:text-5xl font-extrabold text-neutral-content mb-5 tracking-tight">Luxury Defined.</h2>
-               <p className="text-neutral-content/80 text-lg font-medium mb-8 leading-relaxed">Embrace your elegance. Our curated pieces are exclusively verified by Admin to guarantee authenticity.</p>
+               <h2 className="text-4xl md:text-5xl font-extrabold text-neutral-content mb-5 tracking-tight">Your Premium Closet.</h2>
+               <p className="text-neutral-content/80 text-lg font-medium mb-8 leading-relaxed">From show-stopping dresses to the latest sneakers and slides. Explore high-quality fashion, slippers, face masks, and beauty essentials.</p>
                <Link to="/shop" className="px-10 py-4 bg-primary text-primary-content font-extrabold rounded-xl hover:brightness-110 transition-all shadow-xl active:scale-95 inline-block text-lg">
                   Shop the Collection
                </Link>

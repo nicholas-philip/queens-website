@@ -10,6 +10,7 @@
 // GET /api/products/guides       — size & shade guides
 // =====================================================
 
+const mongoose  = require("mongoose");
 const Product   = require("../models/Product");
 const Category  = require("../models/Category");
 const Review    = require("../models/Review");
@@ -18,7 +19,7 @@ const SizeGuide = require("../models/SizeGuide");
 // Product fields safe to expose publicly
 const PUBLIC_FIELDS =
   "title description price discountPrice images SKU averageRating reviewCount " +
-  "totalSold tags status stockQuantity hasVariants variants category metadata";
+  "totalSold tags sizes colors status stockQuantity hasVariants variants category metadata";
 
 // ── Shop page ─────────────────────────────────────
 const getProducts = async (req, res) => {
@@ -31,10 +32,21 @@ const getProducts = async (req, res) => {
 
     const filter = { status: "Active" };
 
-    if (category) {
-      const cat = await Category.findOne({ $or: [{ slug: category }, { _id: category }] });
-      if (cat) filter.category = cat._id;
-      else return res.status(200).json({ success: true, data: [], pagination: { total: 0 } });
+    if (category && category.trim()) {
+      const cleanCategory = category.trim();
+      const isObjectId = mongoose.Types.ObjectId.isValid(cleanCategory);
+      const cat = await Category.findOne({ 
+        $or: [
+          { slug: cleanCategory },
+          ...(isObjectId ? [{ _id: cleanCategory }] : [])
+        ]
+      });
+
+      if (cat) {
+        filter.category = new mongoose.Types.ObjectId(cat._id);
+      } else {
+        return res.status(200).json({ success: true, data: [], pagination: { total: 0 } });
+      }
     }
 
     if (minPrice || maxPrice) {
@@ -84,8 +96,8 @@ const getProducts = async (req, res) => {
       data,
       pagination: {
         total, page: pg, limit: lim,
-        totalPages: Math.ceil(total / lim),
-        hasNext: pg < Math.ceil(total / lim),
+        totalPages: Math.ceil(total / (lim || 12)),
+        hasNext: pg < Math.ceil(total / (lim || 12)),
         hasPrev: pg > 1,
       },
     });
@@ -148,13 +160,23 @@ const getRelatedProducts = async (req, res) => {
 };
 
 const getCategories = async (req, res) => {
-  const cats = await Category.find({ isActive: true }).sort({ productCount: -1 }).select("name slug image productCount description");
+  const cats = await Category.find({ isActive: { $ne: false } })
+    .sort({ sortOrder: 1, name: 1 })
+    .select("name slug image productCount description");
+
   res.status(200).json({ success: true, count: cats.length, categories: cats });
 };
 
 const getByCategory = async (req, res) => {
   try {
-    const cat = await Category.findOne({ $or: [{ slug: req.params.slug }, { _id: req.params.slug }], isActive: true });
+    const isObjectId = mongoose.Types.ObjectId.isValid(req.params.slug);
+    const cat = await Category.findOne({ 
+      $or: [
+        { slug: req.params.slug },
+        ...(isObjectId ? [{ _id: req.params.slug }] : [])
+      ], 
+      isActive: { $ne: false } 
+    });
     if (!cat) return res.status(404).json({ success: false, message: "Category not found." });
     const page  = Math.max(parseInt(req.query.page) || 1, 1);
     const limit = Math.min(parseInt(req.query.limit) || 12, 48);

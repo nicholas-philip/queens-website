@@ -1,6 +1,6 @@
 import { useEffect, useState }              from "react"
 import { useParams, Link, useNavigate }     from "react-router-dom"
-import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle } from "lucide-react"
+import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle, Loader2 } from "lucide-react"
 import { productsAPI }                      from "../../libs/api"
 import { formatCurrency, getStatusBadge, formatDate, cn } from "../../libs/utils"
 import { useToast }                         from "../../context/ToastContext"
@@ -238,6 +238,31 @@ export default function ProductDetailPage() {
                         ))}
                     </div>
                 )}
+
+                {(product.sizes?.length > 0 || product.colors?.length > 0) && (
+                    <div className="flex flex-col gap-6 mt-8 border-t border-neutral-800/50 pt-6">
+                        {product.sizes?.length > 0 && (
+                            <div>
+                                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Sizes</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.sizes.map(size => (
+                                        <span key={size} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-400 cursor-default hover:border-yellow-500/30 hover:text-yellow-500 transition-all">{size}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        {product.colors?.length > 0 && (
+                            <div>
+                                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Colors</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {product.colors.map(color => (
+                                        <span key={color} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-400 cursor-default hover:border-yellow-500/30 hover:text-yellow-500 transition-all">{color}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Technical Footer */}
@@ -344,7 +369,7 @@ export default function ProductDetailPage() {
                     disabled={deleting} 
                     className="px-10 py-3 bg-red-500 rounded-xl text-xs font-bold text-white hover:bg-red-400 shadow-xl shadow-red-500/20 transition-all disabled:opacity-50"
                 >
-                    {deleting ? <Spinner size="sm" /> : "Confirm Deletion"}
+                    {deleting ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : "Confirm Deletion"}
                 </button>
             </div>
         </div>

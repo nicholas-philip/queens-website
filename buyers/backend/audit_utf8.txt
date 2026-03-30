@@ -1,0 +1,34 @@
+﻿[dotenv@17.3.1] injecting env (18) from .env -- tip: ≡ƒöÉ prevent committing .env to code: https://dotenvx.com/precommit
+
+--- ALL CATEGORIES ---
+- Jewelry              | ID: 69c81319a5b5f752f1f0cfad | Slug: jewelry
+- Beauty Essentials    | ID: 69c81319a5b5f752f1f0cfb2 | Slug: beauty-essentials
+- Accessories          | ID: 69c8131aa5b5f752f1f0cfb5 | Slug: accessories
+- Refreshments         | ID: 69c8131aa5b5f752f1f0cfb8 | Slug: refreshments
+- Food                 | ID: 69c815455091d3b849029444 | Slug: food
+- Sjop                 | ID: 69c856395091d3b849029490 | Slug: sjop
+
+--- PRODUCT CATEGORY AUDIT ---
+- Gold Plated Summer Bracelet    | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+- African Waist Beads            | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+- Delicate Anklet                | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+- High-Shine Lip Gloss           | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Nourishing Lip Balm            | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Exfoliating Lip Scrub          | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Signature Summer Perfume       | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Refreshing Body Splash         | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Glow Body Oil                  | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Designer Leather Tote Bag      | CatVal: 69c8131aa5b5f752f1f0cfb5 | Status: Active     | Audit: OK
+- Premium Leather Keychain       | CatVal: 69c8131aa5b5f752f1f0cfb5 | Status: Active     | Audit: OK
+- Natural Pineapple & Ginger Juice | CatVal: 69c8131aa5b5f752f1f0cfb8 | Status: Active     | Audit: OK
+- Fresh Watermelon Splash        | CatVal: 69c8131aa5b5f752f1f0cfb8 | Status: Active     | Audit: OK
+- Pepper                         | CatVal: 69c815455091d3b849029444 | Status: Active     | Audit: OK
+- Crystal Drop Earrings          | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+- Seashell Choker                | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+- SPF 50 Glow Stick              | CatVal: 69c81319a5b5f752f1f0cfb2 | Status: Active     | Audit: OK
+- Cat-Eye Sunglasses             | CatVal: 69c8131aa5b5f752f1f0cfb5 | Status: Active     | Audit: OK
+- Printed Silk Scarf             | CatVal: 69c8131aa5b5f752f1f0cfb5 | Status: Active     | Audit: OK
+- Hibiscus & Mint Cooler         | CatVal: 69c8131aa5b5f752f1f0cfb8 | Status: Active     | Audit: OK
+- Home                           | CatVal: 69c81319a5b5f752f1f0cfad | Status: Active     | Audit: OK
+
+Found 0 inconsistent products out of 21.

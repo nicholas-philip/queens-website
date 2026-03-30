@@ -1,6 +1,12 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 
+console.log("Testing SMTP Connection...");
+console.log("EMAIL_HOST:", process.env.EMAIL_HOST || "smtp.gmail.com");
+console.log("EMAIL_PORT:", process.env.EMAIL_PORT || 587);
+console.log("EMAIL_USER config status:", process.env.EMAIL_USER ? "SET" : "MISSING");
+console.log("EMAIL_PASS config status:", process.env.EMAIL_PASS ? "SET" : "MISSING");
+
 const transporter = nodemailer.createTransport({
   host:   process.env.EMAIL_HOST || "smtp.gmail.com",
   port:   parseInt(process.env.EMAIL_PORT) || 587,
@@ -11,18 +17,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function run() {
-  try {
-    const info = await transporter.sendMail({
-      from: `"Queens Store Debug" <${process.env.EMAIL_USER}>`,
-      to: "badaahjbndszn@gmail.com",
-      subject: "Test Email from Local Server!",
-      html: "<h2>Success!</h2><p>Your SMTP credentials are working perfectly! The code is flawless!</p>",
-    });
-    console.log("Email sent! Message ID:", info.messageId);
-  } catch (err) {
-    console.error("Failed to send:", err.message);
+transporter.verify(function(error, success) {
+  if (error) {
+    console.log("\n❌ SMTP CONNECTION FAILED:");
+    console.log(error.message);
+  } else {
+    console.log("\n✅ SMTP Connection SUCCESSFUL! Credentials are correct.");
   }
-}
-
-run();
+});

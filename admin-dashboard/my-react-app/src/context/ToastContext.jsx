@@ -34,10 +34,10 @@ export function ToastProvider({ children }) {
     return id
   }, [removeToast])
 
-  const success = useCallback((message) => addToast(message, "success"), [addToast])
-  const error   = useCallback((message) => addToast(message, "error"),   [addToast])
-  const warning = useCallback((message) => addToast(message, "warning"), [addToast])
-  const info    = useCallback((message) => addToast(message, "info"),    [addToast])
+  const success = useCallback((titleOrMsg, msg) => addToast(msg || titleOrMsg, "success"), [addToast])
+  const error   = useCallback((titleOrMsg, msg) => addToast(msg || titleOrMsg, "error"),   [addToast])
+  const warning = useCallback((titleOrMsg, msg) => addToast(msg || titleOrMsg, "warning"), [addToast])
+  const info    = useCallback((titleOrMsg, msg) => addToast(msg || titleOrMsg, "info"),    [addToast])
 
   const contextValue = useMemo(() => ({
     success, error, warning, info, addToast, removeToast

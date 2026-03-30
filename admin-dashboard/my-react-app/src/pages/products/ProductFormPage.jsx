@@ -26,6 +26,8 @@ export default function ProductFormPage() {
     SKU: "",
     status: "Active",
     tags: "", // Command separated string
+    sizes: "",
+    colors: "",
     category: ""
   })
 
@@ -54,6 +56,8 @@ export default function ProductFormPage() {
             SKU: p.SKU || "",
             status: p.status || "Active",
             tags: p.tags ? p.tags.join(", ") : "",
+            sizes: p.sizes ? p.sizes.join(", ") : "",
+            colors: p.colors ? p.colors.join(", ") : "",
             category: p.category?._id || p.category || ""
           })
           setExistingImages(p.images || [])
@@ -362,6 +366,22 @@ export default function ProductFormPage() {
                 placeholder="summer, fashion, accessories" 
               />
               <p className="text-[10px] text-neutral-600 mt-2 ml-1">Separate tags with commas.</p>
+            </div>
+            <div>
+              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Available Sizes</label>
+              <input 
+                type="text" name="sizes" value={formData.sizes} onChange={handleChange} 
+                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                placeholder="S, M, L, XL" 
+              />
+            </div>
+            <div>
+              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Available Colors</label>
+              <input 
+                type="text" name="colors" value={formData.colors} onChange={handleChange} 
+                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                placeholder="Red, Blue, Black" 
+              />
             </div>
           </div>
 
