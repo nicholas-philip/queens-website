@@ -16,7 +16,6 @@ const compression = require("compression");
 const errorHandler     = require("./middleware/errorHandler");
 const routes           = require("./routes");
 const { initFirebase } = require("./utils/firebase");
-const { startSelfPing }= require("./utils/selfPing");
 
 // ── Bootstrap external services ───────────────────
 initFirebase();
@@ -117,9 +116,7 @@ if (!MONGO_URI) {
 const startServer = () => {
   const server = app.listen(PORT, () => {
     console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
-    if (process.env.NODE_ENV === "production") {
-      // startSelfPing(); // ⚠️ Disabled for local development
-    }
+    console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
   });
 
   server.on("error", (err) => {
