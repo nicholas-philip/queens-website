@@ -13,6 +13,14 @@ const morgan     = require("morgan");
 const helmet     = require("helmet");
 const compression = require("compression");
 
+// Catch silent crashes to debug the Nodemon crash issue
+process.on("uncaughtException", (err) => {
+  console.error("🔥 FATAL UNCAUGHT EXCEPTION:", err);
+});
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("🔥 FATAL UNHANDLED REJECTION at:", promise, "reason:", reason);
+});
+
 const errorHandler     = require("./middleware/errorHandler");
 const routes           = require("./routes");
 const { initFirebase } = require("./utils/firebase");
@@ -105,7 +113,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ── Connect to MongoDB then start server ──────────
-const PORT      = process.env.PORT || 5000;
+const PORT      = process.env.PORT || 5050;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
@@ -116,13 +124,15 @@ if (!MONGO_URI) {
 const startServer = () => {
   const server = app.listen(PORT, () => {
     console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
-    console.log(`🚀  Server running on port ${PORT} [${process.env.NODE_ENV || "development"}]`);
   });
 
   server.on("error", (err) => {
     if (err.code === "EADDRINUSE") {
-      console.error(`❌  Port ${PORT} is already in use. Retrying in 5s...`);
-      setTimeout(startServer, 5000);
+      console.error(`❌  Port ${PORT} is already in use. Retrying in 5s (Windows port release delay)...`);
+      setTimeout(() => {
+        server.close();
+        startServer();
+      }, 5000);
     } else {
       console.error("❌  Server error:", err.message);
     }

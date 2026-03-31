@@ -58,10 +58,8 @@ const getDashboardStats = async (req, res) => {
     Product.countDocuments({ stockQuantity: { $gt: 0, $lte: 10 } }),
     Product.countDocuments({ status: "Draft" }),
     Order.countDocuments({ currentStatus: "Pending" }),
-    Order.find().sort({ createdAt: -1 }).limit(8)
-      .select("orderNumber customerDetails.name total currentStatus createdAt"),
-    ActivityLog.find().sort({ createdAt: -1 }).limit(10)
-      .select("adminName action target createdAt"),
+    Order.find().sort({ createdAt: -1 }).limit(8).select("orderNumber customerDetails.name total currentStatus createdAt"),
+    ActivityLog.find().sort({ createdAt: -1 }).limit(10).select("adminName action target createdAt"),
     Review.countDocuments({ isApproved: false }),
     Product.countDocuments(),
   ]);
