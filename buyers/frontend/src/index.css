@@ -1,5 +1,5 @@
-@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Montserrat:wght@100..900&family=Outfit:wght@100..900&family=Inter:wght@400;700;900&display=swap');
+@import "tailwindcss";
 
 @plugin "daisyui" {
   themes: false;
@@ -125,3 +125,16 @@
 ::-webkit-scrollbar-track { background-color: #050505; }
 ::-webkit-scrollbar-thumb { background-color: #C9A84C66; border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background-color: #C9A84C; }
+
+/* =====================================================
+   UNIVERSAL THEME-AWARE TRANSPARENCY (V4)
+   ===================================================== */
+.hero-theme-sensitive {
+  mix-blend-mode: multiply;
+  transition: all 0.5s ease-in-out;
+}
+
+[data-theme="queens-dark"] .hero-theme-sensitive {
+  filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
+  mix-blend-mode: screen;
+}

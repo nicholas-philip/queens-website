@@ -152,6 +152,45 @@ const sendLowStockAlert = async (products) => {
   );
 };
 
+// ── Review reply notification ─────────────────────
+const sendReviewReplyEmail = async (review, product, replyText) => {
+  if (!review.customerEmail) return;
+
+  const body = `
+    <div style="text-align:center; margin-bottom:30px;">
+      <div style="width:64px; height:64px; background:rgba(212,160,23,0.1); border-radius:16px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
+        <span style="font-size:32px;">👑</span>
+      </div>
+      <h2 style="margin:0; font-size:24px; letter-spacing:-0.5px;">Official Reply Received</h2>
+      <p style="color:${THEME.muted}; font-size:14px; margin-top:8px;">Queens has responded to your review</p>
+    </div>
+
+    <div style="background-color:rgba(255,255,255,0.03); border:1px solid #262626; border-radius:20px; padding:30px; margin-bottom:30px;">
+      <p style="color:${THEME.muted}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Your Review of "${product.title}"</p>
+      <p style="font-style:italic; border-left:3px solid ${THEME.primary}; padding-left:20px; margin-bottom:24px; color:${THEME.text};">
+        "${review.comment}"
+      </p>
+      
+      <div style="height:1px; background:#262626; margin-bottom:24px;"></div>
+      
+      <p style="color:${THEME.primary}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; font-weight:bold;">Queens Response</p>
+      <p style="margin:0; color:#fff; font-size:16px; line-height:1.6;">
+        ${replyText}
+      </p>
+    </div>
+
+    <div style="text-align:center;">
+      <a href="${process.env.FRONTEND_URL}/product/${product.slug || product._id}" class="btn">View Product Details</a>
+    </div>
+  `;
+
+  await sendEmail(
+    review.customerEmail,
+    `New Reply to your review of ${product.title} ✨`,
+    wrap("Official Reply", body)
+  );
+};
+
 module.exports = {
   sendEmail,
   sendOrderConfirmation,
@@ -159,4 +198,5 @@ module.exports = {
   sendStatusUpdate: sendOrderStatusUpdate, // alias to match buyer backend naming
   sendRefundConfirmation,
   sendLowStockAlert,
+  sendReviewReplyEmail,
 };

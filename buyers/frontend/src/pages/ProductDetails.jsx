@@ -17,6 +17,7 @@ import {
 import { useCartStore } from "../store/useCartStore";
 import api from "../api";
 import ProductCard from "../components/ProductCard";
+import ReviewSection from "../components/ReviewSection";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -28,11 +29,12 @@ const ProductDetails = () => {
 
   const { addToCart, setCheckoutOpen } = useCartStore();
 
-  const { data: product, isLoading } = useQuery({
+  const { data: productData, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
       const { data } = await api.get(`/products/${id}`);
-      const p = data.data || data;
+      const p = data.product || data.data || data;
+      const reviews = data.reviews || [];
       
       // If sizes/colors are empty but variants exist, extract them
       if (p.hasVariants && p.variants?.length > 0) {
@@ -53,28 +55,19 @@ const ProductDetails = () => {
           p.colors = Array.from(c);
         }
       }
-      return p;
+      return { product: p, reviews };
     },
   });
 
+  const product = productData?.product;
+  const reviews = productData?.reviews;
+
   const { data: relatedProducts } = useQuery({
-    queryKey: ["related-products", product?.category?.slug || product?.category?._id || product?.category],
-    enabled: !!(product?.category),
+    queryKey: ["related-products", id],
+    enabled: !!id,
     queryFn: async () => {
-      // Backend filters by slug or ObjectId — *not* by name
-      const catParam =
-        product.category?.slug ||
-        product.category?._id ||
-        product.category;
-
-      const { data } = await api.get("/products", {
-        params: { category: catParam, limit: 6 },
-      });
-
-      const list = data.data || data;
-
-      // Exclude the current product from the results
-      return list.filter((p) => p._id !== id).slice(0, 5);
+      const { data } = await api.get(`/products/${id}/related`);
+      return data.data || data;
     },
   });
 
@@ -110,49 +103,45 @@ const ProductDetails = () => {
         </Link>
 
         {/* MAIN GRID */}
-        <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
 
           {/* PRODUCT GALLERY */}
           <div className="space-y-6">
 
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="aspect-square rounded-3xl bg-base-200 border border-base-300 flex items-center justify-center relative p-10 overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="aspect-[4/5] lg:aspect-square rounded-[2rem] bg-neutral/5 flex items-center justify-center relative overflow-hidden group"
             >
-              {product.images?.length > 0 ? (
+              {(product.images?.length > 0 || product.image) ? (
                 <img
-                  src={product.images[activeImage] || product.images?.[0]}
-                  alt={product.title}
-                  className="object-contain w-full h-full transition-transform duration-500 hover:scale-105"
+                  src={(product.images && product.images[activeImage]) || product.images?.[0] || product.image}
+                  className="w-full h-full object-cover mix-blend-multiply transition-transform duration-700 ease-out group-hover:scale-105 group-hover:drop-shadow-2xl"
                 />
               ) : (
                 <ShoppingBag size={64} className="text-base-content/10" />
               )}
 
-              <button className="absolute top-4 right-4 bg-white p-3 rounded-full shadow hover:text-red-500 transition-colors">
-                <Heart size={20} />
+              <button className="absolute top-5 right-5 bg-white backdrop-blur-md p-3.5 rounded-full shadow-lg hover:text-red-500 hover:scale-110 transition-all z-20">
+                <Heart size={20} className="drop-shadow-sm" />
               </button>
             </motion.div>
 
             {/* THUMBNAILS */}
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {(product.images || []).map((img, idx) => (
+            <div className="flex gap-3 overflow-x-auto pb-4 hide-scrollbar snap-x snap-mandatory">
+              {(product.images || (product.image ? [product.image] : [])).map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImage(idx)}
-                  className={`w-20 h-20 min-w-[5rem] rounded-xl overflow-hidden border-2 transition
+                  className={`w-24 h-24 shrink-0 snap-start bg-neutral/5 rounded-2xl overflow-hidden border-[3px] transition-all duration-300 relative
                   ${
                     activeImage === idx
-                      ? "border-primary"
-                      : "border-transparent hover:border-base-300"
+                      ? "border-primary shadow-lg scale-100"
+                      : "border-transparent hover:border-base-300 scale-95 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <img
-                    src={img}
-                    alt=""
-                    className="object-contain w-full h-full p-2"
-                  />
+                  <img src={img} className="object-cover w-full h-full mix-blend-multiply" alt="" />
                 </button>
               ))}
             </div>
@@ -162,11 +151,11 @@ const ProductDetails = () => {
           <div className="space-y-8">
 
             <div>
-              <span className="badge badge-primary badge-outline mb-4">
+              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-primary mb-4 block">
                 Premium Selection
               </span>
 
-              <h1 className="text-4xl lg:text-5xl font-extrabold leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] tracking-tight text-neutral">
                 {product.title}
               </h1>
 
@@ -204,14 +193,14 @@ const ProductDetails = () => {
             </div>
 
             {/* DESCRIPTION */}
-            <p className="text-base-content/70 text-lg leading-relaxed">
+            <p className="text-base-content/70 text-lg leading-relaxed max-w-2xl">
               {product.description ||
                 "Experience the perfect blend of elegance and quality. Carefully curated to elevate your everyday style."}
             </p>
 
             {/* OPTIONS (SIZES & COLORS) - JUMIA STYLE */}
             {(product.sizes?.length > 0 || product.colors?.length > 0) && (
-              <div className="space-y-8 pt-4 border-t border-base-200">
+              <div className="space-y-8 pt-10 border-t border-base-200/50">
                 <div className="flex items-center justify-between">
                   <span className="text-[11px] font-black uppercase tracking-[0.2em] text-base-content/40">
                     Variation Available
@@ -304,27 +293,27 @@ const ProductDetails = () => {
             <div className="space-y-6 pt-2">
                {/* QUANTITY & SHARE */}
                <div className="flex items-center gap-4">
-                <div className="flex items-center bg-base-200/50 p-1.5 rounded-2xl border border-base-300">
+                <div className="flex items-center bg-base-200/30 p-1.5 rounded-2xl">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-base-300 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-base-200 transition-colors"
                   >
                     <Minus size={16} />
                   </button>
                   <span className="w-12 text-center font-black text-lg">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-base-300 transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-base-200 transition-colors"
                   >
                     <Plus size={16} />
                   </button>
                 </div>
 
                 <div className="flex gap-2">
-                  <button className="btn btn-ghost btn-circle bg-base-200/50 border border-base-300 hover:bg-primary/10 hover:text-primary hover:border-primary/20">
+                  <button className="btn btn-ghost btn-circle bg-base-200/30 hover:bg-primary/10 hover:text-primary transition-all">
                     <Share2 size={18} />
                   </button>
-                  <button className="btn btn-ghost btn-circle bg-base-200/50 border border-base-300 hover:bg-red-50/50 hover:text-red-500 hover:border-red-100">
+                  <button className="btn btn-ghost btn-circle bg-base-200/30 hover:bg-red-50/50 hover:text-red-500 transition-all">
                     <Heart size={18} />
                   </button>
                 </div>
@@ -359,16 +348,16 @@ const ProductDetails = () => {
             </div>
 
             {/* TRUST BADGES */}
-            <div className="grid sm:grid-cols-2 gap-4 pt-4 border-t border-base-200 mt-6">
-              <div className="flex items-center gap-4 bg-base-100 border border-base-200 p-4 rounded-2xl">
-                <div className="p-2 bg-base-200 rounded-lg"><Truck size={20} className="text-primary" /></div>
+            <div className="grid sm:grid-cols-2 gap-4 pt-10 border-t border-base-200/50 mt-10">
+              <div className="flex items-center gap-4 bg-base-200/20 p-5 rounded-3xl transition-colors hover:bg-base-200/40">
+                <div className="p-3 bg-primary/10 rounded-2xl"><Truck size={20} className="text-primary" /></div>
                 <div>
                   <p className="font-black text-[11px] uppercase tracking-wider">Swift Delivery</p>
                   <p className="text-[10px] font-bold opacity-40">Within 24-48 Hours</p>
                 </div>
               </div>
-              <div className="flex items-center gap-4 bg-base-100 border border-base-200 p-4 rounded-2xl">
-                <div className="p-2 bg-base-200 rounded-lg"><ShieldCheck size={20} className="text-primary" /></div>
+              <div className="flex items-center gap-4 bg-base-200/20 p-5 rounded-3xl transition-colors hover:bg-base-200/40">
+                <div className="p-3 bg-primary/10 rounded-2xl"><ShieldCheck size={20} className="text-primary" /></div>
                 <div>
                   <p className="font-black text-[11px] uppercase tracking-wider">Safe Checkout</p>
                   <p className="text-[10px] font-bold opacity-40">SSL Encrypted Hub</p>
@@ -379,10 +368,18 @@ const ProductDetails = () => {
           </div>
         </div>
 
+        {/* REVIEWS SECTION */}
+        <ReviewSection 
+          productId={product._id} 
+          reviews={reviews} 
+          averageRating={product.averageRating || 0} 
+          reviewCount={product.reviewCount || 0}
+        />
+
         {/* RELATED PRODUCTS - JUMIA STYLE CAROUSEL GRID */}
         {relatedProducts?.length > 0 && (
-          <section className="mt-40 border-t border-base-200 pt-20">
-            <div className="flex items-center justify-between mb-12">
+          <section className="mt-20 lg:mt-28 border-t border-base-200 pt-16">
+            <div className="flex items-center justify-between mb-8">
                <div>
                   <h2 className="text-3xl font-black tracking-tight mb-2 uppercase tracking-[0.05em]">Explore more</h2>
                   <div className="h-1.5 w-16 bg-primary rounded-full"></div>
@@ -390,11 +387,12 @@ const ProductDetails = () => {
                <Link to="/shop" className="text-xs font-black uppercase tracking-widest text-primary hover:underline">View All Collection</Link>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-12 gap-x-6 md:gap-x-10">
-              {relatedProducts
-                .map((p) => (
-                  <ProductCard key={p._id} product={p} />
-                ))}
+            <div className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-2">
+              {relatedProducts.map((p) => (
+                <div key={p._id} className="min-w-[180px] md:min-w-[220px] lg:min-w-[240px] snap-start shrink-0 mb-4 flex-1">
+                  <ProductCard product={p} />
+                </div>
+              ))}
             </div>
           </section>
         )}

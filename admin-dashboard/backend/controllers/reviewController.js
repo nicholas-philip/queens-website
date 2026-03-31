@@ -16,6 +16,7 @@ const Product      = require("../models/Product");
 const Notification = require("../models/Notification");
 const logActivity  = require("../middleware/activityLogger");
 const filterQuery  = require("../utils/filterQuery");
+const { sendReviewReplyEmail } = require("../utils/Emailservice");
 
 const submitReview = async (req, res) => {
   const { productId, customerName, customerEmail, rating, comment } = req.body;
@@ -62,8 +63,22 @@ const approveReview = async (req, res) => {
 const replyToReview = async (req, res) => {
   const { reply } = req.body;
   if (!reply?.trim()) return res.status(400).json({ success: false, message: "Reply text is required." });
-  const review = await Review.findByIdAndUpdate(req.params.id, { adminReply: { text: reply.trim(), repliedAt: new Date() } }, { new: true });
+  
+  const review = await Review.findByIdAndUpdate(
+    req.params.id, 
+    { adminReply: { text: reply.trim(), repliedAt: new Date() } }, 
+    { new: true }
+  ).populate("productId", "title slug images");
+
   if (!review) return res.status(404).json({ success: false, message: "Review not found." });
+
+  // Notify customer via email (async, don't block response)
+  if (review.customerEmail) {
+    sendReviewReplyEmail(review, review.productId, reply.trim()).catch(err => {
+      console.error("Failed to send review reply email:", err.message);
+    });
+  }
+
   res.status(200).json({ success: true, message: "Reply posted.", adminReply: review.adminReply });
 };
 

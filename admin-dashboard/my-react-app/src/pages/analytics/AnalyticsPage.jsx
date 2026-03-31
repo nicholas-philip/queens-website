@@ -91,8 +91,8 @@ export default function AnalyticsPage() {
           </div>
         </div>
 
-        <div className="h-[280px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-[280px] w-full min-w-0">
+          <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
             <AreaChart data={data?.revenue || []} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
@@ -151,8 +151,8 @@ export default function AnalyticsPage() {
           </div>
 
           <div className="flex flex-col gap-6">
-            <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-[200px] w-full min-w-0">
+              <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
                 <PieChart>
                   <Pie
                     data={data?.orderStatus || []}
@@ -204,8 +204,8 @@ export default function AnalyticsPage() {
             </div>
           </div>
 
-          <div className="h-[260px]">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-[260px] w-full min-w-0">
+            <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
               <BarChart
                 data={data?.categories || []}
                 layout="vertical"

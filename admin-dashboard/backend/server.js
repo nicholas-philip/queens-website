@@ -90,7 +90,7 @@ app.get("/health", (req, res) => {
 });
 
 // ── API Routes ────────────────────────────────────
-app.use("/", routes);
+app.use("/api", routes);
 
 // ── Root info ────────────────────────────────────
 app.get("/", (req, res) => {
@@ -155,3 +155,5 @@ const connectWithRetry = async (retryCount = 0) => {
 };
 
 connectWithRetry();
+
+module.exports = app;

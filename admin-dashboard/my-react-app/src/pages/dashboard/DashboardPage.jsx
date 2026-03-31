@@ -9,6 +9,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, PieChart, Pie, Cell
 } from "recharts"
+import LowStockWidget from "../../components/dashboard/LowStockWidget"
 
 const PIE_COLORS = ["#d4a017", "#ffffff", "#737373", "#404040", "#1a1a1a"]
 
@@ -35,22 +36,22 @@ function StatCard({ title, value, isCurrency, icon: Icon, growth }) {
   const isNegative = growth < 0
 
   return (
-    <div className="border border-neutral-800 rounded-2xl p-6">
+    <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 hover:bg-neutral-800 transition-all border border-neutral-800/10 group">
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">{title}</p>
-          <h3 className="text-2xl font-bold text-white tracking-tight">
+          <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-4">{title}</p>
+          <h3 className="text-3xl font-black text-base-content tracking-tight">
             {isCurrency ? formatCurrency(value || 0) : (value || 0).toLocaleString()}
           </h3>
           {growth !== undefined && (
-            <p className={`text-[10px] font-bold uppercase tracking-widest mt-2 flex items-center gap-1 ${isPositive ? "text-white" : isNegative ? "text-neutral-500" : "text-neutral-600"}`}>
+            <p className={`text-[10px] font-black uppercase tracking-widest mt-3 flex items-center gap-1 ${isPositive ? "text-yellow-500" : isNegative ? "text-neutral-500" : "text-neutral-600"}`}>
               {isPositive ? <TrendingUp className="h-3 w-3" /> : isNegative ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
               {Math.abs(growth)}% vs last month
             </p>
           )}
         </div>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-800 border border-neutral-700">
-          <Icon className="h-5 w-5 text-yellow-500" />
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-neutral-900 border border-neutral-800 group-hover:border-yellow-500/20 transition-colors shadow-inner">
+          <Icon className="h-6 w-6 text-yellow-500" />
         </div>
       </div>
     </div>
@@ -128,10 +129,10 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
         {/* Revenue Chart */}
-        <div className="border border-neutral-800 rounded-2xl p-6 xl:col-span-2">
-          <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-6">Revenue — Last 30 Days</h3>
-          <div className="h-[240px]">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10 xl:col-span-2">
+          <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Revenue — Last 30 Days</h3>
+          <div className="h-[400px] w-full min-w-0">
+            <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
               <AreaChart data={a.dailyRevenue || []} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
@@ -154,10 +155,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Orders Pie */}
-        <div className="border border-neutral-800 rounded-2xl p-6 flex flex-col">
-          <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4">Orders by Status</h3>
-          <div className="flex-1 min-h-[200px]">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10 flex flex-col">
+          <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Orders by Status</h3>
+          <div className="h-[300px] w-full min-w-0">
+            <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
               <PieChart>
                 <Pie data={a.ordersByStatus || []} dataKey="count" nameKey="status" cx="50%" cy="50%" innerRadius={55} outerRadius={75} paddingAngle={4} stroke="none">
                   {(a.ordersByStatus || []).map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
@@ -176,20 +177,23 @@ export default function DashboardPage() {
                   <div className="h-2 w-2 rounded-full" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
                   <span className="text-neutral-400 font-medium">{item.status}</span>
                 </div>
-                <span className="font-bold text-white">{item.count}</span>
+                <span className="font-bold text-base-content">{item.count}</span>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Low Stock Alerts */}
+        <LowStockWidget />
       </div>
 
       {/* Bottom Row */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         {/* Recent Orders */}
-        <div className={`border border-neutral-800 rounded-2xl overflow-hidden ${!isSuperAdmin ? "xl:col-span-2" : ""}`}>
-          <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-800">
-            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Recent Orders</h3>
+        <div className={`bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl shadow-black/10 border border-neutral-800/10 ${!isSuperAdmin ? "xl:col-span-2" : ""}`}>
+          <div className="flex items-center justify-between px-7 py-5 border-b border-neutral-800/50">
+            <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Orders</h3>
             <Link to="/orders" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View all</Link>
           </div>
           <table className="w-full text-left">
@@ -203,14 +207,14 @@ export default function DashboardPage() {
             </thead>
             <tbody className="divide-y divide-neutral-800/60">
               {(s.recentOrders || []).map((o) => (
-                <tr key={o._id} className="hover:bg-neutral-900/40 transition-colors">
+                <tr key={o._id} className="hover:bg-neutral-800/10 transition-colors">
                   <td className="px-6 py-3.5">
                     <Link to={`/orders/${o._id}`} className="font-mono text-sm font-bold text-yellow-500 hover:text-yellow-400">
                       {o.orderNumber}
                     </Link>
                   </td>
-                  <td className="px-6 py-3.5 text-sm font-medium text-white">{o.customerDetails?.name || "Guest"}</td>
-                  <td className="px-6 py-3.5 text-sm font-bold text-white">{formatCurrency(o.total)}</td>
+                  <td className="px-6 py-3.5 text-sm font-medium text-base-content">{o.customerDetails?.name || "Guest"}</td>
+                  <td className="px-6 py-3.5 text-sm font-bold text-base-content">{formatCurrency(o.total)}</td>
                   <td className="px-6 py-3.5"><span className={getStatusStyle(o.currentStatus)}>{o.currentStatus}</span></td>
                 </tr>
               ))}
@@ -225,9 +229,9 @@ export default function DashboardPage() {
 
         {/* Recent Activity */}
         {isSuperAdmin && (
-          <div className="border border-neutral-800 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-5 pb-4 border-b border-neutral-800">
-              <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Recent Activity</h3>
+          <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/50">
+              <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Activity</h3>
               <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View logs</Link>
             </div>
             <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
@@ -237,8 +241,8 @@ export default function DashboardPage() {
                     {log.adminName?.[0]?.toUpperCase() || "A"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-neutral-300 leading-snug">
-                      <b className="font-bold text-white">{log.adminName || "System"}</b>
+                    <p className="text-sm text-neutral-600 leading-snug">
+                      <b className="font-bold text-base-content">{log.adminName || "System"}</b>
                       {" · "}
                       <span className="text-neutral-500 text-xs">{log.action.replace(/_/g, " ").toLowerCase()}</span>
                     </p>

@@ -93,3 +93,5 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`📡 [STORE] Server listening on port ${PORT}`);
 });
+
+module.exports = app;

@@ -23,7 +23,7 @@ const Home = () => {
   return (
     <div className="bg-base-100 min-h-screen font-sans text-base-content transition-colors duration-300">
       {/* Standard Clean Hero */}
-      <section className="bg-base-200 border-b border-base-300 transition-colors duration-300">
+      <section className="bg-base-100 transition-colors duration-300">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-12 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -38,20 +38,27 @@ const Home = () => {
             <p className="text-base-content/70 text-lg md:text-xl mb-10 max-w-lg mx-auto lg:mx-0">
               Shop our curated collection of luxury dresses, signature perfumes, authentic sneakers, chic slides, and premium beauty essentials designed for you.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-               <Link to="/shop" className="px-8 py-3.5 bg-primary text-primary-content font-bold rounded-lg hover:brightness-110 transition-all shadow-lg active:scale-95 text-center">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+               <Link to="/shop" className="px-6 py-3 bg-primary text-primary-content font-bold text-sm rounded-lg hover:brightness-110 transition-all shadow-lg active:scale-95 text-center">
                  Shop Now
                </Link>
-               <Link to="/shop" className="px-8 py-3.5 border-2 border-base-content/20 text-base-content font-bold rounded-lg hover:border-primary hover:text-primary transition-all active:scale-95 text-center">
+               <Link to="/shop" className="px-6 py-3 border-2 border-base-content/20 text-base-content font-bold text-sm rounded-lg hover:border-primary hover:text-primary transition-all active:scale-95 text-center">
                  Explore Categories
                </Link>
             </div>
           </motion.div>
 
-          {/* Clean Hero Image */}
-          <div className="relative h-[400px] lg:h-[550px] w-full hidden md:block rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white">
-             <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?q=80&w=1200&auto=format&fit=crop" className="w-full h-full object-cover" alt="Luxury Perfume" />
-          </div>
+          {/* Photorealistic 3D Podium Hero Banner (Muse Shopcart Style) */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8 }}
+            className="relative h-[400px] md:h-[500px] lg:h-[600px] w-full flex items-center justify-center mt-8 lg:mt-0 overflow-hidden"
+          >
+             <img 
+               src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop" 
+               className="w-full h-full object-contain drop-shadow-2xl rounded-2xl" 
+               alt="Luxury Queens Boutique Display" 
+             />
+          </motion.div>
         </div>
       </section>
 
@@ -135,12 +142,12 @@ const Home = () => {
 
       {/* Standard Promo Banner */}
       <section className="py-20 max-w-[1440px] mx-auto px-4 md:px-8">
-         <div className="bg-neutral rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl border flex border-neutral-content/20 relative overflow-hidden bg-[url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center bg-blend-overlay">
-            <div className="absolute inset-0 bg-neutral/80 mix-blend-multiply z-0"></div>
+         <div className="rounded-[2.5rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-10 shadow-2xl border border-white/10 relative overflow-hidden bg-[url('https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center">
+            <div className="absolute inset-0 bg-black/20 z-0"></div>
             <div className="z-10 text-center md:text-left max-w-xl">
                <h2 className="text-4xl md:text-5xl font-extrabold text-neutral-content mb-5 tracking-tight">Your Premium Closet.</h2>
                <p className="text-neutral-content/80 text-lg font-medium mb-8 leading-relaxed">From show-stopping dresses to the latest sneakers and slides. Explore high-quality fashion, slippers, face masks, and beauty essentials.</p>
-               <Link to="/shop" className="px-10 py-4 bg-primary text-primary-content font-extrabold rounded-xl hover:brightness-110 transition-all shadow-xl active:scale-95 inline-block text-lg">
+               <Link to="/shop" className="px-8 py-3.5 bg-primary text-primary-content font-bold rounded-lg hover:brightness-110 transition-all shadow-xl active:scale-95 inline-block text-base">
                   Shop the Collection
                </Link>
             </div>

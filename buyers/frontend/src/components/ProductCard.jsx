@@ -53,12 +53,11 @@ const ProductCard = ({ product }) => {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      className="group relative flex flex-col bg-base-100 rounded-[2rem] border-2 border-base-200 overflow-hidden shadow-sm hover:shadow-2xl hover:border-primary/40 transition-all duration-500 h-full"
+      className="group relative flex flex-col bg-base-100 rounded-2xl border border-base-200 overflow-hidden shadow-sm hover:shadow-xl hover:border-primary/40 transition-all duration-500 h-full"
     >
 
       {/* ── Image ─────────────────────────────────── */}
-      <Link to={`/product/${product._id}`} className="relative block overflow-hidden aspect-[4/5] bg-base-200/30">
+      <Link to={`/product/${product._id}`} className="relative block overflow-hidden aspect-[5/6] bg-base-200/30">
         <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity" />
         {image ? (
           <img
@@ -76,14 +75,14 @@ const ProductCard = ({ product }) => {
         {/* Overlays */}
         {isOutOfStock && (
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <span className="bg-black/80 backdrop-blur-md text-gold text-[10px] font-black uppercase tracking-[0.2em] px-4 py-2 rounded-full border border-gold/20 shadow-2xl">
+            <span className="bg-black/80 backdrop-blur-md text-primary text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20 shadow-xl">
               Sold Out
             </span>
           </div>
         )}
 
         {discountPct > 0 && (
-          <div className="absolute top-4 left-4 z-20 bg-primary text-primary-content text-[11px] font-black px-3 py-1.5 rounded-lg shadow-lg rotate-[-2deg]">
+          <div className="absolute top-3 left-3 z-20 bg-primary text-primary-content text-[9px] font-black px-2 py-1 rounded-md shadow-md">
              SAVE {discountPct}%
           </div>
         )}
@@ -91,7 +90,7 @@ const ProductCard = ({ product }) => {
         {/* Wishlist */}
         <button
           onClick={handleToggleWishlist}
-          className="absolute top-4 right-4 w-10 h-10 rounded-full bg-base-100/90 backdrop-blur-md flex items-center justify-center shadow-xl border border-base-content/5 z-20 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95"
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-base-100/90 backdrop-blur-md flex items-center justify-center shadow-md border border-base-content/5 z-20 opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95"
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <Heart
@@ -102,7 +101,7 @@ const ProductCard = ({ product }) => {
       </Link>
 
       {/* ── Details ───────────────────────────────── */}
-      <div className="flex flex-col flex-1 p-4 md:p-6 gap-2 md:gap-3">
+      <div className="flex flex-col flex-1 p-3 md:p-4 gap-1.5 md:gap-2">
         {/* Category & Rating */}
         <div className="flex justify-between items-center">
           {categoryName && (
@@ -117,20 +116,20 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Title */}
-        <h3 className="font-bold text-base-content text-[13px] md:text-[16px] leading-[1.3] line-clamp-2 min-h-[2.6em]">
+        <h3 className="font-bold text-base-content text-xs md:text-sm leading-tight line-clamp-2 min-h-[2.5em]">
           <Link to={`/product/${product._id}`} className="hover:text-primary transition-colors duration-300">
             {product.title}
           </Link>
         </h3>
 
         {/* Price & Cart */}
-        <div className="mt-auto pt-3 md:pt-4 flex items-center justify-between border-t border-base-200">
+        <div className="mt-auto pt-2 md:pt-3 flex items-center justify-between border-t border-base-200">
           <div className="flex flex-col">
-            <span className="text-base-content font-black text-[14px] md:text-[18px] tracking-tight truncate max-w-[80px] md:max-w-none">
+            <span className="text-base-content font-black text-sm md:text-base tracking-tight truncate max-w-[80px] md:max-w-none">
               GHS {displayPrice.toLocaleString()}
             </span>
             {salePrice && (
-              <span className="text-base-content/30 text-[10px] md:text-[12px] line-through font-bold">
+              <span className="text-base-content/40 text-[9px] md:text-[10px] line-through font-bold">
                 GHS {price.toLocaleString()}
               </span>
             )}
@@ -139,7 +138,7 @@ const ProductCard = ({ product }) => {
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock}
-            className={`w-10 h-10 md:w-12 md:h-12 rounded-[1rem] md:rounded-2xl flex-shrink-0 flex items-center justify-center transition-all active:scale-90 relative shadow-sm border ${
+            className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex-shrink-0 flex items-center justify-center transition-all active:scale-90 relative shadow-sm border ${
               isOutOfStock
                 ? 'bg-base-200 text-base-content/20'
                 : addedFeedback
@@ -148,9 +147,9 @@ const ProductCard = ({ product }) => {
             }`}
           >
             {addedFeedback ? (
-              <Star size={16} className="md:w-5 md:h-5 fill-primary animate-pulse" />
+              <Star size={14} className="md:w-[18px] md:h-[18px] fill-primary animate-pulse" />
             ) : (
-              <ShoppingBag size={16} className="md:w-5 md:h-5" />
+              <ShoppingBag size={14} className="md:w-[18px] md:h-[18px]" />
             )}
           </button>
         </div>

@@ -13,49 +13,42 @@ const navGroups = [
   {
     group: "Main",
     items: [
-      { to: "/dashboard",    label: "Dashboard",     icon: LayoutDashboard },
-      { to: "/analytics",    label: "Analytics",      icon: BarChart3 },
+      { to: "/dashboard",    label: "Dashboard",     icon: LayoutDashboard, requiredPermission: "Dashboard" },
+      { to: "/analytics",    label: "Analytics",      icon: BarChart3,       requiredPermission: "Analytics" },
     ],
   },
   {
     group: "Catalog",
     items: [
-      { to: "/products",     label: "Products",       icon: Package },
-      { to: "/categories",   label: "Categories",     icon: Tag },
-      { to: "/coupons",      label: "Coupons",        icon: Ticket },
+      { to: "/products",     label: "Products",       icon: Package,         requiredPermission: "Products" },
+      { to: "/categories",   label: "Categories",     icon: Tag,             requiredPermission: "Categories" },
+      { to: "/coupons",      label: "Coupons",        icon: Ticket,          requiredPermission: "Coupons" },
     ],
   },
   {
     group: "Sales",
     items: [
-      { to: "/orders",       label: "Orders",         icon: ShoppingCart },
-      { to: "/customers",    label: "Customers",      icon: Users },
-      { to: "/transactions", label: "Transactions",   icon: CreditCard },
-      { to: "/invoices",     label: "Invoices",       icon: FileText },
+      { to: "/orders",       label: "Orders",         icon: ShoppingCart,    requiredPermission: "Orders" },
+      { to: "/customers",    label: "Customers",      icon: Users,           requiredPermission: "Customers" },
+      { to: "/transactions", label: "Transactions",   icon: CreditCard,      requiredPermission: "Transactions" },
+      { to: "/invoices",     label: "Invoices",       icon: FileText,        requiredPermission: "Invoices" },
     ],
   },
   {
     group: "Community",
     items: [
-      { to: "/reviews",      label: "Reviews",        icon: Star },
-      { to: "/notifications",label: "Notifications",  icon: Bell },
+      { to: "/reviews",      label: "Reviews",        icon: Star,            requiredPermission: "Reviews" },
+      { to: "/notifications",label: "Notifications",  icon: Bell,            requiredPermission: "Notifications" },
     ],
   },
   {
     group: "Admin",
     items: [
-      { to: "/accounts",     label: "Accounts",       icon: UserCog },
-      { to: "/settings",     label: "Settings",       icon: Settings },
+      { to: "/accounts",     label: "Accounts",       icon: UserCog,         requiredRole: "SuperAdmin" },
+      { to: "/settings",     label: "Settings",       icon: Settings,         requiredRole: "SuperAdmin" },
     ],
   },
 ]
-
-const getInitials = (name) => {
-  if (!name) return "?"
-  const parts = name.trim().split(" ")
-  if (parts.length === 1) return parts[0][0].toUpperCase()
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-}
 
 /* ── Animated Hamburger Button ── */
 function HamburgerButton({ open, onClick }) {
@@ -87,6 +80,13 @@ export default function Sidebar({
   mobileOpen = false,
   setMobileOpen = () => {},
 }) {
+  const getInitials = (name) => {
+    if (!name) return "?"
+    const parts = name.trim().split(" ")
+    if (parts.length === 1) return parts[0][0].toUpperCase()
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
+
   const logout  = useAuthStore((s) => s.logout)
   const admin   = useAuthStore((s) => s.admin)
   const [collapsed, setCollapsed] = useState(false)
@@ -98,7 +98,11 @@ export default function Sidebar({
     ? navGroups 
     : navGroups.map(group => ({
         ...group,
-        items: group.items.filter(item => permissions.includes(item.label))
+        items: group.items.filter(item => {
+          if (item.requiredRole && safeAdmin.role !== item.requiredRole) return false
+          if (item.requiredPermission && !permissions.includes(item.requiredPermission)) return false
+          return true
+        })
       })).filter(group => group.items.length > 0)
 
   /* Lock body scroll when mobile drawer is open */
@@ -130,18 +134,11 @@ export default function Sidebar({
         `}
       >
         {/* Logo Section */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-base-300 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center overflow-hidden shrink-0">
-              <img src={logo} alt="Queens Logo" className="h-full w-full object-contain" />
-            </div>
-            {(!collapsed || mobileOpen) && (
-              <div>
-                <span className="text-base-content font-black text-sm tracking-widest uppercase">Queens</span>
-                <p className="text-primary font-bold text-[9px] tracking-widest uppercase leading-none mt-0.5">Admin Panel</p>
-              </div>
-            )}
+        <div className="flex h-16 items-center justify-center border-b border-base-300 shrink-0 overflow-hidden relative">
+          <div className={`flex items-center justify-center transition-all duration-300 ${collapsed && !mobileOpen ? "w-8 h-8" : "w-32 h-14"}`}>
+            <img src={logo} alt="Queens Logo" className="h-full w-full object-contain" />
           </div>
+        </div>
 
           {/* Close button — mobile only, inside drawer */}
           {mobileOpen && (
@@ -156,7 +153,6 @@ export default function Sidebar({
               </svg>
             </button>
           )}
-        </div>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">

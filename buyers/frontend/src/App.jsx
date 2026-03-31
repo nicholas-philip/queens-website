@@ -28,10 +28,14 @@ import Wishlist from './pages/Wishlist';
 // New Global Components
 import CheckoutModal from './components/CheckoutModal';
 import FloatingCart from './components/FloatingCart';
+import ScrollToTop from './components/ScrollToTop';
+import ReviewNotification from './components/ReviewNotification';
+import PushNotificationHandler from './components/PushNotificationHandler';
 
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col font-sans">
         <Header />
         <main className="flex-1">
@@ -66,6 +70,8 @@ const App = () => {
         {/* Global Overlays */}
         <CheckoutModal />
         <FloatingCart />
+        <ReviewNotification />
+        <PushNotificationHandler />
       </div>
     </Router>
   );

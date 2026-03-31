@@ -93,8 +93,8 @@ export default function LoginPage() {
             <img
               src={logo}
               alt="Queens Admin"
-              className="h-20 w-20 object-contain"
-              style={{ filter: "drop-shadow(0 0 16px rgba(212,160,23,0.45))" }}
+              className="h-16 w-16 object-contain"
+              style={{ filter: "drop-shadow(0 0 12px rgba(212,160,23,0.4))" }}
               loading="lazy"
             />
           </div>

@@ -5,6 +5,7 @@ import Twitter from 'lucide-react/dist/esm/icons/twitter';
 import FacebookIcon from 'lucide-react/dist/esm/icons/facebook';
 import Mail from 'lucide-react/dist/esm/icons/mail';
 import Phone from 'lucide-react/dist/esm/icons/phone';
+import logo from '../assets/logo.png';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -36,13 +37,12 @@ const Footer = () => {
         
         {/* Brand Identity */}
         <div className="space-y-8">
-          <Link to="/" className="flex flex-col gap-4">
-             <div className="flex items-center gap-3 group">
-                 <div className="w-12 h-12 bg-primary flex items-center justify-center rounded-xl shadow-lg shadow-primary/20 group-hover:-rotate-6 transition-transform">
-                    <span className="text-primary-content font-black text-2xl font-serif italic">Q</span>
-                 </div>
-                 <span className="text-3xl font-extrabold tracking-tight text-base-content uppercase">Queens</span>
-              </div>
+          <Link to="/" className="flex flex-col">
+             <div className="flex items-center group -ml-8">
+                <div className="w-48 h-24 flex items-center justify-center transition-transform group-hover:scale-105 duration-500">
+                   <img src={logo} alt="Queens Luxe Logo" className="w-full h-full object-contain" />
+                </div>
+             </div>
            </Link>
            <p className="text-base-content/60 text-sm leading-relaxed max-w-xs font-medium">
              Elevating your style with curated luxury dresses, authentic sneakers, signature perfumes, and essential beauty items. Based in Accra, serving Queens worldwide.

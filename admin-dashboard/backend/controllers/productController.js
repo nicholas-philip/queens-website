@@ -22,15 +22,49 @@ const catchAsync = require("../utils/catchAsync");
 const filterQuery = require("../utils/filterQuery");
 const { uploadToCloudinary, deleteFromCloudinary } = require("../utils/Cloudinaryupload");
 const logActivity = require("../middleware/activityLogger");
+const { sendPushNotification } = require("../utils/firebase");
 
 // ── GET /admin/products/low-stock ─────────────────
 // Returns products where stock is at or below the low-stock threshold (default 10)
+// Improved to handle variants correctly via aggregation.
 const getLowStockProducts = catchAsync(async (req, res) => {
   const threshold = parseInt(req.query.threshold) || 10;
-  const products = await Product.find({ stockQuantity: { $lte: threshold } })
-    .sort({ stockQuantity: 1 })
-    .select("title SKU brand stockQuantity status images price category")
-    .populate("category", "name");
+
+  // We use aggregation to check both product-level stock and individual variant stock
+  const products = await Product.aggregate([
+    {
+      $match: {
+        $or: [
+          { hasVariants: false, stockQuantity: { $lte: threshold } },
+          { hasVariants: true, "variants.stockQuantity": { $lte: threshold } }
+        ]
+      }
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "category",
+        foreignField: "_id",
+        as: "categoryDoc"
+      }
+    },
+    { $unwind: { path: "$categoryDoc", preserveNullAndEmptyArrays: true } },
+    {
+      $project: {
+        title: 1,
+        SKU: 1,
+        brand: 1,
+        stockQuantity: 1,
+        status: 1,
+        images: 1,
+        price: 1,
+        hasVariants: 1,
+        variants: 1,
+        category: "$categoryDoc.name"
+      }
+    },
+    { $sort: { stockQuantity: 1 } }
+  ]);
 
   res.status(200).json({
     success: true,
@@ -68,6 +102,22 @@ const createProduct = catchAsync(async (req, res) => {
 
   const product = await Product.create({ ...req.body, images });
   await logActivity(req, "CREATED_PRODUCT", `Product: ${product.title}`);
+
+  // 🔔 Send Real-time Push Notification to all subscribed devices
+  try {
+    const notificationTitle = "Queens Luxe - New Arrival! ✨";
+    const notificationBody = `Just added: ${product.title}. Shop the latest elegance today!`;
+    const notificationData = {
+        type: "NEW_PRODUCT",
+        productId: product._id.toString(),
+        imageUrl: images[0] || "",
+    };
+    
+    // We don't await this as we don't want to block the response to the admin
+    sendPushNotification(notificationTitle, notificationBody, notificationData);
+  } catch (err) {
+    console.error("FCM Broadcast failed:", err.message);
+  }
 
   res.status(201).json({
     success: true,

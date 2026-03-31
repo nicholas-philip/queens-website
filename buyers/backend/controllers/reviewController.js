@@ -19,7 +19,7 @@ const submitReview = async (req, res) => {
       return res.status(404).json({ success: false, message: "Product not found." });
     }
 
-    await Review.create({ 
+    const review = await Review.create({ 
       productId, customerName, customerEmail, 
       rating, comment, ipAddress: req.ip 
     });
@@ -32,7 +32,11 @@ const submitReview = async (req, res) => {
       "/admin/reviews"
     );
 
-    res.status(201).json({ success: true, message: "Review submitted for moderation! ✨" });
+    res.status(201).json({ 
+      success: true, 
+      message: "Review submitted for moderation! ✨",
+      reviewId: review._id 
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -51,4 +55,23 @@ const getProductReviews = async (req, res) => {
   }
 };
 
-module.exports = { submitReview, getProductReviews };
+const checkReviewReplies = async (req, res) => {
+  try {
+    const { reviewIds } = req.body;
+    if (!reviewIds || !Array.isArray(reviewIds)) {
+      return res.status(400).json({ success: false, message: "reviewIds array is required." });
+    }
+
+    // Find reviews that have an admin reply and were in the provided ID list
+    const reviews = await Review.find({
+      _id: { $in: reviewIds },
+      "adminReply.text": { $exists: true, $ne: "" }
+    }).populate("productId", "title slug images");
+
+    res.status(200).json({ success: true, reviews });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { submitReview, getProductReviews, checkReviewReplies };

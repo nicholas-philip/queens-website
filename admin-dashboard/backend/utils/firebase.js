@@ -33,6 +33,7 @@
 // =====================================================
 
 const admin = require("firebase-admin");
+const DeviceToken = require("../models/DeviceToken");
 
 let firebaseApp = null;
 
@@ -117,4 +118,46 @@ const revokeFirebaseTokens = async (uid) => {
   }
 };
 
-module.exports = { initFirebase, verifyFirebaseIdToken, getFirebaseUser, revokeFirebaseTokens };
+/**
+ * Sends a push notification to all registered device tokens.
+ * @param {string} title - Notification title
+ * @param {string} body - Notification body
+ * @param {object} data - (Optional) Additional key-value pairs
+ */
+const sendPushNotification = async (title, body, data = {}) => {
+  if (!firebaseApp) return;
+
+  try {
+    // Get all unique tokens from the database
+    const tokens = await DeviceToken.find().distinct("token");
+
+    if (tokens.length === 0) {
+      console.log("ℹ️  FCM: No device tokens found to notify.");
+      return;
+    }
+
+    const message = {
+      notification: { title, body },
+      data,
+      tokens: tokens,
+    };
+
+    const response = await admin.messaging().sendEachForMulticast(message);
+    
+    console.log(`✅  FCM: Successfully sent ${response.successCount} messages.`);
+    if (response.failureCount > 0) {
+        console.warn(`⚠️  FCM: Failed to send ${response.failureCount} messages.`);
+        // Optional: Clean up failed tokens based on response.responses
+    }
+  } catch (err) {
+    console.error("❌  FCM: Error sending broadcast notification:", err.message);
+  }
+};
+
+module.exports = { 
+  initFirebase, 
+  verifyFirebaseIdToken, 
+  getFirebaseUser, 
+  revokeFirebaseTokens,
+  sendPushNotification 
+};

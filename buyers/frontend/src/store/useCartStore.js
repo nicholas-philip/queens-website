@@ -15,7 +15,19 @@ import { create } from 'zustand';
 
 export const useCartStore = create((set, get) => ({
   cartItems: [],
+  isCartOpen: false,
   isCheckoutOpen: false,
+
+  // ── Cart Drawer visibility ───────────────────────
+  setCartOpen: (open) => {
+    set({ isCartOpen: open });
+    document.body.style.overflow = open ? 'hidden' : '';
+  },
+
+  toggleCart: () => {
+    const next = !get().isCartOpen;
+    get().setCartOpen(next);
+  },
 
   // ── Checkout visibility ──────────────────────────
   setCheckoutOpen: (open) => {
@@ -30,26 +42,30 @@ export const useCartStore = create((set, get) => ({
   },
 
   // ── Cart operations ──────────────────────────────
-  addToCart: (product, quantity = 1) => set((state) => {
+  addToCart: (product, quantity = 1) => {
     const qty = parseInt(quantity, 10) || 1;
     const cartItemId = product._id + (product.selectedSize ? `-${product.selectedSize}` : "") + (product.selectedColor ? `-${product.selectedColor}` : "");
     
-    // Fallback comparison for old items without cartItemId
-    const existing = state.cartItems.find(item => 
-      (item.cartItemId || item.product._id) === cartItemId
-    );
+    set((state) => {
+      document.body.style.overflow = 'hidden'; // Immediately lock background scroll
+      
+      const existing = state.cartItems.find(item => 
+        (item.cartItemId || item.product._id) === cartItemId
+      );
 
-    if (existing) {
-      return {
-        cartItems: state.cartItems.map(item =>
-          (item.cartItemId || item.product._id) === cartItemId
-            ? { ...item, quantity: item.quantity + qty }
-            : item
-        ),
-      };
-    }
-    return { cartItems: [...state.cartItems, { cartItemId, product, quantity: qty }] };
-  }),
+      if (existing) {
+        return {
+          isCartOpen: true, // Auto-open cart drawer
+          cartItems: state.cartItems.map(item =>
+            (item.cartItemId || item.product._id) === cartItemId
+              ? { ...item, quantity: item.quantity + qty }
+              : item
+          ),
+        };
+      }
+      return { isCartOpen: true, cartItems: [...state.cartItems, { cartItemId, product, quantity: qty }] };
+    });
+  },
 
   removeFromCart: (cartItemId) => set((state) => ({
     cartItems: state.cartItems.filter(item => (item.cartItemId || item.product._id) !== cartItemId),

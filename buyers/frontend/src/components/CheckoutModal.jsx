@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import api from '../api';
+import logo from '../assets/logo.png';
 
 // ── Validation helpers ───────────────────────────────
 const isValidEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
@@ -249,13 +250,19 @@ const CheckoutModal = () => {
         {/* ── Header ────────────────────────────────── */}
         <div className="px-6 pt-6 pb-4 border-b border-white/6 flex-shrink-0">
           <div className="flex items-center justify-between mb-5">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">
-                Queens Checkout
-              </p>
-              <p className="text-white/40 text-xs mt-0.5">
-                {itemCount()} {itemCount() === 1 ? 'item' : 'items'} · GHS {subtotal.toFixed(2)}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-8 flex items-center justify-center">
+                <img src={logo} alt="Queens Logo" className="w-full h-full object-contain" />
+              </div>
+              <div className="h-8 w-px bg-white/10 hidden sm:block" />
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">
+                  Checkout
+                </p>
+                <p className="text-white/40 text-xs mt-0.5">
+                  {itemCount()} {itemCount() === 1 ? 'item' : 'items'} · GHS {subtotal.toFixed(2)}
+                </p>
+              </div>
             </div>
             <button
               onClick={() => setCheckoutOpen(false)}

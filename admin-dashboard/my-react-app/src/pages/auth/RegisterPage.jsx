@@ -6,6 +6,7 @@ import { FcGoogle } from "react-icons/fc"
 import { useAuthStore } from "../../context/AuthContext"
 import { useToast } from "../../context/ToastContext"
 import { authAPI } from "../../libs/api"
+import logo from "../../assets/logo.png"
 
 export default function RegisterPage() {
   const loginWithGoogle = useAuthStore((s) => s.loginWithGoogle)
@@ -86,9 +87,18 @@ export default function RegisterPage() {
           <div className="absolute top-0 left-[10%] right-[10%] h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent" />
 
           {/* Header */}
-          <div className="text-center mb-7">
+          <div className="text-center mb-6">
+            <div className="inline-block mb-3">
+              <img
+                src={logo}
+                alt="Queens Admin"
+                className="h-14 w-14 object-contain"
+                style={{ filter: "drop-shadow(0 0 12px rgba(212,160,23,0.4))" }}
+                loading="lazy"
+              />
+            </div>
             <h1 className="text-2xl font-bold text-base-content tracking-tight">Create Account</h1>
-            <p className="text-sm text-base-content/60 mt-1">Join the Queens management team</p>
+            <p className="text-sm text-base-content/60 mt-0.5">Join the Queens management team</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
