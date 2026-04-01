@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Sidebar from "../Sidebar"
 import api from "../../libs/api"
 import { useDebounce } from "../../libs/useDebounce"
+import logo from "../../assets/logo.png"
 
 export default function DashboardLayout() {
   const admin  = useAuthStore((s) => s.admin)
@@ -95,7 +96,7 @@ export default function DashboardLayout() {
       {/* ── Mobile Sidebar Header ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-base-100 border-b border-base-300 z-50 flex items-center justify-between px-6">
         <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center font-black text-primary-content shadow-[0_0_15px_rgba(212,175,55,0.4)]">Q</div>
+            <img src={logo} alt="Queens Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]" />
             <span className="font-bold text-base-content tracking-tight">Queens Admin</span>
         </div>
 
