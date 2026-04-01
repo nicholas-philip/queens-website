@@ -2,238 +2,250 @@ import { useState, useEffect } from "react"
 import { NavLink } from "react-router-dom"
 import { useAuthStore } from "../context/AuthContext"
 import logo from "../assets/logo.png"
+import { motion, AnimatePresence } from "framer-motion"
 
 import {
   LayoutDashboard, Package, ShoppingCart, Users, CreditCard,
   FileText, Tag, Ticket, Star, Bell, Settings, UserCog,
-  BarChart3, LogOut, ChevronLeft, ChevronRight
+  BarChart3, LogOut, ChevronLeft, ChevronRight, X,
 } from "lucide-react"
 
 const navGroups = [
   {
     group: "Main",
     items: [
-      { to: "/dashboard",    label: "Dashboard",     icon: LayoutDashboard, requiredPermission: "Dashboard" },
-      { to: "/analytics",    label: "Analytics",      icon: BarChart3,       requiredPermission: "Analytics" },
+      { to: "/dashboard",     label: "Dashboard",    icon: LayoutDashboard, requiredPermission: "Dashboard" },
+      { to: "/analytics",     label: "Analytics",    icon: BarChart3,       requiredPermission: "Analytics" },
     ],
   },
   {
     group: "Catalog",
     items: [
-      { to: "/products",     label: "Products",       icon: Package,         requiredPermission: "Products" },
-      { to: "/categories",   label: "Categories",     icon: Tag,             requiredPermission: "Categories" },
-      { to: "/coupons",      label: "Coupons",        icon: Ticket,          requiredPermission: "Coupons" },
+      { to: "/products",      label: "Products",     icon: Package,         requiredPermission: "Products" },
+      { to: "/categories",    label: "Categories",   icon: Tag,             requiredPermission: "Categories" },
+      { to: "/coupons",       label: "Coupons",      icon: Ticket,          requiredPermission: "Coupons" },
     ],
   },
   {
     group: "Sales",
     items: [
-      { to: "/orders",       label: "Orders",         icon: ShoppingCart,    requiredPermission: "Orders" },
-      { to: "/customers",    label: "Customers",      icon: Users,           requiredPermission: "Customers" },
-      { to: "/transactions", label: "Transactions",   icon: CreditCard,      requiredPermission: "Transactions" },
-      { to: "/invoices",     label: "Invoices",       icon: FileText,        requiredPermission: "Invoices" },
+      { to: "/orders",        label: "Orders",       icon: ShoppingCart,    requiredPermission: "Orders" },
+      { to: "/customers",     label: "Customers",    icon: Users,           requiredPermission: "Customers" },
+      { to: "/transactions",  label: "Transactions", icon: CreditCard,      requiredPermission: "Transactions" },
+      { to: "/invoices",      label: "Invoices",     icon: FileText,        requiredPermission: "Invoices" },
     ],
   },
   {
     group: "Community",
     items: [
-      { to: "/reviews",      label: "Reviews",        icon: Star,            requiredPermission: "Reviews" },
-      { to: "/notifications",label: "Notifications",  icon: Bell,            requiredPermission: "Notifications" },
+      { to: "/reviews",       label: "Reviews",      icon: Star,            requiredPermission: "Reviews" },
+      { to: "/notifications", label: "Notifications",icon: Bell,            requiredPermission: "Notifications" },
     ],
   },
   {
     group: "Admin",
     items: [
-      { to: "/accounts",     label: "Accounts",       icon: UserCog,         requiredRole: "SuperAdmin" },
-      { to: "/settings",     label: "Settings",       icon: Settings,         requiredRole: "SuperAdmin" },
+      { to: "/accounts",      label: "Accounts",     icon: UserCog,         requiredRole: "SuperAdmin" },
+      { to: "/settings",      label: "Settings",     icon: Settings,        requiredRole: "SuperAdmin" },
     ],
   },
 ]
 
-/* ── Animated Hamburger Button ── */
-function HamburgerButton({ open, onClick }) {
-  return (
-    <button
-      onClick={onClick}
-      aria-label={open ? "Close menu" : "Open menu"}
-      aria-expanded={open}
-      className={`lg:hidden relative flex h-10 w-10 flex-col items-center justify-center gap-[5px] rounded-xl border border-base-300 bg-base-200 transition-all duration-200 hover:border-primary/50 hover:bg-base-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary`}
-    >
-      <span
-        className={`block h-[1.5px] w-5 origin-center rounded-full bg-base-content transition-all duration-300 ease-in-out
-          ${open ? "translate-y-[6.5px] rotate-45" : ""}`}
-      />
-      <span
-        className={`block h-[1.5px] rounded-full bg-base-content transition-all duration-300 ease-in-out
-          ${open ? "w-0 opacity-0" : "w-3.5 opacity-100"}`}
-      />
-      <span
-        className={`block h-[1.5px] w-5 origin-center rounded-full bg-base-content transition-all duration-300 ease-in-out
-          ${open ? "-translate-y-[6.5px] -rotate-45" : ""}`}
-      />
-    </button>
-  )
-}
-
-export default function Sidebar({
-  notificationCount = 0,
-  mobileOpen = false,
-  setMobileOpen = () => {},
-}) {
-  const getInitials = (name) => {
-    if (!name) return "?"
-    const parts = name.trim().split(" ")
-    if (parts.length === 1) return parts[0][0].toUpperCase()
-    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
-  }
-
+export default function Sidebar({ notificationCount = 0, mobileOpen = false, setMobileOpen = () => {} }) {
   const logout  = useAuthStore((s) => s.logout)
   const admin   = useAuthStore((s) => s.admin)
   const [collapsed, setCollapsed] = useState(false)
 
-  const safeAdmin = admin || {}
-  const permissions = safeAdmin.permissions || []
+  const safeAdmin    = admin || {}
+  const permissions  = safeAdmin.permissions || []
 
-  const filteredNavGroups = safeAdmin.role === "SuperAdmin" 
-    ? navGroups 
-    : navGroups.map(group => ({
-        ...group,
-        items: group.items.filter(item => {
-          if (item.requiredRole && safeAdmin.role !== item.requiredRole) return false
-          if (item.requiredPermission && !permissions.includes(item.requiredPermission)) return false
-          return true
-        })
-      })).filter(group => group.items.length > 0)
+  const getInitials = (name) => {
+    if (!name) return "?"
+    const parts = name.trim().split(" ")
+    return parts.length === 1 ? parts[0][0].toUpperCase() : (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+  }
 
-  /* Lock body scroll when mobile drawer is open */
+  const filteredNavGroups = safeAdmin.role === "SuperAdmin"
+    ? navGroups
+    : navGroups
+        .map((g) => ({
+          ...g,
+          items: g.items.filter((item) => {
+            if (item.requiredRole && safeAdmin.role !== item.requiredRole) return false
+            if (item.requiredPermission && !permissions.includes(item.requiredPermission)) return false
+            return true
+          }),
+        }))
+        .filter((g) => g.items.length > 0)
+
   useEffect(() => {
-    if (mobileOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
+    document.body.style.overflow = mobileOpen ? "hidden" : ""
     return () => { document.body.style.overflow = "" }
   }, [mobileOpen])
 
   const closeMobile = () => setMobileOpen(false)
 
+  /* ─── Shared nav list used in both mobile & desktop ─── */
+  const NavList = ({ mini = false }) => (
+    <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
+      {filteredNavGroups.map(({ group, items }) => (
+        <div key={group}>
+          {!mini && (
+            <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-base-content/40">
+              {group}
+            </p>
+          )}
+          <ul className="space-y-0.5">
+            {items.map(({ to, label, icon: Icon }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  onClick={mobileOpen ? closeMobile : undefined}
+                  title={mini ? label : undefined}
+                  className={({ isActive }) =>
+                    `relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all group
+                    ${isActive ? "bg-primary text-primary-content shadow-lg shadow-primary/20" : "text-base-content/60 hover:bg-base-200 hover:text-base-content"}
+                    ${mini ? "justify-center px-0" : ""}
+                    `
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {!mini && <span className="truncate text-[13px]">{label}</span>}
+                      {label === "Notifications" && notificationCount > 0 && (
+                        <span className={`absolute flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-black px-1
+                          ${mini ? "right-1 top-1" : "right-3"}
+                          ${isActive ? "bg-black text-yellow-500" : ""}
+                        `}>
+                          {notificationCount > 99 ? "99+" : notificationCount}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  )
+
+  /* ─── Shared footer ─── */
+  const Footer = ({ mini = false }) => (
+    <div className="shrink-0 border-t border-base-300 p-3 bg-base-100/50">
+      {!mini ? (
+        <div className="flex items-center gap-3 px-1">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 border border-primary/30 text-primary text-xs font-black">
+            {getInitials(safeAdmin.name)}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-base-content truncate">{safeAdmin.name || "Loading..."}</p>
+            <p className="text-[10px] text-primary font-bold uppercase tracking-widest truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
+          </div>
+          <button
+            onClick={logout}
+            title="Logout"
+            className="flex items-center justify-center h-8 w-8 rounded-lg bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 transition-all border border-red-500/20"
+          >
+            <LogOut className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={logout}
+          title="Logout"
+          className="flex w-full h-10 items-center justify-center rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 hover:text-white hover:bg-red-500 transition-all group"
+        >
+          <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
+        </button>
+      )}
+    </div>
+  )
+
   return (
     <>
-      {/* ── Mobile Backdrop ── */}
-      <div
-        onClick={closeMobile}
-        className={`fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden transition-opacity duration-300
-          ${mobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-      />
+      {/* ══════════════════════════════════════════
+          MOBILE DRAWER
+      ══════════════════════════════════════════ */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            {/* Blurred backdrop */}
+            <motion.div
+              key="mob-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              onClick={closeMobile}
+              className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
+            />
 
-      {/* ── Sidebar Drawer ── */}
+            {/* Slide-in drawer */}
+            <motion.aside
+              key="mob-drawer"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", stiffness: 340, damping: 34 }}
+              className="fixed top-0 left-0 h-[100dvh] w-[280px] max-w-[85vw] z-50 flex flex-col bg-base-100 shadow-2xl shadow-black/60 lg:hidden overflow-hidden"
+              style={{ borderRight: "1px solid color-mix(in oklch, var(--color-base-300) 100%, transparent)" }}
+            >
+              {/* ── Drawer header ── */}
+              <div className="relative flex h-16 shrink-0 items-center justify-between px-4 border-b border-base-300">
+                {/* Gold shimmer accent */}
+                <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
+
+                <div className="flex items-center gap-3">
+                  <img src={logo} alt="Queens Logo" className="h-9 w-9 object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]" />
+                  <div>
+                    <p className="text-sm font-black text-base-content tracking-tight leading-none">Queens</p>
+                    <p className="text-[9px] font-bold text-primary uppercase tracking-[0.16em] mt-0.5">Admin Panel</p>
+                  </div>
+                </div>
+
+                {/* ✕ Close button */}
+                <motion.button
+                  whileTap={{ scale: 0.88 }}
+                  onClick={closeMobile}
+                  aria-label="Close menu"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-base-300 bg-base-200 text-base-content/50 hover:border-primary/40 hover:bg-base-300 hover:text-base-content transition-all"
+                >
+                  <X className="h-4 w-4" />
+                </motion.button>
+              </div>
+
+              <NavList mini={false} />
+              <Footer mini={false} />
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════════════════════════════════════
+          DESKTOP SIDEBAR
+      ══════════════════════════════════════════ */}
       <aside
-        className={`fixed lg:relative flex flex-col bg-base-100 border-r border-base-300 h-[100dvh] transition-all duration-300 shrink-0 z-50
-          ${collapsed ? "lg:w-[72px]" : "lg:w-60"}
-          ${mobileOpen ? "translate-x-0 w-72 shadow-2xl shadow-black/60" : "-translate-x-full lg:translate-x-0"}
+        className={`hidden lg:flex flex-col bg-base-100 border-r border-base-300 h-[100dvh] shrink-0 relative transition-all duration-300
+          ${collapsed ? "w-[72px]" : "w-60"}
         `}
       >
-        {/* Logo Section */}
-        <div className="flex h-16 items-center justify-center border-b border-base-300 shrink-0 overflow-hidden relative">
-          <div className={`flex items-center justify-center transition-all duration-300 ${collapsed && !mobileOpen ? "w-8 h-8" : "w-32 h-14"}`}>
+        {/* Logo */}
+        <div className="flex h-16 items-center justify-center border-b border-base-300 shrink-0 overflow-hidden">
+          <div className={`flex items-center justify-center transition-all duration-300 ${collapsed ? "w-8 h-8" : "w-32 h-14"}`}>
             <img src={logo} alt="Queens Logo" className="h-full w-full object-contain" />
           </div>
         </div>
 
-          {/* Close button — mobile only, inside drawer */}
-          {mobileOpen && (
-            <button
-              onClick={closeMobile}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-base-300 text-base-content/50 hover:text-base-content hover:border-base-300 transition-all lg:hidden bg-base-200"
-              aria-label="Close sidebar"
-            >
-              {/* X icon drawn inline to avoid an extra import */}
-              <svg viewBox="0 0 14 14" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M1 1l12 12M13 1L1 13" />
-              </svg>
-            </button>
-          )}
+        <NavList mini={collapsed} />
+        <Footer mini={collapsed} />
 
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
-          {filteredNavGroups.map(({ group, items }) => (
-            <div key={group}>
-              {(!collapsed || mobileOpen) && (
-                <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-base-content/40">{group}</p>
-              )}
-              <ul className="space-y-0.5">
-                {items.map(({ to, label, icon: Icon }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      onClick={closeMobile}
-                      title={collapsed && !mobileOpen ? label : undefined}
-                      className={({ isActive }) =>
-                        `relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition-all group
-                        ${isActive ? "bg-primary text-primary-content shadow-lg shadow-primary/20" : "text-base-content/60 hover:bg-base-200 hover:text-base-content"}
-                        ${collapsed && !mobileOpen ? "justify-center px-0" : ""}
-                        `
-                      }
-                    >
-                      {({ isActive }) => (
-                        <>
-                          <Icon className="h-4 w-4 shrink-0" />
-                          {(!collapsed || mobileOpen) && (
-                            <span className="truncate text-[13px]">{label}</span>
-                          )}
-                          {label === "Notifications" && notificationCount > 0 && (
-                            <span className={`absolute flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-black px-1
-                              ${collapsed && !mobileOpen ? "right-1 top-1" : "right-3"}
-                              ${isActive ? "bg-black text-yellow-500" : ""}
-                            `}>
-                              {notificationCount > 99 ? "99+" : notificationCount}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </nav>
-
-        {/* Admin Footer */}
-        <div className="shrink-0 border-t border-base-300 p-3 bg-base-100/50">
-          {(!collapsed || mobileOpen) ? (
-            <div className="flex items-center gap-3 px-1">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-base-200 border border-base-300 text-base-content text-xs font-black">
-                {admin ? getInitials(safeAdmin.name) : "?"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-base-content truncate">{safeAdmin.name || "Loading..."}</p>
-                <p className="text-[10px] text-primary font-bold uppercase tracking-widest truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
-              </div>
-              <button
-                onClick={logout}
-                title="Logout"
-                className="flex items-center justify-center h-9 px-3 gap-2 ml-auto rounded-lg bg-red-500/10 text-red-500 hover:text-white hover:bg-red-500 transition-all border border-red-500/20 shadow-md"
-              >
-                <LogOut className="h-4 w-4" />
-                <span className="text-xs font-bold leading-none hidden sm:block">Logout</span>
-              </button>
-            </div>
-          ) : (
-            <button
-              onClick={logout}
-              title="Logout"
-              className="flex w-full h-10 items-center justify-center rounded-xl bg-red-500/10 text-red-500 border border-red-500/20 hover:text-white hover:bg-red-500 transition-all shadow-md group"
-            >
-              <LogOut className="h-5 w-5 group-hover:scale-110 transition-transform" />
-            </button>
-          )}
-        </div>
-
-        {/* Desktop Collapse Button */}
+        {/* Collapse toggle */}
         <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="hidden lg:flex absolute -right-3.5 top-20 h-7 w-7 items-center justify-center rounded-full bg-base-100 text-base-content/40 border border-base-300 hover:border-primary hover:text-primary transition-all z-50 shadow-sm"
+          onClick={() => setCollapsed((c) => !c)}
+          className="absolute -right-3.5 top-20 h-7 w-7 flex items-center justify-center rounded-full bg-base-100 border border-base-300 text-base-content/40 hover:border-primary hover:text-primary transition-all z-50 shadow-sm"
         >
           {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
         </button>
