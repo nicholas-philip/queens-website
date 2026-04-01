@@ -113,7 +113,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // ── Connect to MongoDB then start server ──────────
-const PORT      = process.env.PORT || 5050;
+const PORT      = process.env.PORT || 4000;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
