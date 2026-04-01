@@ -50,7 +50,7 @@ const allowedOrigins = [
 app.use(cors({
   origin: (origin, callback) => {
     // Allow non-browser requests (Postman, server-to-server) and whitelisted origins
-    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app")) return callback(null, true);
     callback(new Error(`CORS: Origin "${origin}" not allowed.`));
   },
   credentials:         true,
