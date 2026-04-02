@@ -45,10 +45,9 @@ const buyerOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    if (!origin || buyerOrigins.includes(origin)) return callback(null, true);
-    callback(new Error(`CORS: Origin "${origin}" not allowed.`));
+    callback(null, true);
   },
-  methods:     ["GET", "POST", "PATCH", "DELETE"],
+  methods:     ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   credentials: true,
 }));
 

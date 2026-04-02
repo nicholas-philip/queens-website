@@ -301,7 +301,7 @@ const Header = () => {
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              transition={{ type: 'spring', stiffness: 340, damping: 34 }}
               className="absolute left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-base-100 shadow-2xl flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >

@@ -129,13 +129,15 @@ export default function LoginPage() {
 
             {/* Email */}
             <div>
-              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
+              <label htmlFor="email" className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Email address
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 pointer-events-none" />
                 <input
+                  id="email"
                   type="email"
+                  autoComplete="username"
                   placeholder="admin@store.com"
                   className={`w-full bg-base-100 border ${
                     errors.email ? "border-red-500" : "border-base-300"
@@ -153,7 +155,7 @@ export default function LoginPage() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[10px] font-bold text-base-content/60 uppercase tracking-widest">Password</label>
+                <label htmlFor="password" className="text-[10px] font-bold text-base-content/60 uppercase tracking-widest">Password</label>
                 <Link to="/auth/forgot-password" className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
                   Forgot password?
                 </Link>
@@ -161,7 +163,9 @@ export default function LoginPage() {
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-base-content/50 pointer-events-none" />
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
                   placeholder="••••••••"
                   className={`w-full bg-base-100 border ${
                     errors.password ? "border-red-500" : "border-base-300"
