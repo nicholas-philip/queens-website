@@ -33,6 +33,7 @@ import FloatingCart from './components/FloatingCart';
 import ScrollToTop from './components/ScrollToTop';
 import ReviewNotification from './components/ReviewNotification';
 import PushNotificationHandler from './components/PushNotificationHandler';
+import { ToastProvider } from './context/ToastContext';
 
 import { useEffect } from 'react';
 
@@ -48,8 +49,9 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <ScrollToTop />
+    <ToastProvider>
+      <Router>
+        <ScrollToTop />
       <div className="min-h-screen flex flex-col font-sans">
         <Header />
         <main className="flex-1">
@@ -92,6 +94,7 @@ const App = () => {
         <PushNotificationHandler />
       </div>
     </Router>
+    </ToastProvider>
   );
 };
 

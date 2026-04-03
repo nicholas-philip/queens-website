@@ -25,6 +25,7 @@ import {
   CheckCircle, Tag, AlertCircle, Lock
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
+import { useToast } from '../context/ToastContext';
 import api from '../api';
 import logo from '../assets/logo.png';
 
@@ -110,6 +111,7 @@ const Select = ({ error, children, ...props }) => (
 
 // ── Main modal ───────────────────────────────────────
 const CheckoutModal = () => {
+  const toast = useToast();
   const {
     isCheckoutOpen, setCheckoutOpen,
     cartItems, removeFromCart, updateQuantity,
@@ -231,9 +233,9 @@ const CheckoutModal = () => {
       const isTimeout = err.message === 'Network Error' || err.response?.status === 502 || err.response?.status === 504;
       
       if (isTimeout) {
-        alert('Server is waking up from standby! Please wait 10 seconds and click Place Order again.');
+        toast.info('Waking up server...', 'Please wait 10 seconds and click Place Order again.');
       } else {
-        alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+        toast.error('Checkout Error', err.response?.data?.message || 'Something went wrong. Please try again.');
       }
     } finally {
       setLoading(false);

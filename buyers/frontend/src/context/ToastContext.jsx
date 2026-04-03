@@ -7,14 +7,14 @@ const icons = {
   success: <CheckCircle  className="h-4 w-4 text-green-400 shrink-0" />,
   error:   <AlertCircle  className="h-4 w-4 text-red-400   shrink-0" />,
   warning: <AlertTriangle className="h-4 w-4 text-yellow-400 shrink-0" />,
-  info:    <Info         className="h-4 w-4 text-blue-400  shrink-0" />,
+  info:    <Info         className="h-4 w-4 text-gold shrink-0" />,
 }
 
 const bars = {
-  success: "bg-green-500",
-  error:   "bg-red-500",
-  warning: "bg-yellow-500",
-  info:    "bg-blue-500",
+  success: "bg-green-400",
+  error:   "bg-red-400",
+  warning: "bg-yellow-400",
+  info:    "bg-gold",
 }
 
 export function ToastProvider({ children }) {
@@ -27,7 +27,7 @@ export function ToastProvider({ children }) {
     delete timers.current[id]
   }, [])
 
-  const addToast = useCallback((message, type = "info", duration = 3500) => {
+  const addToast = useCallback((message, type = "info", duration = 4000) => {
     const id = Date.now() + Math.random()
     setToasts((prev) => [...prev, { id, message, type }])
     timers.current[id] = setTimeout(() => removeToast(id), duration)
@@ -55,14 +55,14 @@ export function ToastProvider({ children }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className="pointer-events-auto flex items-start gap-3 bg-neutral-900 border border-neutral-700 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.6)] px-4 py-3 relative overflow-hidden"
+            className="pointer-events-auto flex items-start gap-3 bg-[#0f0e0c] border border-white/10 rounded-xl shadow-2xl shadow-black px-4 py-3 relative overflow-hidden"
             style={{ animation: "slideInRight 0.25s ease" }}
           >
             {icons[toast.type]}
             <p className="text-sm font-bold text-white leading-snug flex-1">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-neutral-500 hover:text-neutral-200 transition-colors shrink-0 mt-0.5"
+              className="text-white/40 hover:text-white transition-colors shrink-0 mt-0.5"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -82,7 +82,7 @@ export function ToastProvider({ children }) {
           to   { width: 0%; }
         }
         .animate-progress-bar {
-          animation: progress-bar 3.5s linear forwards;
+          animation: progress-bar 4s linear forwards;
         }
       `}</style>
     </ToastContext.Provider>
