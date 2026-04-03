@@ -47,7 +47,7 @@ const PrivacyPolicy = () => {
 
             <div className="pt-6 sm:pt-10 border-t border-base-200 text-center font-bold text-base-content/30 text-xs sm:text-sm tracking-widest mt-8 sm:mt-12">
               <p className="uppercase mb-2">Last Updated: March 2026.</p>
-              <p>Questions? <a href="mailto:concierge@queens.com" className="text-primary hover:underline">concierge@queens.com</a></p>
+              <p>Questions? <a href="mailto:nyarkopriscilla240@gmail.com" className="text-primary hover:underline">nyarkopriscilla240@gmail.com</a></p>
             </div>
           </div>
         </motion.div>

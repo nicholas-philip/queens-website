@@ -129,7 +129,7 @@ const PaymentSuccess = () => {
         </motion.div>
 
         <p className="text-center text-white/20 text-[10px] mt-10 uppercase tracking-[0.3em] font-black">
-          ✦ Secured by Paystack & Queens Luxe ✦
+          ✦ Secured by Paystack & Queens Fashion Store ✦
         </p>
 
       </div>

@@ -43,8 +43,8 @@ const values = [
   },
   {
     icon: Users,
-    title: 'Built for Queens',
-    desc: 'We celebrate women in all their glory — our catalogue is designed to make every woman feel seen.',
+    title: 'Built for Everyone',
+    desc: 'We celebrate individuality in all its glory — our catalogue is designed to make everyone feel seen and confident.',
   },
 ];
 
@@ -61,10 +61,10 @@ const About = () => {
             <span className="text-[10px] font-black uppercase tracking-[0.35em] text-primary mb-4 block">Our Story</span>
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight leading-[1.05] mb-6">
               Elevating Style.<br />
-              <span className="text-primary font-serif italic">Empowering Queens.</span>
+              <span className="text-primary font-serif italic">Empowering You.</span>
             </h1>
             <p className="text-neutral-content/60 text-base sm:text-lg md:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
-              We started with a simple belief: every woman deserves to look and feel extraordinary — without compromise.
+              We started with a simple belief: everyone deserves to look and feel extraordinary — without compromise.
             </p>
           </FadeUp>
         </div>
@@ -76,19 +76,19 @@ const About = () => {
           <FadeUp>
             <div className="bg-base-200/40 border border-base-200 rounded-[2rem] p-8 sm:p-12 md:p-16 space-y-6 text-base-content/70 leading-relaxed font-medium text-base sm:text-lg">
               <p className="text-xl sm:text-2xl font-black text-base-content leading-normal">
-                Welcome to <span className="text-primary">Queens</span> — where elegance meets everyday life.
+                Welcome to <span className="text-primary">Queens Fashion Store</span> — where premium streetwear meets everyday elegance.
               </p>
 
               <p>
-                We curated a lifestyle collection for the modern woman who values style, quality, and refreshing experiences.
-                From hand-picked jewellery — delicate waist beads and 18k gold-plated bracelets — to premium beauty essentials
-                like high-shine glosses and radiant body oils, every product is selected to make you feel like the Queen you are.
+                We curated a lifestyle collection for the modern individual who values style, quality, and refreshing experiences.
+                From authentic sneakers and high-end streetwear to premium lifestyle essentials, 
+                every product is selected to make you look and feel your absolute best.
               </p>
 
               <p>
-                Our mission is to bring the <em className="text-primary font-black not-italic">"Glossy Look"</em> to everyone, everywhere.
-                We believe self-care and style should be accessible, professional, and undeniably beautiful.
-                Based in Accra, serving Queens worldwide.
+                Our mission is to bring <em className="text-primary font-black not-italic">premium, uncompromised style</em> to everyone, everywhere.
+                We believe self-expression and style should be accessible, bold, and undeniably authentic.
+                Based in Accra, serving you worldwide.
               </p>
 
               <div className="pt-8 border-t border-base-200 flex flex-col sm:flex-row items-center gap-6">
@@ -97,7 +97,7 @@ const About = () => {
                 </div>
                 <div>
                   <h3 className="text-base-content font-black text-xl mb-1">Elevate Your Style</h3>
-                  <p className="font-black text-primary tracking-widest uppercase text-xs">#QueensGlow #GlossyKiss</p>
+                  <p className="font-black text-primary tracking-widest uppercase text-xs">#QueensFashion #PremiumStyle</p>
                 </div>
               </div>
             </div>

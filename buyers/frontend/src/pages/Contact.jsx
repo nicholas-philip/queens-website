@@ -81,20 +81,20 @@ const Contact = () => {
               <ContactInfo 
                 icon={Phone} 
                 label="Direct Line" 
-                value="+233 24 570 9324" 
-                href="tel:+233245709324" 
+                value="+233 053 647 9169" 
+                href="tel:+2330536479169" 
               />
               <ContactInfo 
                 icon={MessageSquare} 
                 label="WhatsApp" 
                 value="Queens Concierge" 
-                href="https://wa.me/233245709324" 
+                href="https://wa.me/2330536479169" 
               />
               <ContactInfo 
                 icon={Mail} 
                 label="Electronic Mail" 
-                value="concierge@queens.com" 
-                href="mailto:concierge@queens.com" 
+                value="nyarkopriscilla240@gmail.com" 
+                href="mailto:nyarkopriscilla240@gmail.com" 
               />
               <ContactInfo 
                 icon={Instagram} 

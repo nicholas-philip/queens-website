@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Search, ChevronDown, ChevronRight, User, Heart, Sun, Moon, Star } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, ChevronDown, ChevronRight, User, Heart, Sun, Moon, Star, Crown } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '../store/useCartStore';
 import { useWishlistStore } from '../store/useWishlistStore';
@@ -96,7 +96,8 @@ const Header = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center group flex-shrink-0">
                <div className="w-16 h-12 md:w-32 md:h-20 flex items-center justify-center group-hover:drop-shadow-[0_0_15px_rgba(201,168,76,0.4)] group-hover:scale-105 transition-all duration-500 relative">
-                  <img src={logo} alt="Queens Luxe Logo" className="w-full h-full object-contain" />
+                  <img src={logo} alt="Queens Fashion Store Logo" className="w-full h-full object-contain" />
+                  <Crown size={18} className="text-primary absolute -top-1 -right-2 md:-top-2 md:-right-4 drop-shadow-md rotate-[15deg] group-hover:rotate-0 transition-transform" />
                </div>
             </Link>
 

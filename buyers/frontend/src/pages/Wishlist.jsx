@@ -61,7 +61,7 @@ const Wishlist = () => {
                 My <span className="font-serif italic text-primary">Favourites</span>
               </h1>
               <p className="text-base-content/50 font-medium text-sm md:text-lg max-w-lg leading-relaxed">
-                A curated selection of your most desired Queens Luxe pieces. Take another look and make them yours.
+                A curated selection of your most desired Queens Fashion Store pieces. Take another look and make them yours.
               </p>
             </FadeUp>
           </div>

@@ -55,13 +55,18 @@ const initializePayment = async (req, res) => {
 
     const reference = `QNS-${uuidv4().replace(/-/g, "").substring(0, 16).toUpperCase()}`;
 
+    // Using hardcoded live URL as fallback if env var is incorrectly set to localhost on Render
+    const frontendUrl = (process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost'))
+      ? process.env.FRONTEND_URL 
+      : 'https://buyers-meus.onrender.com';
+
     const paystackData = await initializeTransaction({
       email:          order.customerDetails.email || "customer@queens.shop",
       amount:         order.total,              // GHS — service converts to pesewas
       reference,
       channel,
       mobileProvider,
-      callbackUrl:    `${process.env.FRONTEND_URL}/payment/success?ref=${reference}`,
+      callbackUrl:    `${frontendUrl}/payment/success?ref=${reference}`,
       metadata: {
         orderId:      order._id.toString(),
         orderNumber:  order.orderNumber,
