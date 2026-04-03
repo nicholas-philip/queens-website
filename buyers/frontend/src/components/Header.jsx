@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Menu, X, Search, ChevronDown, ChevronRight, User, Heart, Sun, Moon, Star } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '../store/useCartStore';
+import { useWishlistStore } from '../store/useWishlistStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
 import logo from '../assets/logo.png';
@@ -15,12 +16,14 @@ const Header = () => {
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [showCatDropdown, setShowCatDropdown] = useState(false);
-  const [isMobileCatOpen, setIsMobileCatOpen] = useState(false);
+  const [isMobileCatOpen, setIsMobileCatOpen] = useState(true);
   
   // DaisyUI Theme State
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'queens-light');
 
   const { cartItems, setCheckoutOpen } = useCartStore();
+  const { wishlistIds } = useWishlistStore();
+  const wishlistCount = wishlistIds.length;
   const navigate = useNavigate();
 
   const { data: categories } = useQuery({
@@ -66,18 +69,23 @@ const Header = () => {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 z-50">
-        {/* Top Utility Bar - Shiny Black with Gold Border */}
-        <div className="bg-[#050505] text-white py-2.5 px-6 text-[11px] font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
-          <div className="hidden md:flex gap-6">
-            <span className="flex items-center gap-1 opacity-60 hover:opacity-100 transition-opacity cursor-pointer">📞 +233 24 000 0000</span>
+        {/* Top Utility Bar */}
+        <div className="bg-[#050505] text-white py-2 px-4 md:px-6 text-[10px] md:text-[11px] font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
+          {/* Left: Promo */}
+          <div className="flex w-full md:w-auto justify-center md:justify-start items-center gap-3 uppercase italic">
+            <span className="text-primary tracking-widest animate-pulse truncate">✦ Free Delivery on orders above GHS 500 ✦</span>
           </div>
-          <div className="flex w-full md:w-auto justify-center gap-4 md:gap-8 items-center uppercase italic text-center">
-            <span className="text-primary tracking-widest animate-pulse w-full truncate md:w-auto">Free Delivery on orders above GHS 500</span>
-            <span className="hidden sm:block h-3 w-[1px] bg-white/10" />
-            <Link to="/shop" className="hidden sm:inline text-white hover:text-primary underline underline-offset-4 decoration-primary/30 transition-all font-black">Shop Now</Link>
-          </div>
-          <div className="hidden md:flex gap-4">
-            <span className="flex items-center gap-1 cursor-pointer opacity-60 hover:opacity-100 group">GHS <ChevronDown size={12} className="group-hover:text-primary transition-colors"/></span>
+          {/* Right: Quick Nav Links */}
+          <div className="hidden md:flex items-center gap-5 uppercase tracking-widest flex-shrink-0">
+            <Link to="/orders" className="text-primary hover:text-white transition-all">My Orders</Link>
+            <span className="h-3 w-[1px] bg-white/20" />
+            <Link to="/track" className="opacity-60 hover:opacity-100 hover:text-primary transition-all">Track Order</Link>
+            <span className="h-3 w-[1px] bg-white/20" />
+            <Link to="/blog" className="opacity-60 hover:opacity-100 hover:text-primary transition-all">Blog</Link>
+            <span className="h-3 w-[1px] bg-white/20" />
+            <Link to="/faq" className="opacity-60 hover:opacity-100 hover:text-primary transition-all">FAQ</Link>
+            <span className="h-3 w-[1px] bg-white/20" />
+            <Link to="/contact" className="opacity-60 hover:opacity-100 hover:text-primary transition-all">Contact</Link>
           </div>
         </div>
 
@@ -85,41 +93,42 @@ const Header = () => {
         <div className={`transition-all duration-500 border-b ${isScrolled ? 'bg-base-100 shadow-[0_10px_40px_rgba(0,0,0,0.1)] border-primary/20 py-2' : 'bg-base-100/95 backdrop-blur-3xl border-base-200 py-3 md:py-6'}`}>
           <div className="max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between gap-2 md:gap-12">
             
-            {/* Logo - Fully Transparent Branding */}
+            {/* Logo */}
             <Link to="/" className="flex items-center group flex-shrink-0">
                <div className="w-16 h-12 md:w-32 md:h-20 flex items-center justify-center group-hover:drop-shadow-[0_0_15px_rgba(201,168,76,0.4)] group-hover:scale-105 transition-all duration-500 relative">
                   <img src={logo} alt="Queens Luxe Logo" className="w-full h-full object-contain" />
                </div>
             </Link>
 
-            {/* Nav Links - Center */}
-            <nav className="hidden lg:flex items-center gap-10 text-[13px] font-black uppercase tracking-[0.15em] text-base-content">
-               <Link to="/" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group">
+            {/* Desktop Nav Links */}
+            <nav className="hidden lg:flex items-center gap-8 text-[12px] font-black uppercase tracking-[0.12em] text-base-content">
+               <Link to="/" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Home
-                 <span className="absolute -bottom-2 left-0 w-0 h-1 bg-primary transition-all group-hover:w-full rounded-full" />
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
-               <Link to="/shop" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group">
+               <Link to="/shop" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Shop
-                 <span className="absolute -bottom-2 left-0 w-0 h-1 bg-primary transition-all group-hover:w-full rounded-full" />
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
                
+               {/* Collections Dropdown */}
                <div 
-                 className="relative h-full py-4 -my-4"
+                 className="relative py-2"
                  onMouseEnter={() => setShowCatDropdown(true)}
                  onMouseLeave={() => setShowCatDropdown(false)}
                >
-                 <span className="hover:text-primary transition-all flex items-center gap-1.5 h-full cursor-pointer hover:-translate-y-0.5">
+                 <span className="hover:text-primary transition-all flex items-center gap-1.5 cursor-pointer hover:-translate-y-0.5">
                    Collections <ChevronDown size={14} className={`transition-transform duration-300 ${showCatDropdown ? 'rotate-180 text-primary' : ''}`} />
                  </span>
                  
                  <AnimatePresence>
                    {showCatDropdown && (
                      <motion.div 
-                        initial={{ opacity: 0, y: 15 }}
+                        initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 15 }}
-                        transition={{ type: 'spring', damping: 15, stiffness: 200 }}
-                        className="absolute top-full -left-6 w-[280px] bg-base-100 border-2 border-primary/30 shadow-[0_30px_60px_rgba(0,0,0,0.15)] rounded-[2.5rem] py-6 z-50 overflow-hidden backdrop-blur-3xl"
+                        exit={{ opacity: 0, y: 10 }}
+                        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                        className="absolute top-[calc(100%+8px)] -left-6 w-[280px] bg-base-100 border-2 border-primary/30 shadow-[0_30px_60px_rgba(0,0,0,0.15)] rounded-[2rem] py-4 z-[999] overflow-hidden"
                      >
                         {!categories || categories.length === 0 ? (
                            <div className="px-10 py-4 text-xs font-black text-base-content/20 tracking-widest uppercase animate-pulse">
@@ -129,11 +138,12 @@ const Header = () => {
                           categories.map((cat) => (
                             <Link 
                               key={cat._id} 
-                              to={`/shop?category=${cat.slug}`} 
-                              className="group flex items-center justify-between px-10 py-4 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
+                              to={`/shop?category=${cat.slug}`}
+                              onClick={() => setShowCatDropdown(false)}
+                              className="group flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
                             >
-                              <span className="font-black text-[13px] uppercase tracking-widest transition-transform group-hover:translate-x-2">{cat.name}</span>
-                              <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5] shadow-gold shadow-sm" />
+                              <span className="font-black text-[12px] uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5]" />
                             </Link>
                           ))
                         )}
@@ -142,9 +152,21 @@ const Header = () => {
                  </AnimatePresence>
                </div>
 
-               <Link to="/shop?sort=newest" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group">
+               <Link to="/shop?sort=newest" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  New
-                 <span className="absolute -bottom-2 left-0 w-0 h-1 bg-primary transition-all group-hover:w-full rounded-full" />
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
+               </Link>
+               <Link to="/about" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+                 About
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
+               </Link>
+               <Link to="/blog" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+                 Blog
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
+               </Link>
+               <Link to="/contact" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+                 Contact
+                 <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
             </nav>
 
@@ -260,11 +282,19 @@ const Header = () => {
                   >
                      {theme === 'queens-dark' ? <Sun size={18} className="md:w-5 md:h-5" /> : <Moon size={18} className="md:w-5 md:h-5" />}
                   </button>
-                  <button className="hidden sm:flex w-12 h-12 items-center justify-center rounded-2xl text-base-content hover:bg-primary/10 hover:text-primary transition-all active:scale-90 shadow-sm border border-transparent hover:border-primary/20">
-                     <Heart size={20} />
-                  </button>
+                  <Link 
+                    to="/wishlist" 
+                    className="hidden sm:flex relative w-12 h-12 items-center justify-center rounded-2xl text-base-content hover:bg-primary/10 hover:text-primary transition-all active:scale-90 shadow-sm border border-transparent hover:border-primary/20"
+                  >
+                      <Heart size={20} />
+                      {wishlistCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-content text-[9px] font-black flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(201,168,76,0.5)] pointer-events-none ring-4 ring-base-100">
+                          {wishlistCount}
+                        </span>
+                      )}
+                  </Link>
                   <button 
-                    onClick={() => setCartOpen(true)}
+                    onClick={() => setCheckoutOpen(true)}
                     className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl text-base-content hover:bg-primary/10 hover:text-primary transition-all active:scale-90 shadow-sm border border-transparent hover:border-primary/20"
                   >
                      <ShoppingBag size={18} className="md:w-[22px] md:h-[22px]" />
@@ -285,7 +315,7 @@ const Header = () => {
         </div>
       </header>
 
-      <div className="h-[120px] md:h-[130px]" />
+      <div className="h-[112px] md:h-[130px]" />
 
       {/* Mobile Menu Overlay */}
       <AnimatePresence>
@@ -320,108 +350,47 @@ const Header = () => {
               </div>
 
               <div className="flex-grow overflow-y-auto px-6 py-8 bg-base-100">
-                <div className="relative mb-8">
-                  <form onSubmit={handleSearch} className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="Search collection..."
-                      value={searchQuery}
-                      onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        if (!showSearchOverlay) setShowSearchOverlay(true);
-                      }}
-                      onFocus={() => setShowSearchOverlay(true)}
-                      className="w-full bg-base-200 rounded-2xl px-5 py-3.5 text-xs outline-none border-2 border-transparent focus:border-primary font-black tracking-widest transition-all shadow-inner"
-                    />
-                    <Search size={18} className="absolute right-5 top-1/2 -translate-y-1/2 text-base-content/30" strokeWidth={3} />
-                  </form>
-
-                  {/* Mobile Search Overlay */}
-                  <AnimatePresence>
-                    {showSearchOverlay && debouncedSearch.length >= 2 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute top-full mt-2 left-0 right-0 bg-base-100 border-2 border-primary/20 shadow-xl rounded-3xl z-50 overflow-hidden"
-                      >
-                         <div className="max-h-[300px] overflow-y-auto p-2">
-                           {isSearching ? (
-                             <div className="p-4 text-center animate-pulse text-[10px] font-black uppercase text-primary">Searching...</div>
-                           ) : suggestions?.length === 0 ? (
-                             <div className="p-4 text-center text-[10px] font-black uppercase opacity-30">No Results</div>
-                           ) : (
-                             suggestions.map(product => (
-                               <Link
-                                 key={product._id}
-                                 to={`/product/${product._id}`}
-                                 onClick={() => {
-                                   setIsMenuOpen(false);
-                                   setShowSearchOverlay(false);
-                                   setSearchQuery('');
-                                 }}
-                                 className="flex items-center gap-3 p-3 rounded-2xl hover:bg-primary/10 transition-colors"
-                               >
-                                 <img src={product.images?.[0] || product.image} className="w-10 h-10 rounded-lg object-cover" />
-                                 <div className="flex-1 min-w-0">
-                                   <p className="text-[10px] font-black uppercase truncate">{product.title}</p>
-                                   <p className="text-[10px] font-bold text-primary">GHS {product.discountPrice || product.price}</p>
-                                 </div>
-                               </Link>
-                             ))
-                           )}
-                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-
                 <nav className="flex flex-col gap-2">
-                  <Link 
-                    to="/" 
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content"
-                  >
+                  {/* Main Links */}
+                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
                     Home
                   </Link>
-
-                  <Link 
-                    to="/shop" 
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content"
-                  >
+                  <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
                     Shop
                   </Link>
 
-                  <div className="rounded-2xl overflow-hidden mt-1">
+                  {/* Collections Accordion */}
+                  <div className="rounded-2xl overflow-hidden border border-base-200/50">
                     <button 
                       onClick={() => setIsMobileCatOpen(!isMobileCatOpen)}
-                      className="w-full flex justify-between items-center p-4 text-base font-black tracking-tight text-primary uppercase"
+                      className="w-full flex justify-between items-center p-4 text-base font-black tracking-tight text-primary uppercase bg-primary/5 rounded-2xl"
                     >
-                      Collections
+                      <span>Collections</span>
+                      <ChevronDown size={16} className={`transition-transform duration-300 ${isMobileCatOpen ? 'rotate-180' : ''}`} />
                     </button>
                     
-                    <AnimatePresence>
+                    <AnimatePresence initial={false}>
                       {isMobileCatOpen && (
                         <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden bg-base-100/50"
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
                         >
-                          <div className="px-6 py-4 flex flex-col gap-2">
+                          <div className="px-4 py-2 flex flex-col gap-1">
                             {!categories || categories.length === 0 ? (
-                              <p className="text-sm text-base-content/40 p-6 italic text-center">Empty</p>
+                              <p className="text-sm text-base-content/40 p-4 italic text-center">Loading...</p>
                             ) : (
                               categories.map(cat => (
                                 <Link 
                                   key={cat._id} 
                                   to={`/shop?category=${cat.slug}`} 
                                   onClick={() => setIsMenuOpen(false)}
-                                  className="flex items-center justify-between px-4 py-3 hover:text-primary font-black text-base-content/80 transition-all uppercase tracking-widest text-xs"
+                                  className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-primary/5 hover:text-primary font-bold text-base-content/70 transition-all text-sm"
                                 >
                                   {cat.name}
-                                  <ChevronRight size={14} className="text-primary/30"/>
+                                  <ChevronRight size={14} className="text-primary/40"/>
                                 </Link>
                               ))
                             )}
@@ -431,12 +400,50 @@ const Header = () => {
                     </AnimatePresence>
                   </div>
 
-                  <Link 
-                    to="/shop?sort=newest" 
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex justify-between items-center p-4 mt-2 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content"
-                  >
+                  <Link to="/shop?sort=newest" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
                     New Arrivals
+                  </Link>
+                  <Link to="/about" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    About Us
+                  </Link>
+                  <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    Blog
+                  </Link>
+                  <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-primary italic">
+                    My Wishlist
+                    <div className="flex items-center gap-2">
+                       {wishlistCount > 0 && <span className="w-5 h-5 bg-primary text-primary-content text-[10px] flex items-center justify-center rounded-full font-black">{wishlistCount}</span>}
+                       <Heart size={16} className="fill-primary/10" />
+                    </div>
+                  </Link>
+
+                  {/* Divider */}
+                  <div className="my-3 border-t border-base-200" />
+                  <p className="px-4 text-[9px] font-black uppercase tracking-[0.25em] text-base-content/30 mb-1">Support</p>
+
+                  <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl bg-primary/10 border border-primary/20 text-primary font-black tracking-tight transition-all active:scale-95 shadow-sm">
+                    My Order History
+                    <ChevronRight size={14}/>
+                  </Link>
+                  <Link to="/track" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    Track My Order
+                    <ChevronRight size={14} className="text-primary/40" />
+                  </Link>
+                  <Link to="/faq" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    FAQ
+                    <ChevronRight size={14} className="text-primary/40" />
+                  </Link>
+                  <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    Contact Us
+                    <ChevronRight size={14} className="text-primary/40" />
+                  </Link>
+                  <Link to="/shipping" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    Shipping Policy
+                    <ChevronRight size={14} className="text-primary/40" />
+                  </Link>
+                  <Link to="/returns" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                    Returns & Exchanges
+                    <ChevronRight size={14} className="text-primary/40" />
                   </Link>
                 </nav>
               </div>

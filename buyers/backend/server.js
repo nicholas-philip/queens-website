@@ -93,4 +93,5 @@ app.listen(PORT, () => {
   console.log(`📡 [STORE] Server listening on port ${PORT}`);
 });
 
+// --- Server Sync Trigger: v1.0.4 - Ensures route stability ---
 module.exports = app;

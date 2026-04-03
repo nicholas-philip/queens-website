@@ -20,9 +20,28 @@ const { uploadToCloudinary } = require("../utils/Cloudinaryupload");
 
 
 const getAllCategories = async (req, res) => {
-  const filter = {};
-  if (req.query.active === "true") filter.isActive = true;
-  const categories = await Category.find(filter).sort({ name: 1 }).select("-__v");
+  const categories = await Category.aggregate([
+    {
+      $lookup: {
+        from: "products",
+        localField: "_id",
+        foreignField: "category",
+        as: "assignedProducts"
+      }
+    },
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        description: 1,
+        image: 1,
+        isActive: 1,
+        slug: 1,
+        productCount: { $size: "$assignedProducts" }
+      }
+    },
+    { $sort: { name: 1 } }
+  ]);
   res.status(200).json({ success: true, count: categories.length, categories });
 };
 

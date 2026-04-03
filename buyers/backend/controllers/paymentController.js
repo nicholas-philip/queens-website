@@ -170,32 +170,70 @@ const verifyPayment = async (req, res) => {
     const { reference } = req.params;
     const data = await verifyTransaction(reference);
 
+    // Paystack status can be: success, abandoned, failed
     if (data.status !== "success") {
-      return res.status(400).json({ success: false, message: "Payment not successful.", status: data.status });
+      return res.status(200).json({ success: false, message: "Payment not completed.", status: data.status });
     }
 
-    const order = await Order.findOne({ paystackReference: reference })
-      .select("orderNumber currentStatus paymentStatus total customerDetails.name");
+    // 1. Find the order by reference
+    const order = await Order.findOne({ paystackReference: reference });
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found for this transaction." });
+    }
+
+    // 2. If already marked paid, just return success
+    if (order.paymentStatus === "Paid") {
+      return res.status(200).json({ success: true, message: "Payment already verified.", order });
+    }
+
+    // 3. Update Order to 'Paid' & 'Processing' (Fail-safe for missing Webhook)
+    order.paymentStatus = "Paid";
+    order.currentStatus = "Processing";
+    order.statusHistory.push({
+      status:    "Processing",
+      note:      `Payment manually verified via success page. GHS ${(data.amount / 100).toFixed(2)} confirmed.`,
+      changedAt: new Date(),
+    });
+    await order.save();
+
+    // 4. Mark Invoice as Paid
+    await Invoice.findOneAndUpdate({ orderRef: order._id }, { status: "Paid" });
+
+    // 5. Record Transaction if it doesn't exist
+    const exists = await Transaction.findOne({ transactionId: reference });
+    if (!exists) {
+       await Transaction.create({
+         transactionId: reference, orderRef: order._id,
+         paymentMethod: formatChannel(data.channel),
+         amount:        data.amount / 100, currency: "GHS",
+         status:        "Success",
+         customerName:  order.customerDetails.name,
+         customerEmail: order.customerDetails.email,
+       });
+    }
+
+    // 6. Push Admin Notification
+    await Notification.push(
+      "PAYMENT_RECEIVED",
+      `Payment Verified — ${order.orderNumber}`,
+      `GHS ${(data.amount / 100).toLocaleString()} via ${formatChannel(data.channel)} from ${order.customerDetails.name}`,
+      `/admin/orders/${order._id}`
+    );
 
     res.status(200).json({
-      success:       true,
-      message:       "Payment verified successfully.",
-      reference,
-      amount:        data.amount / 100,
-      currency:      "GHS",
-      channel:       data.channel,
-      paidAt:        data.paid_at,
-      order: order ? {
-        orderNumber:   order.orderNumber,
-        status:        order.currentStatus,
+      success: true,
+      message: "Payment verified and order updated!",
+      order: {
+        orderNumber: order.orderNumber,
+        status:      order.currentStatus,
         paymentStatus: order.paymentStatus,
-        total:         order.total,
-        customerName:  order.customerDetails.name,
-      } : null,
+        total: order.total
+      }
     });
+
   } catch (err) {
-    console.error("❌ [Verify Payment]", err.response?.data || err.message);
-    res.status(500).json({ success: false, message: "Payment verification failed.", error: err.message });
+    console.error("❌ [Verify Payment Fail]", err.response?.data || err.message);
+    res.status(500).json({ success: false, message: "Payment verification failed." });
   }
 };
 

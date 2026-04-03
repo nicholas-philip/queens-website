@@ -12,6 +12,7 @@ const Transaction  = require("../models/Transaction");
 const Customer     = require("../models/Customer");
 const ActivityLog  = require("../models/ActivityLog");
 const Review       = require("../models/Review");
+const Wishlist     = require("../models/Wishlist");
 
 // Calculate % growth: ((current - previous) / previous) * 100
 const growth = (current, prev) => {
@@ -44,6 +45,7 @@ const getDashboardStats = async (req, res) => {
     recentActivity,
     pendingReviews,
     totalProducts,
+    topWishlisted,
   ] = await Promise.all([
     Transaction.aggregate([{ $match: { status: "Success" } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
     Transaction.aggregate([{ $match: { status: "Success", createdAt: { $gte: startOfThisMonth } } }, { $group: { _id: null, total: { $sum: "$amount" } } }]),
@@ -62,6 +64,15 @@ const getDashboardStats = async (req, res) => {
     ActivityLog.find().sort({ createdAt: -1 }).limit(10).select("adminName action target createdAt"),
     Review.countDocuments({ isApproved: false }),
     Product.countDocuments(),
+    Wishlist.aggregate([
+      { $unwind: "$items" },
+      { $group: { _id: "$items.productId", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 },
+      { $lookup: { from: "products", localField: "_id", foreignField: "_id", as: "product" } },
+      { $unwind: "$product" },
+      { $project: { _id: 1, count: 1, title: "$product.title", images: "$product.images", SKU: "$product.SKU" } }
+    ]),
   ]);
 
   const totalRevenue     = totalRevenueRes[0]?.total     || 0;
@@ -99,6 +110,7 @@ const getDashboardStats = async (req, res) => {
       pendingReviews,
       recentOrders,
       recentActivity,
+      topWishlisted,
     },
   });
 };

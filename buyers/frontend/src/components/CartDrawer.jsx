@@ -130,7 +130,7 @@ export default function CartDrawer() {
                     {/* Remove Button */}
                     <button
                       onClick={() => removeFromCart(item.cartItemId || item.product._id)}
-                      className="absolute top-0 right-0 p-1.5 text-base-content/30 hover:text-error hover:bg-error/10 rounded-md transition-all sm:opacity-0 sm:group-hover:opacity-100"
+                      className="absolute top-0 right-0 p-1.5 text-base-content/30 hover:text-error hover:bg-error/10 rounded-md transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                     >
                       <Trash2 size={16} />
                     </button>

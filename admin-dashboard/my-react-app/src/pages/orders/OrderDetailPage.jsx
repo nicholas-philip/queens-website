@@ -1,6 +1,6 @@
 import { useEffect, useState }           from "react"
 import { useParams, Link }               from "react-router-dom"
-import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2, Loader2 } from "lucide-react"
+import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
 import { ordersAPI }                     from "../../libs/api"
 import { formatCurrency, formatDateTime, getStatusBadge, cn } from "../../libs/utils"
 import { useToast }                      from "../../context/ToastContext"
@@ -18,6 +18,7 @@ export default function OrderDetailPage() {
   const [statusModal, setStatusModal] = useState(false)
   const [trackModal,  setTrackModal]  = useState(false)
   const [payModal,    setPayModal]    = useState(false)
+  const [verifying,   setVerifying]   = useState(false)
   const [newStatus,   setNewStatus]   = useState("")
   const [statusNote,  setStatusNote]  = useState("")
   const [newPayStat,  setNewPayStat]  = useState("")
@@ -67,6 +68,22 @@ export default function OrderDetailPage() {
       setPayModal(false)
     } catch (err) { toast.error("Error", "Failed to update payment.") }
     finally { setSaving(false) }
+  }
+
+  const verifyPayment = async () => {
+    setVerifying(true)
+    try {
+      const { data } = await ordersAPI.verifyPayment(id)
+      if (data.success) {
+        setOrder(data.order)
+        toast.success("Payment Verified", data.message || "Order status synchronized with Paystack.")
+      } else {
+        throw new Error(data.message || "Verification failed")
+      }
+    } catch (err) { 
+      toast.error("Verification Fail", err.response?.data?.message || err.message || "Paystack shows payment as non-successful.") 
+    }
+    finally { setVerifying(false) }
   }
 
   if (loading) return <div className="flex items-center justify-center h-screen bg-black"><Spinner size="xl" /></div>
@@ -310,9 +327,22 @@ export default function OrderDetailPage() {
                         <CreditCard className="h-5 w-5 text-yellow-500/70" />
                         <h3 className="text-sm font-bold text-white uppercase tracking-widest">Payment Context</h3>
                     </div>
-                    {order.paymentStatus !== 'Paid' && (
-                        <button onClick={() => setPayModal(true)} className="text-[10px] font-bold text-yellow-500 hover:text-yellow-400 uppercase tracking-widest bg-yellow-500/10 px-2 py-1 rounded-lg transition-colors">Manage</button>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {/* Always allow re-check for active orders to ensure transactions are synced */}
+                        {!['Cancelled', 'Delivered'].includes(order.currentStatus) && (
+                            <button 
+                                onClick={verifyPayment} 
+                                disabled={verifying}
+                                className="flex items-center gap-1.5 text-[10px] font-black text-white hover:text-yellow-500 uppercase tracking-widest bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                            >
+                                {verifying ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+                                {verifying ? 'Verifying Gateway...' : 'Re-check Paystack'}
+                            </button>
+                        )}
+                        {order.paymentStatus !== 'Paid' && (
+                            <button onClick={() => setPayModal(true)} className="text-[10px] font-bold text-yellow-500 hover:text-yellow-400 uppercase tracking-widest bg-yellow-500/10 px-2 py-1 rounded-lg transition-colors">Manage</button>
+                        )}
+                    </div>
                 </div>
                 
                 <div className="space-y-4">

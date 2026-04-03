@@ -48,16 +48,12 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow any origin for now to prevent CORS issues
-    callback(null, true);
-  },
-  credentials:         true,
-  methods:             ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  optionsSuccessStatus: 200,
+  origin: (origin, callback) => callback(null, true), // Allow all origins during dev
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 }));
 
-// Explicit pre-flight handler for all routes
+// Explicit pre-flight handler
 app.options("*", cors());
 
 // ── Compression (gzip) ────────────────────────────

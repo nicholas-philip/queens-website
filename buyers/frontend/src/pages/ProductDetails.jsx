@@ -89,21 +89,21 @@ const ProductDetails = () => {
     );
 
   return (
-    <div className="bg-base-100 min-h-screen pt-28 pb-20">
+    <div className="bg-base-100 min-h-screen pt-24 md:pt-28 pb-16 md:pb-20">
 
-      <div className="max-w-[1400px] mx-auto px-6 lg:px-10">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-10">
 
         {/* BACK LINK */}
         <Link
           to="/shop"
-          className="flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-10"
+          className="inline-flex items-center gap-2 text-sm text-base-content/60 hover:text-primary mb-6 sm:mb-10 font-medium transition-colors"
         >
           <ChevronLeft size={16} />
           Back to Shop
         </Link>
 
         {/* MAIN GRID */}
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-20 items-start">
 
           {/* PRODUCT GALLERY */}
           <div className="space-y-6">
@@ -155,7 +155,7 @@ const ProductDetails = () => {
                 Premium Selection
               </span>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.1] tracking-tight text-neutral">
+              <h1 className="text-2xl sm:text-3xl lg:text-5xl font-black leading-[1.1] tracking-tight text-base-content">
                 {product.title}
               </h1>
 
@@ -389,7 +389,7 @@ const ProductDetails = () => {
 
             <div className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-2">
               {relatedProducts.map((p) => (
-                <div key={p._id} className="min-w-[180px] md:min-w-[220px] lg:min-w-[240px] snap-start shrink-0 mb-4 flex-1">
+                <div key={p._id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[220px] lg:min-w-[240px] snap-start shrink-0 mb-4">
                   <ProductCard product={p} />
                 </div>
               ))}

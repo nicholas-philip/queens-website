@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, Save, Upload, X, Box, DollarSign, Tag, Image as ImageIcon, Loader2 } from "lucide-react"
+import { ArrowLeft, Save, Upload, X, Box, DollarSign, Tag, Image as ImageIcon, Loader2, Sparkles } from "lucide-react"
 import { productsAPI, categoriesAPI } from "../../libs/api"
 import { useToast } from "../../context/ToastContext"
 import { cn } from "../../libs/utils"
@@ -71,6 +71,19 @@ export default function ProductFormPage() {
   }, [id, isEdit, navigate, toast])
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value })
+  
+  const generateSKU = () => {
+    if (!formData.title) return toast.error("Error", "Please enter a product title first.")
+    
+    // Prefix + First 4 letters of title + 4 random chars
+    const prefix = "QNS"
+    const titlePart = formData.title.replace(/[^a-zA-Z]/g, "").slice(0, 4).toUpperCase()
+    const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase()
+    
+    const newSKU = `${prefix}-${titlePart || "PROD"}-${randomPart}`
+    setFormData({ ...formData, SKU: newSKU })
+    toast.info("ID Generated", `Product SKU set to: ${newSKU}`)
+  }
 
   // ── Image Handling ──
   const handleImageSelect = (e) => {
@@ -332,14 +345,6 @@ export default function ProductFormPage() {
                 type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} 
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="e.g. 50" 
-              />
-            </div>
-            <div>
-              <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">SKU (Stock Keeping Unit)</label>
-              <input 
-                type="text" name="SKU" value={formData.SKU} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono uppercase" 
-                placeholder="e.g. SCARF-001" 
               />
             </div>
             <div>

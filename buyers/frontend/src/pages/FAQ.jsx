@@ -6,21 +6,21 @@ const FAQItem = ({ question, answer, icon: Icon }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="border border-gray-100 rounded-2xl overflow-hidden bg-white mb-4 shadow-sm">
+    <div className="border border-base-200 rounded-2xl overflow-hidden bg-base-100 mb-4 shadow-sm transition-colors duration-300">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 text-left transition-colors hover:bg-gray-50"
+        className="w-full flex items-center justify-between p-4 sm:p-6 text-left transition-colors hover:bg-base-200/50"
       >
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-green-50 rounded-xl text-green-700">
-            <Icon size={20} />
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0 pr-2">
+          <div className="p-2.5 sm:p-3 bg-primary/10 rounded-xl text-primary flex-shrink-0">
+            <Icon size={18} />
           </div>
-          <span className="font-extrabold text-gray-900 text-lg">{question}</span>
+          <span className="font-extrabold text-base-content text-sm sm:text-base md:text-lg">{question}</span>
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.3 }}
-          className="text-gray-400"
+          className="text-base-content/40 flex-shrink-0"
         >
           <ChevronDown size={20} />
         </motion.div>
@@ -32,7 +32,7 @@ const FAQItem = ({ question, answer, icon: Icon }) => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="px-6 pb-6 text-gray-500 font-medium leading-relaxed pt-2 ml-14"
+            className="px-4 sm:px-6 pb-5 sm:pb-6 text-base-content/60 font-medium leading-relaxed pt-2 ml-10 sm:ml-14 text-sm md:text-base"
           >
             {answer}
           </motion.div>
@@ -72,32 +72,32 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-32 pb-20 px-6 font-sans">
+    <div className="min-h-screen bg-base-200/40 pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 font-sans transition-colors duration-300">
       <div className="max-w-3xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4 text-center">Frequently Asked <span className="text-green-700 font-serif italic">Questions</span>.</h1>
-            <p className="text-gray-500 font-medium text-lg">Everything you need to know about shopping with Queens.</p>
+          <div className="text-center mb-10 sm:mb-16">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-base-content tracking-tight mb-4 text-center">Frequently Asked <span className="text-primary font-serif italic">Questions</span>.</h1>
+            <p className="text-base-content/60 font-medium text-base sm:text-lg">Everything you need to know about shopping with Queens.</p>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, index) => (
               <FAQItem key={index} {...faq} />
             ))}
           </div>
 
-          <div className="mt-16 bg-white p-10 rounded-[2.5rem] border border-gray-100 shadow-sm text-center">
-            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">Still have questions?</h3>
-            <p className="text-gray-500 font-medium md:text-lg mb-8">Our concierge team is here to assist you.</p>
+          <div className="mt-12 sm:mt-16 bg-base-100 p-6 sm:p-10 rounded-[2rem] sm:rounded-[2.5rem] border border-base-200 shadow-sm text-center">
+            <h3 className="text-xl sm:text-2xl font-extrabold text-base-content mb-2">Still have questions?</h3>
+            <p className="text-base-content/60 font-medium text-base sm:text-lg mb-6 sm:mb-8">Our concierge team is here to assist you.</p>
             <a
               href="https://wa.me/233245709324" 
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block px-8 py-5 bg-green-700 text-white font-extrabold rounded-xl hover:bg-green-800 transition-colors shadow-lg active:scale-[0.98]"
+              className="inline-block px-6 sm:px-8 py-4 sm:py-5 bg-primary text-primary-content font-extrabold rounded-xl hover:brightness-110 transition-colors shadow-lg active:scale-[0.98] text-sm sm:text-base"
             >
               Chat with us on WhatsApp
             </a>

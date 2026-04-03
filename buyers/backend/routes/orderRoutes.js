@@ -10,7 +10,9 @@ const {
   trackOrder, 
   recordTransaction, 
   validateCoupon, 
-  createLead 
+  createLead,
+  getMyOrdersHistory,
+  claimOrder
 } = require("../controllers/orderController");
 
 const { checkoutLimiter } = require("../middleware/rateLimiter");
@@ -18,6 +20,8 @@ const { checkoutLimiter } = require("../middleware/rateLimiter");
 // --- PUBLIC ACCESS ---
 router.post("/",         checkoutLimiter, placeOrder); // Checkout button
 router.get("/track/:id", trackOrder); // Tracking number search
+router.get("/my-history",   getMyOrdersHistory); // List all orders for the current session (from headers)
+router.patch("/claim-secure", claimOrder); // Claim and link an order to current session
 
 // --- LEAD CAPTURE ---
 router.post("/leads",    createLead); // Save potential customer info

@@ -24,6 +24,8 @@ import BeautyQuiz from './pages/BeautyQuiz';
 import GiftCards from './pages/GiftCards';
 import RequestReturn from './pages/RequestReturn';
 import Wishlist from './pages/Wishlist';
+import MyOrders from './pages/MyOrders';
+import PaymentSuccess from './pages/PaymentSuccess';
 
 // New Global Components
 import CheckoutModal from './components/CheckoutModal';
@@ -32,7 +34,19 @@ import ScrollToTop from './components/ScrollToTop';
 import ReviewNotification from './components/ReviewNotification';
 import PushNotificationHandler from './components/PushNotificationHandler';
 
+import { useEffect } from 'react';
+
+const generateSessionId = () => {
+   return 'qns_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 const App = () => {
+  useEffect(() => {
+    if (!localStorage.getItem('queens_session_id')) {
+       localStorage.setItem('queens_session_id', generateSessionId());
+    }
+  }, []);
+
   return (
     <Router>
       <ScrollToTop />
@@ -63,6 +77,10 @@ const App = () => {
             <Route path="/gift-cards" element={<GiftCards />} />
             <Route path="/returns" element={<RequestReturn />} />
             <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/orders" element={<MyOrders />} />
+            <Route path="/history" element={<MyOrders />} />
+            <Route path="/payment/success" element={<PaymentSuccess />} />
+            <Route path="/success" element={<PaymentSuccess />} />
           </Routes>
         </main>
         <Footer />

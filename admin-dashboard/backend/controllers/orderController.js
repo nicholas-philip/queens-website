@@ -207,6 +207,9 @@ const addTrackingNumber = catchAsync(async (req, res) => {
   await order.save();
   await logActivity(req, "ADDED_TRACKING", `Order: ${order._id}`, `Tracking: ${trackingNumber}`);
 
+  // Send automated email update with tracking info
+  sendOrderStatusUpdate(order, `Tracking information has been added. Your package is now with the carrier.`).catch(() => {});
+
   res.status(200).json({
     success: true,
     message: "Tracking number added and order marked as Shipped.",
@@ -242,6 +245,69 @@ const deleteOrder = catchAsync(async (req, res) => {
   res.status(200).json({ success: true, message: "Order deleted." });
 });
 
+// ── POST /admin/orders/:id/verify-payment ─────────
+// Manually triggers a Paystack check if webhook was missed
+const verifyOrderPayment = catchAsync(async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return res.status(404).json({ success: false, message: "Order not found." });
+
+  const ref = order.paystackReference || order.orderNumber;
+  if (!ref) return res.status(400).json({ success: false, message: "No payment reference or order number found for verification." });
+
+  // Import local service
+  const paystackService = require("../utils/paystackService");
+  
+  // Attempt verification — if it fails (404), catch 
+  try {
+    const pyData = await paystackService.verifyTransaction(ref);
+    if (pyData.status === "success") {
+      order.paymentStatus = "Paid";
+      order.currentStatus = "Processing";
+      order.statusHistory.push({
+        status: "Processing",
+        note: `Payment manually verified via Paystack. Ref: ${ref}. GHS ${(pyData.amount / 100).toFixed(2)} confirmed.`,
+        changedBy: req.admin?.name || "Admin",
+        changedAt: new Date()
+      });
+      await order.save();
+
+      // --- NEW: Update Bookkeeping ---
+      const Transaction = require("../models/Transaction");
+      const Invoice     = require("../models/Invoice");
+
+      // Format channel for Enum: card -> Card, mobile_money -> Mobile Money
+      let method = "Other";
+      if (pyData.channel === "card") method = "Card";
+      if (pyData.channel === "mobile_money") method = "Mobile Money";
+      if (pyData.channel === "bank_transfer") method = "Bank Transfer";
+
+      // 1. Create Transaction (if not exists)
+      const exists = await Transaction.findOne({ transactionId: ref });
+      if (!exists) {
+        await Transaction.create({
+          transactionId: ref,
+          orderRef:      order._id,
+          amount:        pyData.amount / 100,
+          status:        "Success",
+          paymentMethod: method,
+          customerName:  order.customerDetails?.name || "Customer",
+          currency:      "GHS",
+          gatewayResponse: pyData
+        });
+      }
+
+      // 2. Mark Invoice as Paid
+      await Invoice.findOneAndUpdate({ orderRef: order._id }, { status: "Paid" });
+
+      return res.status(200).json({ success: true, message: "Payment verified! Balance and Order updated.", order });
+    }
+    return res.status(400).json({ success: false, message: `Bank Gateway Status: ${pyData.status || "Unsuccessful"} for ID: ${ref}` });
+  } catch (err) {
+    const payError = err.response?.data?.message || err.message;
+    return res.status(400).json({ success: false, message: `Gateway check failed for ${ref}: ${payError}` });
+  }
+});
+
 module.exports = {
   createOrder,
   getAllOrders,
@@ -251,4 +317,5 @@ module.exports = {
   updateAdminNotes,
   deleteOrder,
   updateOrderPayment,
+  verifyOrderPayment,
 };// TS file system cache invalidation

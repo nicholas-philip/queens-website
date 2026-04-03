@@ -173,9 +173,14 @@ export default function CategoriesPage() {
               </div>
 
               <div className="flex-1">
-                <h3 className="font-bold text-lg text-white truncate">{cat.name}</h3>
+                <div className="flex items-center justify-between gap-3 mb-1">
+                    <h3 className="font-bold text-lg text-white truncate">{cat.name}</h3>
+                    <div className="px-2 py-0.5 bg-neutral-800 rounded-lg border border-neutral-700 font-mono text-[10px] font-bold text-yellow-500 whitespace-nowrap">
+                        {cat.productCount || 0} ITEMS
+                    </div>
+                </div>
                 {cat.description && (
-                  <p className="text-xs text-neutral-500 mt-1 line-clamp-2 leading-relaxed">{cat.description}</p>
+                  <p className="text-xs text-neutral-500 line-clamp-1 leading-relaxed">{cat.description}</p>
                 )}
               </div>
 

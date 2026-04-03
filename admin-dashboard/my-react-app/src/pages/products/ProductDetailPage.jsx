@@ -1,6 +1,6 @@
 import { useEffect, useState }              from "react"
 import { useParams, Link, useNavigate }     from "react-router-dom"
-import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle, Loader2 } from "lucide-react"
+import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle, Loader2, Heart } from "lucide-react"
 import { productsAPI }                      from "../../libs/api"
 import { formatCurrency, getStatusBadge, formatDate, cn } from "../../libs/utils"
 import { useToast }                         from "../../context/ToastContext"
@@ -193,7 +193,7 @@ export default function ProductDetailPage() {
         <div className="lg:col-span-7 space-y-8">
             
             {/* Essential Metrics */}
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                 <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl w-fit mb-4">
                         <ShoppingCart className="h-4 w-4 text-blue-500" />
@@ -219,6 +219,13 @@ export default function ProductDetailPage() {
                     </div>
                     <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Avg Rating</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.averageRating || '—'}</p>
+                </div>
+                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
+                    <div className="p-2 bg-pink-500/10 border border-pink-500/20 rounded-xl w-fit mb-4">
+                        <Heart className="h-4 w-4 text-pink-500" />
+                    </div>
+                    <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Wishlist Saved</p>
+                    <p className="text-2xl font-bold text-white tracking-tight">{product.wishlistCount || 0}</p>
                 </div>
             </div>
 

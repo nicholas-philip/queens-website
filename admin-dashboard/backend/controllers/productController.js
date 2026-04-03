@@ -18,6 +18,7 @@
 // =====================================================
 
 const Product    = require("../models/Product");
+const Wishlist   = require("../models/Wishlist");
 const catchAsync = require("../utils/catchAsync");
 const filterQuery = require("../utils/filterQuery");
 const { uploadToCloudinary, deleteFromCloudinary } = require("../utils/Cloudinaryupload");
@@ -137,7 +138,17 @@ const getProductById = catchAsync(async (req, res) => {
   if (!product) {
     return res.status(404).json({ success: false, message: "Product not found." });
   }
-  res.status(200).json({ success: true, product });
+
+  // Fetch wishlist metrics
+  const wishlistCount = await Wishlist.countDocuments({ "items.productId": req.params.id });
+
+  res.status(200).json({ 
+    success: true, 
+    product: {
+      ...product.toObject(),
+      wishlistCount
+    }
+  });
 });
 
 // ── PUT /admin/products/:id ───────────────────────

@@ -58,6 +58,11 @@ const OrderSchema = new mongoose.Schema(
     currentStatus: { type: String, default: "Pending" },
     statusHistory: { type: [StatusLogSchema], default: [] },
     adminNotes:    { type: String, default: "" },
+    metadata: {
+      sessionId:   { type: String, default: null, index: true },
+      userAgent:   { type: String, default: null },
+      ipAddress:   { type: String, default: null },
+    },
   },
   { timestamps: true }
 );
@@ -71,8 +76,8 @@ OrderSchema.pre("save", function () {
   if (this.isNew && !this.orderNumber) {
     const now  = new Date();
     const date = `${String(now.getFullYear()).slice(-2)}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-    const rand = Math.random().toString(16).slice(2, 8).toUpperCase();
-    this.orderNumber = `#QN-${date}-${rand}`;
+    const rand = Math.random().toString(16).slice(2, 6).toUpperCase();
+    this.orderNumber = `QN-${date}-${rand}`;
   }
 });
 

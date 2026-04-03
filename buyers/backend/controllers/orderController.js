@@ -27,9 +27,24 @@ const placeOrder = async (req, res) => {
   }
 
   const settings = await Settings.getSettings();
+  const sessionId = req.headers["x-session-id"]; // We will send this from frontend
 
-  // Check if blocked customer
-  const existing = await Customer.findOne({ phone: customerDetails.phone });
+  // 1. Spam Lock (Device-based multi-email detection)
+  if (sessionId) {
+    const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000);
+    const recentEmails = await Order.distinct("customerDetails.email", {
+      "metadata.sessionId": sessionId,
+      createdAt: { $gte: twelveHoursAgo }
+    });
+    
+    // If this device has used 3 different emails already, block further attempts
+    if (recentEmails.length >= 3 && !recentEmails.includes(customerDetails.email)) {
+       return res.status(429).json({ success: false, message: "Security alert: Too many different emails used from this device. Please try again later." });
+    }
+  }
+
+  // 2. Check if blocked customer
+  const existing = await Customer.findOne({ $or: [{ phone: customerDetails.phone }, { email: customerDetails.email }] });
   if (existing?.isBlocked) {
     return res.status(403).json({ success: false, message: "Unable to process this order. Please contact support." });
   }
@@ -111,6 +126,11 @@ const placeOrder = async (req, res) => {
     couponCode:    appliedCode,
     currentStatus: "Pending",
     statusHistory: [{ status: "Pending", note: "Order placed via storefront", changedAt: new Date() }],
+    metadata: {
+      sessionId: sessionId || null,
+      userAgent: req.headers["user-agent"] || null,
+      ipAddress: req.ip || req.headers["x-forwarded-for"] || null
+    }
   });
 
   // Deduct stock
@@ -245,4 +265,43 @@ const createLead = async (req, res) => {
   }
 };
 
-module.exports = { placeOrder, trackOrder, recordTransaction, validateCoupon, createLead };
+// ── GET /api/orders/my-history — Guest order history ─
+const getMyOrdersHistory = async (req, res) => {
+  const sessionId = req.headers["x-session-id"];
+  if (!sessionId) {
+    return res.status(200).json({ success: true, orders: [] });
+  }
+
+  const orders = await Order.find({ "metadata.sessionId": sessionId })
+    .sort({ createdAt: -1 })
+    .select("orderNumber currentStatus total items createdAt trackingNumber carrier");
+
+  res.status(200).json({ success: true, orders });
+};
+
+// ── PATCH /api/orders/claim — Link missing order to session ─
+const claimOrder = async (req, res) => {
+  const { orderNumber } = req.body;
+  const sessionId = req.headers["x-session-id"];
+
+  if (!orderNumber || !sessionId) {
+    return res.status(400).json({ success: false, message: "Order number and session ID are required." });
+  }
+
+  const cleaned = orderNumber.trim().toUpperCase();
+  const possibleNumbers = [cleaned, cleaned.startsWith("#") ? cleaned.slice(1) : `#${cleaned}`];
+
+  const order = await Order.findOne({ orderNumber: { $in: possibleNumbers } });
+  if (!order) {
+    return res.status(404).json({ success: false, message: `Order not found. We checked ${possibleNumbers.join(' and ')}.` });
+  }
+
+  // Update session ID so it appears in history
+  order.metadata = order.metadata || {};
+  order.metadata.sessionId = sessionId;
+  await order.save();
+
+  res.status(200).json({ success: true, message: "Order successfully linked to your history! ✨" });
+};
+
+module.exports = { placeOrder, trackOrder, recordTransaction, validateCoupon, createLead, getMyOrdersHistory, claimOrder };

@@ -1,23 +1,13 @@
 // =====================================================
-// pages/BeautyQuiz.jsx  —  FIXED
-//
-// Fixes:
-//   1. Was posting { skinType, concern, routine } but backend quizController
-//      expects { answers: { skinType, skinTone, ... }, sessionId }.
-//      The controller was always returning fallback best-sellers because
-//      `answers` was undefined — quiz personalisation was completely broken.
-//   2. Added sessionId (stable per browser session via sessionStorage).
-//   3. Added newsletter opt-in that wires to backend subscribeNewsletter flag.
-//   4. UI: improved answer selection feedback, better loading state.
+// pages/BeautyQuiz.jsx  —  RESPONSIVE + THEME-AWARE
 // =====================================================
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Sparkles, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
 import ProductCard from '../components/ProductCard';
 
-// Stable session ID — persists for the browser session
 const getSessionId = () => {
   let id = sessionStorage.getItem('queens_quiz_session');
   if (!id) {
@@ -34,7 +24,7 @@ const QUESTIONS = [
     options: ['Oily', 'Combination', 'Dry', 'Sensitive', 'Normal'],
   },
   {
-    id: 'skinConcerns', // now an array — matches backend answers.skinConcerns
+    id: 'skinConcerns',
     title: 'What are your main beauty concerns?',
     multi: true,
     options: ['Acne & Blemishes', 'Anti-Aging', 'Hydration', 'Dark Spots', 'Radiance', 'Even Skin Tone'],
@@ -48,9 +38,9 @@ const QUESTIONS = [
     id: 'budget',
     title: 'What is your budget range?',
     options: [
-      { label: 'Under GHS 50',       value: 'under-5000' },
-      { label: 'GHS 50 – 150',       value: '5000-15000' },
-      { label: 'GHS 150+',           value: '15000-plus' },
+      { label: 'Under GHS 50', value: 'under-5000' },
+      { label: 'GHS 50 – 150', value: '5000-15000' },
+      { label: 'GHS 150+',     value: '15000-plus' },
     ],
   },
 ];
@@ -70,7 +60,6 @@ const BeautyQuiz = () => {
     const value = option.value ?? option;
 
     if (question.multi) {
-      // Toggle multi-select
       const current = answers.skinConcerns || [];
       const next = current.includes(value)
         ? current.filter(v => v !== value)
@@ -79,8 +68,6 @@ const BeautyQuiz = () => {
     } else {
       const nextAnswers = { ...answers, [question.id]: value };
       setAnswers(nextAnswers);
-
-      // Auto-advance on single-select
       if (step < QUESTIONS.length) {
         setTimeout(() => setStep(s => s + 1), 280);
       } else {
@@ -102,20 +89,20 @@ const BeautyQuiz = () => {
     try {
       const { data } = await api.post('/quiz/submit', {
         answers: {
-          skinType:      finalAnswers.skinType      || '',
-          skinTone:      finalAnswers.skinTone      || '',
-          skinConcerns:  finalAnswers.skinConcerns  || [],
-          makeupStyle:   finalAnswers.makeupStyle   || '',
-          budget:        finalAnswers.budget        || '',
+          skinType:     finalAnswers.skinType     || '',
+          skinTone:     finalAnswers.skinTone     || '',
+          skinConcerns: finalAnswers.skinConcerns || [],
+          makeupStyle:  finalAnswers.makeupStyle  || '',
+          budget:       finalAnswers.budget       || '',
         },
         sessionId,
-        email:                email || null,
-        subscribeNewsletter:  subscribeNewsletter,
+        email:               email || null,
+        subscribeNewsletter: subscribeNewsletter,
       });
       setRecs(data.recommendations || []);
     } catch (err) {
       console.error('Quiz error:', err);
-      setRecs([]); // show fallback
+      setRecs([]);
     } finally {
       setLoading(false);
     }
@@ -131,36 +118,36 @@ const BeautyQuiz = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFDFC] pt-32 pb-24 font-sans">
-      <div className="max-w-3xl mx-auto px-6">
+    <div className="min-h-screen bg-base-200/40 pt-28 sm:pt-32 pb-16 sm:pb-24 font-sans transition-colors duration-300">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
         {/* Header */}
-        <div className="text-center mb-14">
-          <div className="w-14 h-14 bg-green-50 rounded-full flex items-center justify-center text-green-700 mx-auto mb-5">
-            <Sparkles size={28} />
+        <div className="text-center mb-10 sm:mb-14">
+          <div className="w-12 sm:w-14 h-12 sm:h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary mx-auto mb-4 sm:mb-5">
+            <Sparkles size={26} />
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-3">
-            The Routine <span className="text-green-700 italic font-serif">Quiz</span>.
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-base-content tracking-tight mb-3">
+            The Routine <span className="text-primary italic font-serif">Quiz</span>.
           </h1>
-          <p className="text-gray-500 font-medium text-lg">
+          <p className="text-base-content/60 font-medium text-base sm:text-lg">
             Answer {QUESTIONS.length} quick questions and we'll curate your perfect routine.
           </p>
         </div>
 
         {/* Quiz panel */}
         {!recommendations && !loading && (
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-gray-100 relative overflow-hidden">
+          <div className="bg-base-100 rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 md:p-12 shadow-sm border border-base-200 relative overflow-hidden">
             {/* Progress */}
-            <div className="flex justify-between items-center mb-10">
-              <span className="text-green-700 font-black tracking-widest text-xs uppercase">
+            <div className="flex justify-between items-center mb-8 sm:mb-10">
+              <span className="text-primary font-black tracking-widest text-xs uppercase">
                 Step {step} of {QUESTIONS.length}
               </span>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5 sm:gap-2">
                 {QUESTIONS.map((_, i) => (
                   <div
                     key={i}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i + 1 <= step ? 'bg-green-700 w-10' : 'bg-gray-100 w-6'
+                      i + 1 <= step ? 'bg-primary w-8 sm:w-10' : 'bg-base-200 w-5 sm:w-6'
                     }`}
                   />
                 ))}
@@ -175,11 +162,11 @@ const BeautyQuiz = () => {
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.25 }}
               >
-                <h2 className="text-2xl md:text-3xl font-extrabold text-gray-900 mb-7">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-base-content mb-5 sm:mb-7">
                   {question.title}
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                   {question.options.map((opt) => {
                     const label = opt.label ?? opt;
                     const value = opt.value ?? opt;
@@ -191,14 +178,14 @@ const BeautyQuiz = () => {
                       <button
                         key={value}
                         onClick={() => handleSelect(opt)}
-                        className={`py-4 px-5 rounded-2xl border-2 text-left font-bold transition-all duration-200 ${
+                        className={`py-3.5 sm:py-4 px-4 sm:px-5 rounded-2xl border-2 text-left font-bold transition-all duration-200 text-sm sm:text-base ${
                           isSelected
-                            ? 'border-green-700 bg-green-50 text-green-700 shadow-sm'
-                            : 'border-gray-100 bg-white text-gray-700 hover:border-gray-200 hover:bg-gray-50'
+                            ? 'border-primary bg-primary/10 text-primary shadow-sm'
+                            : 'border-base-200 bg-base-100 text-base-content/70 hover:border-base-300 hover:bg-base-200/50'
                         }`}
                       >
                         <span className={`inline-block w-4 h-4 rounded border-2 mr-2 align-middle transition-all ${
-                          isSelected ? 'bg-green-700 border-green-700' : 'border-gray-300'
+                          isSelected ? 'bg-primary border-primary' : 'border-base-300'
                         }`} />
                         {label}
                       </button>
@@ -206,11 +193,10 @@ const BeautyQuiz = () => {
                   })}
                 </div>
 
-                {/* Multi-select next button */}
                 {question.multi && (
                   <button
                     onClick={handleMultiNext}
-                    className="mt-6 w-full py-4 bg-green-700 text-white font-extrabold rounded-2xl hover:bg-green-800 transition-colors flex items-center justify-center gap-2"
+                    className="mt-5 sm:mt-6 w-full py-4 btn btn-primary rounded-2xl font-extrabold flex items-center justify-center gap-2"
                   >
                     {step < QUESTIONS.length ? 'Next' : 'Get my picks'}
                     <ArrowRight size={18} />
@@ -219,22 +205,22 @@ const BeautyQuiz = () => {
               </motion.div>
             </AnimatePresence>
 
-            {/* Newsletter opt-in — only show on last step */}
+            {/* Newsletter opt-in */}
             {step === QUESTIONS.length && !question.multi && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="mt-8 pt-8 border-t border-gray-100 space-y-3"
+                className="mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-base-200 space-y-3"
               >
-                <p className="text-sm font-bold text-gray-700">Get your results + beauty tips in your inbox?</p>
+                <p className="text-sm font-bold text-base-content/70">Get your results + beauty tips in your inbox?</p>
                 <input
                   type="email"
                   placeholder="Your email (optional)"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 text-sm outline-none focus:border-green-700 transition-all placeholder:text-gray-400"
+                  className="w-full bg-base-200 border border-base-300 rounded-xl px-4 py-3 text-base-content text-sm outline-none focus:border-primary transition-all placeholder:text-base-content/30"
                 />
-                <label className="flex items-center gap-2 text-sm text-gray-500 cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-base-content/60 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={subscribeNewsletter}
@@ -250,42 +236,42 @@ const BeautyQuiz = () => {
 
         {/* Loading */}
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-14 h-14 border-4 border-gray-100 border-t-green-700 rounded-full animate-spin mb-5" />
-            <h3 className="text-2xl font-extrabold text-gray-900">Curating your picks...</h3>
-            <p className="text-gray-500 mt-2">Matching products to your unique profile.</p>
+          <div className="flex flex-col items-center justify-center py-16 sm:py-20 text-center">
+            <div className="w-12 sm:w-14 h-12 sm:h-14 border-4 border-base-200 border-t-primary rounded-full animate-spin mb-5" />
+            <h3 className="text-xl sm:text-2xl font-extrabold text-base-content">Curating your picks...</h3>
+            <p className="text-base-content/60 mt-2 text-sm sm:text-base">Matching products to your unique profile.</p>
           </div>
         )}
 
         {/* Results */}
         {recommendations && !loading && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="text-center mb-10 border-b border-gray-100 pb-10">
-              <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-full font-bold text-sm tracking-wide mb-5">
+            <div className="text-center mb-8 sm:mb-10 border-b border-base-200 pb-8 sm:pb-10">
+              <div className="inline-flex items-center gap-2 bg-success/10 text-success px-4 py-2 rounded-full font-bold text-sm tracking-wide mb-4 sm:mb-5">
                 <CheckCircle2 size={15} /> Match Complete
               </div>
-              <h2 className="text-3xl font-extrabold text-gray-900">Your Signature Routine</h2>
-              <p className="text-gray-500 mt-3 max-w-lg mx-auto">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-base-content">Your Signature Routine</h2>
+              <p className="text-base-content/60 mt-2 sm:mt-3 max-w-lg mx-auto text-sm sm:text-base">
                 Based on your answers, we picked these essentials for optimal results.
               </p>
             </div>
 
             {recommendations.length > 0 ? (
-              <div className="grid grid-cols-2 gap-5 max-w-4xl mx-auto">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5 max-w-4xl mx-auto">
                 {recommendations.map(p => <ProductCard key={p._id} product={p} />)}
               </div>
             ) : (
               <div className="text-center py-10">
-                <p className="text-gray-400 font-medium">
+                <p className="text-base-content/40 font-medium">
                   No direct matches found — browse our full collection!
                 </p>
               </div>
             )}
 
-            <div className="text-center mt-10">
+            <div className="text-center mt-8 sm:mt-10">
               <button
                 onClick={reset}
-                className="inline-flex items-center gap-2 text-gray-400 font-bold hover:text-green-700 uppercase tracking-widest text-sm transition-colors"
+                className="inline-flex items-center gap-2 text-base-content/40 font-bold hover:text-primary uppercase tracking-widest text-sm transition-colors"
               >
                 <RotateCcw size={14} /> Retake quiz
               </button>

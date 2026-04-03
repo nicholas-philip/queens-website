@@ -68,7 +68,7 @@ export default function VerifyEmailPage() {
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-green-900/30 border border-green-700/40 mx-auto mb-5">
                 <CheckCircle className="h-8 w-8 text-green-400" />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2 tracking-tight">Email Verified! 🎉</h2>
+              <h2 className="text-xl font-bold text-white mb-2 tracking-tight">Email Verified!</h2>
               <p className="text-sm text-neutral-500 mb-6">
                 Your account is now active. Redirecting you to the dashboard…
               </p>

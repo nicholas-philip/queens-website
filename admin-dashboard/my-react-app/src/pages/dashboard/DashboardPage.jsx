@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { DollarSign, ShoppingCart, Users, Package, AlertCircle, TrendingUp, TrendingDown, Minus } from "lucide-react"
+import { DollarSign, ShoppingCart, Users, Package, AlertCircle, TrendingUp, TrendingDown, Minus, Heart, ChevronRight } from "lucide-react"
 import { dashboardAPI, analyticsAPI } from "../../libs/api"
 import { useAuthStore } from "../../context/AuthContext"
 import { formatCurrency } from "../../libs/utils"
@@ -191,7 +191,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
 
         {/* Recent Orders */}
-        <div className={`bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl shadow-black/10 border border-neutral-800/10 ${!isSuperAdmin ? "xl:col-span-2" : ""}`}>
+        <div className="bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl shadow-black/10 border border-neutral-800/10">
           <div className="flex items-center justify-between px-7 py-5 border-b border-neutral-800/50">
             <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Orders</h3>
             <Link to="/orders" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View all</Link>
@@ -218,48 +218,77 @@ export default function DashboardPage() {
                   <td className="px-6 py-3.5"><span className={getStatusStyle(o.currentStatus)}>{o.currentStatus}</span></td>
                 </tr>
               ))}
-              {(!s.recentOrders || s.recentOrders.length === 0) && (
-                <tr>
-                  <td colSpan="4" className="px-6 py-10 text-center text-sm text-neutral-600 font-medium">No recent orders</td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
 
-        {/* Recent Activity */}
-        {isSuperAdmin && (
+        {/* Top Wishlisted */}
+        <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10">
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/50">
+            <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Customer Desires (Top Wishlisted)</h3>
+            <div className="p-2 bg-pink-500/10 rounded-lg">
+                <Heart className="h-4 w-4 text-pink-500" />
+            </div>
+          </div>
+          <div className="space-y-5">
+            {(s.topWishlisted || []).map((item) => (
+              <Link 
+                key={item._id} 
+                to={`/products/${item._id}`}
+                className="flex items-center gap-4 group hover:bg-white/5 p-2 rounded-2xl transition-all"
+              >
+                <div className="h-12 w-12 rounded-xl bg-neutral-800 border border-neutral-700 overflow-hidden flex-shrink-0">
+                  <img src={item.images?.[0]} alt="" className="h-full w-full object-cover group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-bold text-base-content truncate group-hover:text-yellow-500 transition-colors">{item.title}</h4>
+                  <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mt-0.5">{item.SKU}</p>
+                </div>
+                <div className="flex flex-col items-end shrink-0">
+                  <span className="text-lg font-black text-white leading-none">{item.count}</span>
+                  <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest mt-1 italic">Saves</span>
+                </div>
+                <ChevronRight className="h-4 w-4 text-neutral-800 group-hover:text-white transition-colors" />
+              </Link>
+            ))}
+            {(!s.topWishlisted || s.topWishlisted.length === 0) && (
+              <div className="py-12 text-center flex flex-col items-center opacity-20">
+                <Heart className="h-10 w-10 mb-2" />
+                <p className="text-xs font-black uppercase tracking-widest">No interests recorded yet</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Admin Log Wrap (Secondary) */}
+      {isSuperAdmin && (
           <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/50">
-              <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Activity</h3>
-              <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View logs</Link>
+              <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Internal Activity Log</h3>
+              <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">Audit trail</Link>
             </div>
-            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
-              {(s.recentActivity || []).map((log) => (
-                <div key={log._id} className="flex gap-3 py-2 border-b border-neutral-800/50 last:border-0">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-neutral-800 text-yellow-500 text-xs font-bold">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {(s.recentActivity || []).slice(0, 6).map((log) => (
+                <div key={log._id} className="flex gap-4 p-4 bg-black/20 rounded-2xl border border-neutral-800/20">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-800 text-yellow-500 text-sm font-bold border border-neutral-700">
                     {log.adminName?.[0]?.toUpperCase() || "A"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-neutral-600 leading-snug">
+                    <p className="text-xs text-neutral-400 leading-snug">
                       <b className="font-bold text-base-content">{log.adminName || "System"}</b>
                       {" · "}
-                      <span className="text-neutral-500 text-xs">{log.action.replace(/_/g, " ").toLowerCase()}</span>
+                      <span className="text-neutral-500 text-[10px] uppercase">{log.action.replace(/_/g, " ")}</span>
                     </p>
-                    {log.target && <p className="font-medium text-neutral-500 text-xs mt-0.5 truncate">{log.target}</p>}
-                    <p className="text-[10px] font-mono text-neutral-700 mt-1 uppercase tracking-widest">
+                    <p className="text-[10px] font-mono text-neutral-700 mt-1">
                       {formatRelativeTime(log.createdAt)}
                     </p>
                   </div>
                 </div>
               ))}
-              {(!s.recentActivity || s.recentActivity.length === 0) && (
-                <div className="py-8 text-center text-sm text-neutral-600">No recent activity</div>
-              )}
             </div>
           </div>
-        )}
-      </div>
+      )}
     </div>
   )
 }

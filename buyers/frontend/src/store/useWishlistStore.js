@@ -50,11 +50,11 @@ export const useWishlistStore = create(
         const { sessionId } = get();
         try {
           const { data } = await api.get(`/wishlist/${sessionId}`);
-          // Backend returns { success: true, items: [{ productId: {...} }] }
+          // Backend returns { success: true, items: [ { _id, title, price... } ] }
           const items = data.items || [];
-          const ids = items.map(i => i.productId?._id).filter(Boolean);
+          const ids = items.map(i => i._id).filter(Boolean); 
           set({ wishlistIds: ids });
-          return items.map(i => i.productId).filter(Boolean);
+          return items;
         } catch (err) {
           console.error('Failed to fetch wishlist:', err);
           return [];

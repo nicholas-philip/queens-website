@@ -55,9 +55,9 @@ const ProductSchema = new mongoose.Schema(
 
 ProductSchema.pre("save", async function () {
   if (!this.SKU) {
-    const random = Math.floor(1000 + Math.random() * 9000); 
-    const prefix = this.title.substring(0, 3).toUpperCase().replace(/[^A-Z0-9]/g, 'X');
-    this.SKU = `${prefix}-${Date.now().toString().slice(-4)}-${random}`;
+    const random = Math.random().toString(36).substring(2, 6).toUpperCase(); 
+    const prefix = this.title.substring(0, 4).toUpperCase().replace(/[^A-Z0-9]/g, 'X');
+    this.SKU = `QNS-${prefix}-${random}`;
   }
   if (this.isModified("title") || !this.slug) {
     this.slug = this.title.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");

@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ShoppingCart, User, Truck, CreditCard,
   ChevronRight, ChevronLeft, Trash2, Plus, Minus,
-  CheckCircle, Tag, AlertCircle,
+  CheckCircle, Tag, AlertCircle, Lock
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import api from '../api';
@@ -64,7 +64,7 @@ const StepBar = ({ current }) => (
             }`}>
               {done ? '✓' : idx}
             </div>
-            <span className={`text-[9px] uppercase tracking-widest font-bold transition-colors ${
+            <span className={`hidden sm:block text-[9px] uppercase tracking-widest font-bold transition-colors ${
               active ? 'text-gold' : done ? 'text-white/60' : 'text-white/20'
             }`}>{label}</span>
           </div>
@@ -178,13 +178,15 @@ const CheckoutModal = () => {
     }
   };
 
-  // ── Place order ──────────────────────────────────────
   const handlePlaceOrder = async () => {
     if (!shippingMethod) return;
     setLoading(true);
     try {
+      const sessionId = localStorage.getItem('queens_session_id');
+      
       // 1. Create order — payload matches orderController.placeOrder exactly
       const { data: orderData } = await api.post('/orders', {
+        metadata: { sessionId }, // <--- Added for instant history sync
         customerDetails: {
           name:    `${formData.firstName.trim()} ${formData.lastName.trim()}`,
           email:   formData.email.trim(),
@@ -213,6 +215,7 @@ const CheckoutModal = () => {
       const { data: payData } = await api.post('/payment/initialize', {
         orderId: orderData.order._id,
         channel: 'card',
+        metadata: { sessionId }, // <--- Double sync for webhook
       });
 
       if (payData.success && payData.authorization_url) {
@@ -575,7 +578,7 @@ const CheckoutModal = () => {
 
           {/* Trust signal */}
           <p className="text-center text-white/20 text-[10px] mt-3 flex items-center justify-center gap-1.5">
-            <span>🔒</span> Secured by Paystack · SSL encrypted
+            <Lock size={12} /> Secured by Paystack · SSL encrypted
           </p>
         </div>
       </motion.div>

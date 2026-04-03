@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { messaging, getToken, onMessage } from '../libs/firebase';
-import axios from 'axios';
+import api from '../api';
 
 const VAPID_KEY = import.meta.env.VITE_FIREBASE_VAPID_KEY;
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
@@ -24,7 +24,7 @@ const PushNotificationHandler = () => {
                     if (token) {
                         console.log('✅ FCM Token generated:', token);
                         // 4. Send token to backend
-                        await axios.post(`${API_URL}/alerts/subscribe-push`, {
+                        await api.post('/alerts/subscribe-push', {
                             token,
                             platform: 'web'
                         });

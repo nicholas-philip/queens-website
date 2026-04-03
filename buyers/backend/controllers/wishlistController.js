@@ -64,4 +64,18 @@ const clearWishlist = async (req, res) => {
   }
 };
 
-module.exports = { getWishlist, toggleWishlist, clearWishlist };
+const getWishlistCountForProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    if (!productId) return res.status(400).json({ success: false, message: "Missing product ID." });
+
+    // Count how many wishlists contain this productId
+    const count = await Wishlist.countDocuments({ "items.productId": productId });
+
+    res.status(200).json({ success: true, count });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { getWishlist, toggleWishlist, clearWishlist, getWishlistCountForProduct };
