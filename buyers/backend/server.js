@@ -91,6 +91,10 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`📡 [STORE] Server listening on port ${PORT}`);
+  
+  // Start the background cron job to prevent Render sleep
+  const { startKeepAlive } = require('./cron');
+  startKeepAlive();
 });
 
 // --- Server Sync Trigger: v1.0.4 - Ensures route stability ---
