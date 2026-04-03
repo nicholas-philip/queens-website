@@ -227,7 +227,14 @@ const CheckoutModal = () => {
       }
     } catch (err) {
       console.error('Checkout error:', err.response?.data || err.message);
-      alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+      
+      const isTimeout = err.message === 'Network Error' || err.response?.status === 502 || err.response?.status === 504;
+      
+      if (isTimeout) {
+        alert('Server is waking up from standby! Please wait 10 seconds and click Place Order again.');
+      } else {
+        alert(err.response?.data?.message || 'Something went wrong. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
