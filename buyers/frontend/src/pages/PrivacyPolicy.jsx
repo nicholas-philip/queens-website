@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
           <div className="bg-base-100 p-6 sm:p-10 md:p-16 rounded-[2rem] sm:rounded-[2.5rem] shadow-sm border border-base-200 space-y-10 sm:space-y-12">
             
             <p className="text-lg sm:text-xl md:text-2xl font-extrabold text-base-content leading-tight">
-              At Queens, we value your trust as much as your elegance. This policy explains how we secure your data.
+              At Queens Fashion Store, we value your trust as much as your elegance. This policy explains how we secure your data.
             </p>
 
             <section>
@@ -41,7 +41,7 @@ const PrivacyPolicy = () => {
               <h3 className="text-base-content font-extrabold text-xl sm:text-2xl mb-3 sm:mb-4">No Third-Party Sharing</h3>
               <p className="text-sm sm:text-base md:text-lg">
                 We simply do not sell, trade, or share your personal data with third parties. Your information is 
-                safe within the Queens kingdom.
+                safe within the Queens Fashion Store kingdom.
               </p>
             </section>
 

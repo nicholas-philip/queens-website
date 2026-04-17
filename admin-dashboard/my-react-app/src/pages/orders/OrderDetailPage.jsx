@@ -109,7 +109,7 @@ export default function OrderDetailPage() {
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold text-white tracking-tight">{order.orderNumber}</h1>
                     <span className={cn(
-                        "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border",
+                        "px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest border",
                         order.currentStatus === 'Delivered' ? "bg-green-500/10 border-green-500/20 text-green-500" : 
                         order.currentStatus === 'Cancelled' ? "bg-red-500/10 border-red-500/20 text-red-500" :
                         "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"
@@ -152,7 +152,7 @@ export default function OrderDetailPage() {
                             <Truck className="h-6 w-6 text-black" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-black/60 uppercase tracking-widest leading-none mb-1.5">Shipping Reference</p>
+                            <p className="text-xs font-bold text-black/60 uppercase tracking-widest leading-none mb-1.5">Shipping Reference</p>
                             <p className="text-xl font-bold text-black tracking-tight">{order.trackingNumber}</p>
                         </div>
                     </div>
@@ -163,7 +163,7 @@ export default function OrderDetailPage() {
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-neutral-800/50 flex items-center justify-between">
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Order Consignment</h3>
-                    <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">{order.items?.length} Items</span>
+                    <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">{order.items?.length} Items</span>
                 </div>
                 <div className="divide-y divide-neutral-800">
                     {order.items?.map((item, i) => (
@@ -178,11 +178,11 @@ export default function OrderDetailPage() {
                                 </div>
                                 <div>
                                     <p className="font-bold text-white group-hover:text-yellow-500 transition-colors">{item.title}</p>
-                                    <p className="text-[10px] font-mono text-neutral-600 mt-0.5">{item.SKU}</p>
+                                    <p className="text-xs font-mono text-neutral-600 mt-0.5">{item.SKU}</p>
                                     {item.attributes && (
                                         <div className="flex flex-wrap gap-2 mt-2">
                                             {Object.entries(item.attributes).filter(([,v]) => v).map(([k,v]) => (
-                                                <span key={k} className="text-[9px] font-bold text-neutral-500 uppercase tracking-tighter bg-neutral-900 border border-neutral-800 px-1.5 py-0.5 rounded">
+                                                <span key={k} className="text-xs font-bold text-neutral-500 uppercase tracking-tighter bg-neutral-900 border border-neutral-800 px-1.5 py-0.5 rounded">
                                                     {k}: {v}
                                                 </span>
                                             ))}
@@ -192,7 +192,7 @@ export default function OrderDetailPage() {
                             </div>
                             <div className="text-right">
                                 <p className="font-bold text-white">{formatCurrency(item.lineTotal)}</p>
-                                <p className="text-[10px] font-bold text-neutral-600 mt-1 uppercase tracking-tighter">{formatCurrency(item.price)} × {item.quantity}</p>
+                                <p className="text-xs font-bold text-neutral-600 mt-1 uppercase tracking-tighter">{formatCurrency(item.price)} × {item.quantity}</p>
                             </div>
                         </div>
                     ))}
@@ -201,17 +201,17 @@ export default function OrderDetailPage() {
                 {/* Financial Summary */}
                 <div className="bg-black/40 p-8 space-y-4">
                     <div className="flex justify-between text-sm text-neutral-500">
-                        <span className="font-bold uppercase tracking-widest text-[10px]">Merchant Subtotal</span>
+                        <span className="font-bold uppercase tracking-widest text-xs">Merchant Subtotal</span>
                         <span className="font-medium">{formatCurrency(order.subtotal)}</span>
                     </div>
                     {order.discount > 0 && (
                         <div className="flex justify-between text-sm text-green-500/80">
-                            <span className="font-bold uppercase tracking-widest text-[10px]">Applied Discount ({order.couponCode})</span>
+                            <span className="font-bold uppercase tracking-widest text-xs">Applied Discount ({order.couponCode})</span>
                             <span className="font-medium">-{formatCurrency(order.discount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-sm text-neutral-500">
-                        <span className="font-bold uppercase tracking-widest text-[10px]">Logistics Fee</span>
+                        <span className="font-bold uppercase tracking-widest text-xs">Logistics Fee</span>
                         <span className="font-medium">{formatCurrency(order.shipping || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center border-t border-neutral-800 pt-6 mt-2">
@@ -248,7 +248,7 @@ export default function OrderDetailPage() {
                                 <div className="flex items-center gap-3">
                                     <p className={cn("text-xs font-bold uppercase tracking-widest", i === 0 ? "text-white" : "text-neutral-500")}>{s.status}</p>
                                     <span className="h-px flex-1 bg-neutral-900/40" />
-                                    <p className="text-[10px] font-bold text-neutral-600 uppercase">{formatDateTime(s.changedAt)}</p>
+                                    <p className="text-xs font-bold text-neutral-600 uppercase">{formatDateTime(s.changedAt)}</p>
                                 </div>
                                 {s.note && (
                                     <div className="mt-2 text-sm text-neutral-400 font-medium italic">
@@ -278,7 +278,7 @@ export default function OrderDetailPage() {
                         </div>
                         <div>
                             <p className="font-bold text-white text-lg leading-tight">{order.customerDetails?.name}</p>
-                            <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Loyal Member</p>
+                            <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mt-1">Loyal Member</p>
                         </div>
                     </div>
                     
@@ -314,7 +314,7 @@ export default function OrderDetailPage() {
                         </p>
                         <div className="mt-4 px-3 py-1 bg-black/40 border border-neutral-800 rounded-lg inline-flex items-center gap-2">
                             <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
-                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Verified Address</span>
+                            <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Verified Address</span>
                         </div>
                     </div>
                 </div>
@@ -333,14 +333,14 @@ export default function OrderDetailPage() {
                             <button 
                                 onClick={verifyPayment} 
                                 disabled={verifying}
-                                className="flex items-center gap-1.5 text-[10px] font-black text-white hover:text-yellow-500 uppercase tracking-widest bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-50"
+                                className="flex items-center gap-1.5 text-xs font-black text-white hover:text-yellow-500 uppercase tracking-widest bg-white/5 border border-white/10 px-2.5 py-1.5 rounded-lg transition-all active:scale-95 disabled:opacity-50"
                             >
                                 {verifying ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
                                 {verifying ? 'Verifying Gateway...' : 'Re-check Paystack'}
                             </button>
                         )}
                         {order.paymentStatus !== 'Paid' && (
-                            <button onClick={() => setPayModal(true)} className="text-[10px] font-bold text-yellow-500 hover:text-yellow-400 uppercase tracking-widest bg-yellow-500/10 px-2 py-1 rounded-lg transition-colors">Manage</button>
+                            <button onClick={() => setPayModal(true)} className="text-xs font-bold text-yellow-500 hover:text-yellow-400 uppercase tracking-widest bg-yellow-500/10 px-2 py-1 rounded-lg transition-colors">Manage</button>
                         )}
                     </div>
                 </div>
@@ -349,19 +349,19 @@ export default function OrderDetailPage() {
                     <div className="flex items-center justify-between">
                         <div>
                             <p className="text-sm font-bold text-white tracking-tight">{order.paystackReference ? 'Paystack Gateway' : (order.paymentMethod || 'Manual Entry')}</p>
-                            <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">Status Registry</p>
+                            <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mt-1">Status Registry</p>
                         </div>
                         <div className={cn(
                             "px-3 py-1 rounded-lg border",
                             order.paymentStatus === 'Paid' ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-neutral-800 border-neutral-700 text-neutral-500"
                         )}>
-                            <span className="text-[10px] font-bold uppercase tracking-widest">{order.paymentStatus || 'Unpaid'}</span>
+                            <span className="text-xs font-bold uppercase tracking-widest">{order.paymentStatus || 'Unpaid'}</span>
                         </div>
                     </div>
 
                     {order.paystackReference && (
                         <div className="pt-4 border-t border-neutral-800/50">
-                            <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1.5">Gateway Reference</p>
+                            <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1.5">Gateway Reference</p>
                             <p className="text-xs font-mono text-neutral-400 bg-black/40 p-2 rounded-lg border border-neutral-800/50 break-all">{order.paystackReference}</p>
                         </div>
                     )}
@@ -431,7 +431,7 @@ export default function OrderDetailPage() {
                         placeholder="e.g. DHL-593-9201" 
                     />
                 </div>
-                <p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5 italic">Providing this reference allows customers to track their parcels in real-time.</p>
+                <p className="text-xs text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5 italic">Providing this reference allows customers to track their parcels in real-time.</p>
             </div>
 
             <div className="flex items-center justify-between gap-4 pt-4">
@@ -463,7 +463,7 @@ export default function OrderDetailPage() {
                         <option value="Refunded">Refunded (Returned)</option>
                     </select>
                 </div>
-                <p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5">Use this to manually override the payment status if a customer pays via bank transfer or cash.</p>
+                <p className="text-xs text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5">Use this to manually override the payment status if a customer pays via bank transfer or cash.</p>
             </div>
 
             <div className="flex items-center justify-between gap-4 pt-4">

@@ -131,7 +131,7 @@ export default function OrdersPage() {
                             <Link to={`/orders/${o._id}`} className="font-bold text-white hover:text-yellow-500 transition-colors">
                                 {o.orderNumber || `#${o._id.slice(-6).toUpperCase()}`}
                             </Link>
-                            <span className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">{o.items?.length || 0} Items</span>
+                            <span className="text-xs text-neutral-500 font-bold uppercase tracking-wider">{o.items?.length || 0} Items</span>
                         </div>
                     </div>
                   </TableCell>
@@ -140,7 +140,7 @@ export default function OrdersPage() {
                   <TableCell>
                     <div className="flex flex-col">
                         <span className="font-bold text-neutral-300">{o.customerDetails?.name || "Guest Customer"}</span>
-                        <span className="text-[10px] text-neutral-600">{o.customerDetails?.email}</span>
+                        <span className="text-xs text-neutral-600">{o.customerDetails?.email}</span>
                     </div>
                   </TableCell>
 
@@ -157,18 +157,18 @@ export default function OrdersPage() {
                   {/* Payment */}
                   <TableCell>
                     <span className={cn(
-                        "px-2 py-1 rounded text-[10px] font-bold uppercase",
+                        "px-2 py-1 rounded text-xs font-bold uppercase",
                         o.paymentStatus === 'Paid' ? "text-green-500 bg-green-500/10" : "text-neutral-500 bg-neutral-800"
                     )}>
                         {o.paymentStatus || 'Unpaid'}
                     </span>
-                    <p className="text-[9px] text-neutral-600 mt-1 font-medium">{o.paymentMethod || '—'}</p>
+                    <p className="text-xs text-neutral-600 mt-1 font-medium">{o.paymentMethod || '—'}</p>
                   </TableCell>
 
                   {/* Status */}
                   <TableCell>
                     <span className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
+                        "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border",
                         getStatusBadge(o.currentStatus).replace("badge ", "bg-opacity-10 ")
                     )}>
                         {o.currentStatus}

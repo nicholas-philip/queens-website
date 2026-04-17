@@ -25,7 +25,7 @@ class ErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     // In production, send to your error tracker (Sentry, LogRocket, etc.)
-    console.error('Queens App Error:', error, info);
+    console.error('Queens Fashion Store Error:', error, info);
   }
 
   render() {

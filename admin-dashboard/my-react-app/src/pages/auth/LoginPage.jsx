@@ -92,7 +92,7 @@ export default function LoginPage() {
           <div className="inline-block mb-4">
             <img
               src={logo}
-              alt="Queens Admin"
+              alt="Queens Fashion Store Admin"
               className="h-16 w-16 object-contain"
               style={{ filter: "drop-shadow(0 0 12px rgba(212,160,23,0.4))" }}
               loading="lazy"
@@ -129,7 +129,7 @@ export default function LoginPage() {
 
             {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
+              <label htmlFor="email" className="block text-xs font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Email address
               </label>
               <div className="relative">
@@ -155,7 +155,7 @@ export default function LoginPage() {
             {/* Password */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label htmlFor="password" className="text-[10px] font-bold text-base-content/60 uppercase tracking-widest">Password</label>
+                <label htmlFor="password" className="text-xs font-bold text-base-content/60 uppercase tracking-widest">Password</label>
                 <Link to="/auth/forgot-password" className="text-xs text-primary hover:text-primary/80 font-medium transition-colors">
                   Forgot password?
                 </Link>

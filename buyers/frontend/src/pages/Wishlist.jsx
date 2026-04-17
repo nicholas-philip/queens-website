@@ -56,7 +56,7 @@ const Wishlist = () => {
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-8">
           <div>
             <FadeUp>
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary mb-4 block">Saved For Later</span>
+              <span className="text-xs font-black uppercase tracking-[0.4em] text-primary mb-4 block">Saved For Later</span>
               <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-none mb-4">
                 My <span className="font-serif italic text-primary">Favourites</span>
               </h1>
@@ -73,7 +73,7 @@ const Wishlist = () => {
                 className="group flex items-center gap-3 px-6 py-3 bg-base-200/50 hover:bg-error/10 border border-base-300 hover:border-error/30 rounded-2xl transition-all duration-300"
               >
                 <Trash2 size={16} className="text-base-content/40 group-hover:text-error transition-colors" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-base-content/60 group-hover:text-error">Clear Collection</span>
+                <span className="text-xs font-black uppercase tracking-widest text-base-content/60 group-hover:text-error">Clear Collection</span>
               </button>
             </FadeUp>
           )}
@@ -136,7 +136,7 @@ const Wishlist = () => {
                   {/* Quick Shop Link */}
                   <Link 
                     to={`/product/${product._id}`}
-                    className="absolute bottom-20 left-4 right-4 z-20 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl text-[9px] font-black text-white uppercase tracking-widest text-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-primary hover:text-primary-content"
+                    className="absolute bottom-20 left-4 right-4 z-20 py-3 bg-white/10 backdrop-blur-xl border border-white/20 rounded-xl text-xs font-black text-white uppercase tracking-widest text-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-500 hover:bg-primary hover:text-primary-content"
                   >
                     View Details
                   </Link>
@@ -155,7 +155,7 @@ const Wishlist = () => {
                     <ShoppingBag size={24} className="text-base-content/20 group-hover:text-primary transition-colors" />
                  </div>
                  <h3 className="text-xs font-black uppercase tracking-[0.3em] mb-2">Continue Shopping</h3>
-                 <p className="text-[11px] font-bold text-base-content/40 italic">Find more pieces to love</p>
+                 <p className="text-xs font-bold text-base-content/40 italic">Find more pieces to love</p>
               </Link>
             </div>
           </FadeUp>

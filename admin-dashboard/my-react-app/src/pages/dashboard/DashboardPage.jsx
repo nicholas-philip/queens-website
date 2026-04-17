@@ -20,7 +20,7 @@ const formatRelativeTime = (dateString) => {
 }
 
 const getStatusStyle = (status) => {
-  const base = "px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-widest whitespace-nowrap border"
+  const base = "px-2 py-0.5 rounded text-xs uppercase font-bold tracking-widest whitespace-nowrap border"
   switch (status) {
     case "Pending":    return `${base} bg-neutral-900 text-yellow-500 border-yellow-600/20`
     case "Processing": return `${base} bg-neutral-900 text-neutral-300 border-neutral-700`
@@ -39,12 +39,12 @@ function StatCard({ title, value, isCurrency, icon: Icon, growth }) {
     <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 hover:bg-neutral-800 transition-all border border-neutral-800/10 group">
       <div className="flex justify-between items-start">
         <div>
-          <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-4">{title}</p>
+          <p className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em] mb-4">{title}</p>
           <h3 className="text-3xl font-black text-base-content tracking-tight">
             {isCurrency ? formatCurrency(value || 0) : (value || 0).toLocaleString()}
           </h3>
           {growth !== undefined && (
-            <p className={`text-[10px] font-black uppercase tracking-widest mt-3 flex items-center gap-1 ${isPositive ? "text-yellow-500" : isNegative ? "text-neutral-500" : "text-neutral-600"}`}>
+            <p className={`text-xs font-black uppercase tracking-widest mt-3 flex items-center gap-1 ${isPositive ? "text-yellow-500" : isNegative ? "text-neutral-500" : "text-neutral-600"}`}>
               {isPositive ? <TrendingUp className="h-3 w-3" /> : isNegative ? <TrendingDown className="h-3 w-3" /> : <Minus className="h-3 w-3" />}
               {Math.abs(growth)}% vs last month
             </p>
@@ -103,21 +103,21 @@ export default function DashboardPage() {
         <div className="flex flex-wrap gap-3">
           {s.inventory?.outOfStock > 0 && (
             <Link to="/products?status=Out+of+Stock"
-              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-[11px] font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
+              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
               <AlertCircle className="h-4 w-4 text-yellow-500" />
               {s.inventory.outOfStock} Out of Stock
             </Link>
           )}
           {s.inventory?.lowStock > 0 && (
             <Link to="/products/low-stock"
-              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-[11px] font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
+              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
               <AlertCircle className="h-4 w-4 text-neutral-400" />
               {s.inventory.lowStock} Low on Stock
             </Link>
           )}
           {s.orders?.pendingCount > 0 && (
             <Link to="/orders?currentStatus=Pending"
-              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-[11px] font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
+              className="flex items-center gap-2 rounded-xl border border-neutral-700 px-4 py-2.5 text-xs font-bold text-white uppercase tracking-widest hover:border-yellow-600/40 transition-colors">
               <ShoppingCart className="h-4 w-4 text-neutral-400" />
               {s.orders.pendingCount} Pending Orders
             </Link>
@@ -130,7 +130,7 @@ export default function DashboardPage() {
 
         {/* Revenue Chart */}
         <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10 xl:col-span-2">
-          <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Revenue — Last 30 Days</h3>
+          <h3 className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Revenue — Last 30 Days</h3>
           <div className="h-[400px] w-full min-w-0">
             <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
               <AreaChart data={a.dailyRevenue || []} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
@@ -156,7 +156,7 @@ export default function DashboardPage() {
 
         {/* Orders Pie */}
         <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10 flex flex-col">
-          <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Orders by Status</h3>
+          <h3 className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em] mb-6">Orders by Status</h3>
           <div className="h-[300px] w-full min-w-0">
             <ResponsiveContainer width="99%" height="100%" minWidth={1} minHeight={1} debounce={50}>
               <PieChart>
@@ -193,16 +193,16 @@ export default function DashboardPage() {
         {/* Recent Orders */}
         <div className="bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl shadow-black/10 border border-neutral-800/10">
           <div className="flex items-center justify-between px-7 py-5 border-b border-neutral-800/50">
-            <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Orders</h3>
-            <Link to="/orders" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View all</Link>
+            <h3 className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Recent Orders</h3>
+            <Link to="/orders" className="text-xs uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">View all</Link>
           </div>
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-neutral-800">
-                <th className="px-6 py-3 text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Order</th>
-                <th className="px-6 py-3 text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Customer</th>
-                <th className="px-6 py-3 text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Total</th>
-                <th className="px-6 py-3 text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Status</th>
+                <th className="px-6 py-3 text-xs font-bold text-neutral-600 uppercase tracking-widest">Order</th>
+                <th className="px-6 py-3 text-xs font-bold text-neutral-600 uppercase tracking-widest">Customer</th>
+                <th className="px-6 py-3 text-xs font-bold text-neutral-600 uppercase tracking-widest">Total</th>
+                <th className="px-6 py-3 text-xs font-bold text-neutral-600 uppercase tracking-widest">Status</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-neutral-800/60">
@@ -225,7 +225,7 @@ export default function DashboardPage() {
         {/* Top Wishlisted */}
         <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10">
           <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/50">
-            <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Customer Desires (Top Wishlisted)</h3>
+            <h3 className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Customer Desires (Top Wishlisted)</h3>
             <div className="p-2 bg-pink-500/10 rounded-lg">
                 <Heart className="h-4 w-4 text-pink-500" />
             </div>
@@ -242,11 +242,11 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="text-sm font-bold text-base-content truncate group-hover:text-yellow-500 transition-colors">{item.title}</h4>
-                  <p className="text-[10px] font-mono text-neutral-500 uppercase tracking-widest mt-0.5">{item.SKU}</p>
+                  <p className="text-xs font-mono text-neutral-500 uppercase tracking-widest mt-0.5">{item.SKU}</p>
                 </div>
                 <div className="flex flex-col items-end shrink-0">
                   <span className="text-lg font-black text-white leading-none">{item.count}</span>
-                  <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest mt-1 italic">Saves</span>
+                  <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest mt-1 italic">Saves</span>
                 </div>
                 <ChevronRight className="h-4 w-4 text-neutral-800 group-hover:text-white transition-colors" />
               </Link>
@@ -265,8 +265,8 @@ export default function DashboardPage() {
       {isSuperAdmin && (
           <div className="bg-neutral-900 rounded-2xl p-7 shadow-2xl shadow-black/10 border border-neutral-800/10">
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-800/50">
-              <h3 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Internal Activity Log</h3>
-              <Link to="/accounts" className="text-[10px] uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">Audit trail</Link>
+              <h3 className="text-xs font-black text-neutral-500 uppercase tracking-[0.2em]">Internal Activity Log</h3>
+              <Link to="/accounts" className="text-xs uppercase font-bold tracking-widest text-yellow-500 hover:text-yellow-400 transition-colors">Audit trail</Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {(s.recentActivity || []).slice(0, 6).map((log) => (
@@ -278,9 +278,9 @@ export default function DashboardPage() {
                     <p className="text-xs text-neutral-400 leading-snug">
                       <b className="font-bold text-base-content">{log.adminName || "System"}</b>
                       {" · "}
-                      <span className="text-neutral-500 text-[10px] uppercase">{log.action.replace(/_/g, " ")}</span>
+                      <span className="text-neutral-500 text-xs uppercase">{log.action.replace(/_/g, " ")}</span>
                     </p>
-                    <p className="text-[10px] font-mono text-neutral-700 mt-1">
+                    <p className="text-xs font-mono text-neutral-700 mt-1">
                       {formatRelativeTime(log.createdAt)}
                     </p>
                   </div>

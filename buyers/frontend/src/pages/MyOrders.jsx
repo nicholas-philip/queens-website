@@ -37,12 +37,12 @@ const OrderCard = ({ order }) => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="text-[10px] sm:text-xs font-bold text-base-content/40 uppercase tracking-widest">Order ID</span>
+            <span className="text-xs sm:text-xs font-bold text-base-content/40 uppercase tracking-widest">Order ID</span>
             <span className="text-sm font-black text-base-content tracking-tight">{order.orderNumber}</span>
           </div>
           <p className="text-xs text-base-content/60 font-medium">Placed on {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
         </div>
-        <div className={`px-4 py-2 rounded-xl border text-[11px] font-black uppercase tracking-wider flex items-center gap-2 transition-transform group-hover:scale-105 ${getStatusStyles(order.currentStatus)}`}>
+        <div className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-transform group-hover:scale-105 ${getStatusStyles(order.currentStatus)}`}>
            {getStatusIcon(order.currentStatus)}
            {order.currentStatus}
         </div>
@@ -56,18 +56,18 @@ const OrderCard = ({ order }) => {
             </div>
             <div className="min-w-0 flex-1">
                <p className="text-sm font-bold text-base-content truncate">{item.title}</p>
-               <p className="text-[10px] font-bold text-base-content/40 uppercase tracking-widest">Qty: {item.quantity}</p>
+               <p className="text-xs font-bold text-base-content/40 uppercase tracking-widest">Qty: {item.quantity}</p>
             </div>
           </div>
         ))}
         {order.items?.length > 2 && (
-          <p className="text-[10px] font-black text-primary uppercase tracking-widest pl-1">+ {order.items.length - 2} more items</p>
+          <p className="text-xs font-black text-primary uppercase tracking-widest pl-1">+ {order.items.length - 2} more items</p>
         )}
       </div>
 
       <div className="mt-8 pt-6 border-t border-base-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
         <div>
-           <p className="text-[10px] font-bold text-base-content/40 uppercase tracking-widest mb-0.5">Total Amount</p>
+           <p className="text-xs font-bold text-base-content/40 uppercase tracking-widest mb-0.5">Total Amount</p>
            <p className="text-lg font-black text-base-content tracking-tight">GHS {order.total.toFixed(2)}</p>
         </div>
         <div className="flex gap-2">
@@ -165,7 +165,7 @@ const MyOrders = () => {
                   {claiming ? 'Synchronizing...' : 'Find and Link Order'}
                 </button>
               </form>
-              <p className="mt-6 flex items-start gap-2 text-[10px] text-base-content/40 font-bold uppercase tracking-wider leading-relaxed">
+              <p className="mt-6 flex items-start gap-2 text-xs text-base-content/40 font-bold uppercase tracking-wider leading-relaxed">
                 <AlertCircle size={14} className="shrink-0" />
                 This will move the order into your permanent history list for easier tracking.
               </p>
@@ -185,7 +185,7 @@ const MyOrders = () => {
           <div className="flex flex-wrap items-center gap-4">
              <button 
                onClick={() => setShowClaim(true)}
-               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-[11px] font-black text-primary uppercase tracking-widest hover:bg-primary/20 transition-all font-mono"
+               className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary/10 border border-primary/20 text-xs font-black text-primary uppercase tracking-widest hover:bg-primary/20 transition-all font-mono"
              >
                 Lost an order? <Search size={14} />
              </button>
@@ -227,7 +227,7 @@ const MyOrders = () => {
 
         {/* Footer Help */}
         <div className="mt-16 text-center space-y-4">
-           <p className="text-[10px] font-black text-base-content/30 uppercase tracking-[0.2em]">Have an issue with an order?</p>
+           <p className="text-xs font-black text-base-content/30 uppercase tracking-[0.2em]">Have an issue with an order?</p>
            <div className="flex justify-center gap-6">
               <Link to="/contact" className="text-xs font-bold text-base-content/60 hover:text-primary transition-colors flex items-center gap-2">
                 Contact Concierge <ExternalLink size={12} />

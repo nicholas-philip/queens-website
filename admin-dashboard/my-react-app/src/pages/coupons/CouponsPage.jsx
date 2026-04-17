@@ -44,8 +44,8 @@ function CouponCard({ coupon, onEdit, onToggle, onDelete }) {
           </button>
         </div>
         <div className="flex items-center gap-2">
-          {expired && <span className="px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] uppercase font-bold tracking-widest rounded-lg">Expired</span>}
-          <span className={`px-2.5 py-1 text-[10px] uppercase font-bold tracking-widest rounded-lg border ${coupon.isActive ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-neutral-800 border-neutral-700 text-neutral-400"}`}>
+          {expired && <span className="px-2.5 py-1 bg-red-500/10 border border-red-500/20 text-red-500 text-xs uppercase font-bold tracking-widest rounded-lg">Expired</span>}
+          <span className={`px-2.5 py-1 text-xs uppercase font-bold tracking-widest rounded-lg border ${coupon.isActive ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-neutral-800 border-neutral-700 text-neutral-400"}`}>
             {coupon.isActive ? "Active" : "Off"}
           </span>
         </div>
@@ -58,7 +58,7 @@ function CouponCard({ coupon, onEdit, onToggle, onDelete }) {
           {discountLabel}
         </span>
         {coupon.minOrderAmount > 0 && (
-          <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-widest">
+          <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">
             Min {formatCurrency(coupon.minOrderAmount)}
           </span>
         )}
@@ -73,17 +73,17 @@ function CouponCard({ coupon, onEdit, onToggle, onDelete }) {
       <div className="grid grid-cols-3 gap-3 text-center">
         <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3">
           <p className="text-lg font-bold text-white">{coupon.usedCount || 0}</p>
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mt-1">Used</p>
+          <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Used</p>
         </div>
         <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3">
           <p className="text-lg font-bold text-white">
             {coupon.maxUses ? coupon.maxUses - (coupon.usedCount || 0) : "∞"}
           </p>
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mt-1">Remaining</p>
+          <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Remaining</p>
         </div>
         <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3 flex flex-col items-center justify-center">
           <p className="text-xs font-bold text-white leading-tight">{formatDate(coupon.expiryDate)}</p>
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mt-1">Expires</p>
+          <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Expires</p>
         </div>
       </div>
 

@@ -87,7 +87,7 @@ const Rewards = () => {
             <Gift size={26} />
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-base-content tracking-tight mb-3 sm:mb-4 leading-tight">
-            Queens <span className="text-primary">Rewards</span>.
+            Queens Fashion Store <span className="text-primary">Rewards</span>.
           </h1>
           <p className="text-base-content/60 font-medium text-base sm:text-lg mb-6 sm:mb-8 leading-relaxed">
             Every purchase earns you points. Enter your WhatsApp number to check your tier and redeem for discounts.
@@ -131,13 +131,13 @@ const Rewards = () => {
                   {/* Tier + Points */}
                   <div className="flex justify-between items-start">
                     <div>
-                      <span className={`px-3 py-1 rounded-lg border font-black tracking-widest text-[10px] uppercase mb-2 sm:mb-3 inline-block ${TIER_STYLES[account.tier] || TIER_STYLES.Bronze}`}>
+                      <span className={`px-3 py-1 rounded-lg border font-black tracking-widest text-xs uppercase mb-2 sm:mb-3 inline-block ${TIER_STYLES[account.tier] || TIER_STYLES.Bronze}`}>
                         {account.tier} Tier
                       </span>
                       <h2 className="text-xl sm:text-2xl font-extrabold text-base-content">{account.firstName || 'Queen'}</h2>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-black uppercase text-base-content/40 tracking-widest mb-0.5">Points</p>
+                      <p className="text-xs font-black uppercase text-base-content/40 tracking-widest mb-0.5">Points</p>
                       <p className="text-4xl sm:text-5xl font-black text-primary">{account.currentBalance?.toLocaleString() ?? 0}</p>
                     </div>
                   </div>
@@ -164,11 +164,11 @@ const Rewards = () => {
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="bg-base-200 rounded-2xl p-3 sm:p-4 border border-base-300">
-                      <p className="text-[10px] uppercase tracking-widest text-base-content/40 font-bold mb-1">Total earned</p>
+                      <p className="text-xs uppercase tracking-widest text-base-content/40 font-bold mb-1">Total earned</p>
                       <p className="text-lg sm:text-xl font-black text-base-content">{account.totalEarned?.toLocaleString() ?? 0} pts</p>
                     </div>
                     <div className="bg-base-200 rounded-2xl p-3 sm:p-4 border border-base-300">
-                      <p className="text-[10px] uppercase tracking-widest text-base-content/40 font-bold mb-1">Total redeemed</p>
+                      <p className="text-xs uppercase tracking-widest text-base-content/40 font-bold mb-1">Total redeemed</p>
                       <p className="text-lg sm:text-xl font-black text-base-content">{account.totalRedeemed?.toLocaleString() ?? 0} pts</p>
                     </div>
                   </div>

@@ -38,14 +38,14 @@ const FloatingCart = () => {
           {/* Icon */}
           <div className="w-10 h-10 rounded-full bg-black/20 flex items-center justify-center relative flex-shrink-0">
             <ShoppingBag size={20} className="text-black" />
-            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black text-gold text-[10px] font-black flex items-center justify-center border border-gold">
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-black text-gold text-xs font-black flex items-center justify-center border border-gold">
               {count > 9 ? '9+' : count}
             </span>
           </div>
 
           {/* Text */}
           <div className="text-left">
-            <p className="text-[9px] uppercase tracking-widest font-bold text-black/60 leading-none">Your bag</p>
+            <p className="text-xs uppercase tracking-widest font-bold text-black/60 leading-none">Your bag</p>
             <p className="text-black font-black text-[15px] leading-tight">GHS {total.toFixed(2)}</p>
           </div>
         </button>

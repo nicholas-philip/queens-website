@@ -1,6 +1,6 @@
 // =====================================================
 // server.js
-// Main entry point for the Queens Admin Dashboard API.
+// Main entry point for the Queens Fashion Store Admin Dashboard API.
 // =====================================================
 
 require("dotenv").config();
@@ -95,7 +95,7 @@ app.use("/api", routes);
 
 // ── Root info ────────────────────────────────────
 app.get("/", (req, res) => {
-  res.json({ success: true, message: "Queens Admin Dashboard API", version: "1.0.0" });
+  res.json({ success: true, message: "Queens Fashion Store Admin Dashboard API", version: "1.0.0" });
 });
 
 // ── 404 handler ───────────────────────────────────

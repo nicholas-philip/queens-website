@@ -91,21 +91,21 @@ export default function RegisterPage() {
             <div className="inline-block mb-3">
               <img
                 src={logo}
-                alt="Queens Admin"
+                alt="Queens Fashion Store Admin"
                 className="h-14 w-14 object-contain"
                 style={{ filter: "drop-shadow(0 0 12px rgba(212,160,23,0.4))" }}
                 loading="lazy"
               />
             </div>
             <h1 className="text-2xl font-bold text-base-content tracking-tight">Create Account</h1>
-            <p className="text-sm text-base-content/60 mt-0.5">Join the Queens management team</p>
+            <p className="text-sm text-base-content/60 mt-0.5">Join the Queens Fashion Store management team</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
             {/* Full Name */}
             <div>
-              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -126,7 +126,7 @@ export default function RegisterPage() {
 
             {/* Email */}
             <div>
-              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -147,7 +147,7 @@ export default function RegisterPage() {
 
             {/* Password */}
             <div>
-              <label className="block text-[10px] font-bold text-base-content/60 uppercase tracking-widest mb-2">
+              <label className="block text-xs font-bold text-base-content/60 uppercase tracking-widest mb-2">
                 Password
               </label>
               <div className="relative">

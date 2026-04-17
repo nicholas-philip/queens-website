@@ -233,6 +233,17 @@ router.get("/admin/export/invoices",      verifyAdmin, exp.exportInvoices);
 router.get("/admin/export/customers",     verifyAdmin, exp.exportCustomers);
 
 // =====================================================
+// BLOG POSTS
+// =====================================================
+const blog = require("../controllers/blogController");
+router.get   ("/admin/blog",               verifyAdmin, blog.getAllPosts);
+router.post  ("/admin/blog",               verifyAdmin, upload.single("coverImage"), blog.createPost);
+router.get   ("/admin/blog/:id",           verifyAdmin, blog.getPostById);
+router.put   ("/admin/blog/:id",           verifyAdmin, upload.single("coverImage"), blog.updatePost);
+router.patch ("/admin/blog/:id/publish",   verifyAdmin, blog.togglePublish);
+router.delete("/admin/blog/:id",           verifyAdmin, blog.deletePost);
+
+// =====================================================
 // GLOBAL SEARCH
 // =====================================================
 router.get("/admin/search", verifyAdmin, srch.globalSearch);

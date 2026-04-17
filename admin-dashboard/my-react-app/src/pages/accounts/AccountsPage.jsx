@@ -28,13 +28,13 @@ const formatRelativeTime = (dateString) => {
 function RoleBadge({ role }) {
   if (role === "SuperAdmin") {
     return (
-      <span className="px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-[10px] uppercase font-bold tracking-widest rounded-lg flex items-center gap-1.5 w-fit">
+      <span className="px-2.5 py-1 bg-purple-500/10 border border-purple-500/30 text-purple-400 text-xs uppercase font-bold tracking-widest rounded-lg flex items-center gap-1.5 w-fit">
         <Crown className="h-3 w-3" /> SuperAdmin
       </span>
     )
   }
   return (
-    <span className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] uppercase font-bold tracking-widest rounded-lg flex items-center gap-1.5 w-fit">
+    <span className="px-2.5 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs uppercase font-bold tracking-widest rounded-lg flex items-center gap-1.5 w-fit">
       <Shield className="h-3 w-3" /> Manager
     </span>
   )
@@ -235,7 +235,7 @@ export default function AccountsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="font-bold text-white truncate text-lg">{acc.name}</p>
-                    {isSelf(acc._id) && <span className="px-2 py-0.5 bg-yellow-500 text-black text-[9px] font-bold uppercase tracking-widest rounded">You</span>}
+                    {isSelf(acc._id) && <span className="px-2 py-0.5 bg-yellow-500 text-black text-xs font-bold uppercase tracking-widest rounded">You</span>}
                   </div>
                   <p className="text-xs text-neutral-500 truncate mt-0.5">{acc.email}</p>
                 </div>
@@ -243,7 +243,7 @@ export default function AccountsPage() {
 
               <div className="flex items-center justify-between">
                 <RoleBadge role={acc.role} />
-                <span className={`px-2.5 py-1 text-[10px] uppercase font-bold tracking-widest rounded-lg border ${acc.isActive ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-red-500/10 border-red-500/20 text-red-500"}`}>
+                <span className={`px-2.5 py-1 text-xs uppercase font-bold tracking-widest rounded-lg border ${acc.isActive ? "bg-green-500/10 border-green-500/20 text-green-500" : "bg-red-500/10 border-red-500/20 text-red-500"}`}>
                   {acc.isActive ? "Active" : "Deactivated"}
                 </span>
               </div>
@@ -321,7 +321,7 @@ export default function AccountsPage() {
                 <option value="Manager">Manager</option>
                 <option value="SuperAdmin">SuperAdmin</option>
               </select>
-              <p className="mt-2 text-[10px] text-neutral-500 font-bold uppercase tracking-widest ml-1">Managers have customizable access, SuperAdmins have full access.</p>
+              <p className="mt-2 text-xs text-neutral-500 font-bold uppercase tracking-widest ml-1">Managers have customizable access, SuperAdmins have full access.</p>
             </div>
           )}
 
@@ -398,13 +398,13 @@ export default function AccountsPage() {
                     <span className="font-bold font-mono text-xs bg-black/40 px-2.5 py-1 rounded-lg border border-neutral-700 text-yellow-500">
                       {log.action}
                     </span>
-                    <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">
                       {formatRelativeTime(log.createdAt)}
                     </span>
                   </div>
                   {log.target && <p className="text-sm font-bold text-white mt-1">{log.target}</p>}
                   {log.details && <p className="text-xs text-neutral-400">{log.details}</p>}
-                  <p className="text-[10px] text-neutral-600 font-mono flex items-center gap-1 mt-2">
+                  <p className="text-xs text-neutral-600 font-mono flex items-center gap-1 mt-2">
                     IP: <span className="text-neutral-500">{log.ipAddress || "Unknown"}</span>
                   </p>
                 </div>

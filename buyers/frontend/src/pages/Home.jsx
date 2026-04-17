@@ -23,7 +23,7 @@ const SectionHeader = ({ eyebrow, title, subtitle, linkTo, linkLabel }) => (
   <div className="flex justify-between items-end mb-8 sm:mb-12 gap-4">
     <div>
       {eyebrow && (
-        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2 block">
+        <span className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-2 block">
           {eyebrow}
         </span>
       )}
@@ -89,7 +89,7 @@ const Home = () => {
             >
               <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full mb-6">
                 <Star size={12} className="fill-primary text-primary" />
-                <span className="text-[10px] font-black uppercase tracking-[0.25em] text-primary">
+                <span className="text-xs font-black uppercase tracking-[0.25em] text-primary">
                   New Season Arrivals
                 </span>
               </div>
@@ -122,7 +122,7 @@ const Home = () => {
 
           {/* Animated Marquee strip */}
           <div className="mt-16 overflow-hidden">
-            <div className="animate-marquee whitespace-nowrap text-[11px] font-black uppercase tracking-[0.3em] text-base-content/20 select-none">
+            <div className="animate-marquee whitespace-nowrap text-xs font-black uppercase tracking-[0.3em] text-base-content/20 select-none">
               {Array.from({ length: 2 }).map((_, i) => (
                 <span key={i}>
                   {['Free Delivery on Orders Over GHS 500', '✦', 'Authentic Products', '✦', 'Premium Quality', '✦', 'Luxury Fashion', '✦', 'Beauty Essentials', '✦', 'Express Delivery', '✦'].join('   ')}
@@ -271,7 +271,7 @@ const Home = () => {
               {/* Gold glow */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
               <div>
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3 block">
+                <span className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-3 block">
                   ✦ Limited Time
                 </span>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-2">

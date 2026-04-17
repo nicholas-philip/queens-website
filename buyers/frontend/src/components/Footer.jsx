@@ -92,14 +92,14 @@ const Footer = () => {
              <li className="flex items-center gap-3 sm:gap-4 group">
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-base-100 shadow-sm flex items-center justify-center rounded-xl text-primary group-hover:scale-105 transition-transform flex-shrink-0"><Phone size={18} strokeWidth={2} /></div>
                 <div>
-                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-base-content/40 mb-0.5">WhatsApp Support</p>
+                   <p className="text-xs sm:text-xs font-bold uppercase tracking-widest text-base-content/40 mb-0.5">WhatsApp Support</p>
                    <p className="text-base-content text-sm sm:text-[15px] font-extrabold">+233 053 647 9169</p>
                 </div>
              </li>
              <li className="flex items-center gap-3 sm:gap-4 group">
                 <div className="w-10 sm:w-12 h-10 sm:h-12 bg-base-100 shadow-sm flex items-center justify-center rounded-xl text-primary group-hover:scale-105 transition-transform flex-shrink-0"><Mail size={18} strokeWidth={2} /></div>
                 <div>
-                   <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-base-content/40 mb-0.5">Email Support</p>
+                   <p className="text-xs sm:text-xs font-bold uppercase tracking-widest text-base-content/40 mb-0.5">Email Support</p>
                    <p className="text-base-content text-sm sm:text-[15px] font-extrabold break-all">nyarkopriscilla240@gmail.com</p>
                 </div>
              </li>
@@ -108,7 +108,7 @@ const Footer = () => {
       </div>
 
       {/* Copyright Bar */}
-      <div className="max-w-[1440px] mx-auto mt-12 sm:mt-20 md:mt-24 pt-6 sm:pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-[11px] sm:text-[12px] font-bold tracking-wider text-base-content/40">
+      <div className="max-w-[1440px] mx-auto mt-12 sm:mt-20 md:mt-24 pt-6 sm:pt-8 border-t border-base-300 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-xs sm:text-[12px] font-bold tracking-wider text-base-content/40">
         <p className="text-center md:text-left flex items-center justify-center md:justify-start gap-1">© {currentYear} Queens Fashion Store <Crown size={12} className="text-primary" />. All Rights Reserved.</p>
         <div className="flex gap-5 sm:gap-8">
            {footerLinks.legal.map(link => (

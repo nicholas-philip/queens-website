@@ -227,7 +227,7 @@ const BeautyQuiz = () => {
                     onChange={e => setSub(e.target.checked)}
                     className="rounded"
                   />
-                  Subscribe to the Queens newsletter
+                  Subscribe to the Queens Fashion Store newsletter
                 </label>
               </motion.div>
             )}

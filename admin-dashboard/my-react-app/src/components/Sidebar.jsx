@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard, Package, ShoppingCart, Users, CreditCard,
   FileText, Tag, Ticket, Star, Bell, Settings, UserCog,
-  BarChart3, LogOut, ChevronLeft, ChevronRight, X,
+  BarChart3, LogOut, ChevronLeft, ChevronRight, X, PenTool
 } from "lucide-react"
 
 const navGroups = [
@@ -39,6 +39,7 @@ const navGroups = [
     group: "Community",
     items: [
       { to: "/reviews",       label: "Reviews",      icon: Star,            requiredPermission: "Reviews" },
+      { to: "/blog",          label: "Blog Posts",   icon: PenTool },
       { to: "/notifications", label: "Notifications",icon: Bell,            requiredPermission: "Notifications" },
     ],
   },
@@ -91,7 +92,7 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
       {filteredNavGroups.map(({ group, items }) => (
         <div key={group}>
           {!mini && (
-            <p className="px-3 mb-2 text-[9px] font-black uppercase tracking-widest text-base-content/40">
+            <p className="px-3 mb-2 text-xs font-black uppercase tracking-widest text-base-content/40">
               {group}
             </p>
           )}
@@ -112,9 +113,9 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
                   {({ isActive }) => (
                     <>
                       <Icon className="h-4 w-4 shrink-0" />
-                      {!mini && <span className="truncate text-[13px]">{label}</span>}
+                      {!mini && <span className="truncate text-sm">{label}</span>}
                       {label === "Notifications" && notificationCount > 0 && (
-                        <span className={`absolute flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white text-black text-[9px] font-black px-1
+                        <span className={`absolute flex h-4 min-w-[16px] items-center justify-center rounded-full bg-white text-black text-xs font-black px-1
                           ${mini ? "right-1 top-1" : "right-3"}
                           ${isActive ? "bg-black text-yellow-500" : ""}
                         `}>
@@ -142,7 +143,7 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-bold text-base-content truncate">{safeAdmin.name || "Loading..."}</p>
-            <p className="text-[10px] text-primary font-bold uppercase tracking-widest truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
+            <p className="text-xs text-primary font-bold uppercase tracking-widest truncate mt-0.5">{safeAdmin.role || "Admin"}</p>
           </div>
           <button
             onClick={logout}
@@ -199,10 +200,10 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
                 <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
 
                 <div className="flex items-center gap-3">
-                  <img src={logo} alt="Queens Logo" className="h-9 w-9 object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]" />
+                  <img src={logo} alt="Queens Fashion Store Logo" className="h-9 w-9 object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]" />
                   <div>
-                    <p className="text-sm font-black text-base-content tracking-tight leading-none">Queens</p>
-                    <p className="text-[9px] font-bold text-primary uppercase tracking-[0.16em] mt-0.5">Admin Panel</p>
+                    <p className="text-sm font-black text-base-content tracking-tight leading-none">Queens Fashion Store</p>
+                    <p className="text-xs font-bold text-primary uppercase tracking-[0.16em] mt-0.5">Admin Panel</p>
                   </div>
                 </div>
 
@@ -235,7 +236,7 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
         {/* Logo */}
         <div className="flex h-16 items-center justify-center border-b border-base-300 shrink-0 overflow-hidden">
           <div className={`flex items-center justify-center transition-all duration-300 ${collapsed ? "w-8 h-8" : "w-32 h-14"}`}>
-            <img src={logo} alt="Queens Logo" className="h-full w-full object-contain" />
+            <img src={logo} alt="Queens Fashion Store Logo" className="h-full w-full object-contain" />
           </div>
         </div>
 

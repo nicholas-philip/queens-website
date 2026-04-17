@@ -64,9 +64,9 @@ export default function LowStockWidget() {
       <div className="px-6 py-5 border-b border-neutral-800 flex items-center justify-between bg-yellow-500/5">
         <div className="flex items-center gap-2">
           <AlertTriangle size={16} className="text-yellow-500" />
-          <h3 className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.2em]">Inventory Alerts</h3>
+          <h3 className="text-xs font-black text-neutral-400 uppercase tracking-[0.2em]">Inventory Alerts</h3>
         </div>
-        <Link to="/products/low-stock" className="text-[10px] font-black uppercase text-yellow-500 hover:underline tracking-widest">
+        <Link to="/products/low-stock" className="text-xs font-black uppercase text-yellow-500 hover:underline tracking-widest">
           Resolve All
         </Link>
       </div>
@@ -89,16 +89,16 @@ export default function LowStockWidget() {
             </div>
             
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-bold text-neutral-200 truncate pr-2">
+              <p className="text-xs font-bold text-neutral-200 truncate pr-2">
                 {item.title}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
                 {(item.size || item.color) && (
-                  <span className="text-[9px] font-black uppercase text-neutral-500 border border-neutral-800 px-1.5 py-0.5 rounded">
+                  <span className="text-xs font-black uppercase text-neutral-500 border border-neutral-800 px-1.5 py-0.5 rounded">
                     {item.size} {item.color}
                   </span>
                 )}
-                <span className={`text-[9px] font-black uppercase tracking-widest ${item.stock <= 2 ? 'text-red-500' : 'text-yellow-500'}`}>
+                <span className={`text-xs font-black uppercase tracking-widest ${item.stock <= 2 ? 'text-red-500' : 'text-yellow-500'}`}>
                    {item.stock} LEFT
                 </span>
               </div>
@@ -110,7 +110,7 @@ export default function LowStockWidget() {
       </div>
 
       <div className="px-6 py-4 bg-neutral-800/20 text-center">
-         <p className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">
+         <p className="text-xs font-black text-neutral-600 uppercase tracking-widest">
            Proactive Stock replenishment recommended
          </p>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
 import { useParams, Link, useNavigate } from "react-router-dom"
-import { ArrowLeft, Save, Upload, X, Box, DollarSign, Tag, Image as ImageIcon, Loader2, Sparkles } from "lucide-react"
+import { ArrowLeft, Upload, X, Box, DollarSign, Tag, Image as ImageIcon, Loader2, Sparkles } from "lucide-react"
 import { productsAPI, categoriesAPI } from "../../libs/api"
 import { useToast } from "../../context/ToastContext"
 import { cn } from "../../libs/utils"
@@ -206,7 +206,7 @@ export default function ProductFormPage() {
             disabled={loading}
             className="px-6 py-2.5 bg-yellow-500 text-black font-bold rounded-xl hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-yellow-500/20 flex items-center gap-2"
           >
-            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} 
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? "Saving..." : "Save Product"}
           </button>
         </div>
@@ -284,7 +284,7 @@ export default function ProductFormPage() {
                     >
                       <X className="h-4 w-4" />
                     </button>
-                    <div className="absolute bottom-0 inset-x-0 bg-yellow-500/90 text-black text-[9px] font-bold text-center py-1 uppercase tracking-widest">New</div>
+                    <div className="absolute bottom-0 inset-x-0 bg-yellow-500/90 text-black text-xs font-bold text-center py-1 uppercase tracking-widest">New</div>
                   </div>
                 ))}
               </div>
@@ -299,7 +299,7 @@ export default function ProductFormPage() {
                 <Upload className="h-6 w-6" />
               </div>
               <p className="text-sm font-bold text-white mb-1">Click to browse images</p>
-              <p className="text-[11px] font-medium text-neutral-500 tracking-wide uppercase mt-1">PNG, JPG, JPEG up to 5MB</p>
+              <p className="text-xs font-medium text-neutral-500 tracking-wide uppercase mt-1">PNG, JPG, JPEG up to 5MB</p>
               <input 
                 ref={fileInputRef} 
                 type="file" 
@@ -370,7 +370,7 @@ export default function ProductFormPage() {
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
                 placeholder="summer, fashion, accessories" 
               />
-              <p className="text-[10px] text-neutral-600 mt-2 ml-1">Separate tags with commas.</p>
+              <p className="text-xs text-neutral-600 mt-2 ml-1">Separate tags with commas.</p>
             </div>
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Available Sizes</label>

@@ -93,7 +93,7 @@ const PaymentSuccess = () => {
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-8 border-b border-white/10">
              <div>
-                <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-1">Order Number</p>
+                <p className="text-xs font-black text-white/30 uppercase tracking-[0.2em] mb-1">Order Number</p>
                 <h2 className="text-xl font-black text-white tracking-tight">{order?.orderNumber}</h2>
              </div>
              <div className="px-5 py-2.5 bg-green-500/10 border border-green-500/20 text-green-500 rounded-2xl text-xs font-black uppercase tracking-widest flex items-center gap-2">
@@ -105,14 +105,14 @@ const PaymentSuccess = () => {
              <div className="flex items-start gap-5">
                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 shrink-0"><Package size={22} /></div>
                 <div>
-                   <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-widest text-[11px]">Preparing Shipment</h3>
+                   <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-widest text-xs">Preparing Shipment</h3>
                    <p className="text-white/40 text-xs leading-relaxed font-medium">Our team is currently selecting and packing your luxury items with the utmost care.</p>
                 </div>
              </div>
              <div className="flex items-start gap-5">
                 <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/20 shrink-0"><ShoppingBag size={22} /></div>
                 <div>
-                   <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-widest text-[11px]">Next Steps</h3>
+                   <h3 className="text-white font-bold text-sm mb-1 uppercase tracking-widest text-xs">Next Steps</h3>
                    <p className="text-white/40 text-xs leading-relaxed font-medium">You will receive a confirmation message on WhatsApp once your order is on its way.</p>
                 </div>
              </div>
@@ -128,7 +128,7 @@ const PaymentSuccess = () => {
           </div>
         </motion.div>
 
-        <p className="text-center text-white/20 text-[10px] mt-10 uppercase tracking-[0.3em] font-black">
+        <p className="text-center text-white/20 text-xs mt-10 uppercase tracking-[0.3em] font-black">
           ✦ Secured by Paystack & Queens Fashion Store ✦
         </p>
 

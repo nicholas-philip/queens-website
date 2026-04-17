@@ -34,16 +34,16 @@ function ReviewCard({ review, onApprove, onDelete, onReply }) {
           </div>
           <div>
             <p className="text-sm font-bold text-white">{review.customerName}</p>
-            <p className="text-[10px] text-neutral-500 mt-0.5">{review.customerEmail || "No email"} · {formatRelativeTime(review.createdAt)}</p>
+            <p className="text-xs text-neutral-500 mt-0.5">{review.customerEmail || "No email"} · {formatRelativeTime(review.createdAt)}</p>
           </div>
         </div>
         <div>
           {!review.isApproved ? (
-            <span className="flex items-center gap-1 px-2 py-1 bg-neutral-900 border border-yellow-600/30 text-yellow-500 text-[9px] font-bold uppercase tracking-widest rounded-lg">
+            <span className="flex items-center gap-1 px-2 py-1 bg-neutral-900 border border-yellow-600/30 text-yellow-500 text-xs font-bold uppercase tracking-widest rounded-lg">
               <Clock className="h-3 w-3" /> Pending
             </span>
           ) : (
-            <span className="flex items-center gap-1 px-2 py-1 bg-neutral-900 border border-neutral-700 text-neutral-400 text-[9px] font-bold uppercase tracking-widest rounded-lg">
+            <span className="flex items-center gap-1 px-2 py-1 bg-neutral-900 border border-neutral-700 text-neutral-400 text-xs font-bold uppercase tracking-widest rounded-lg">
               <CheckCircle className="h-3 w-3" /> Approved
             </span>
           )}
@@ -57,7 +57,7 @@ function ReviewCard({ review, onApprove, onDelete, onReply }) {
           {review.productId.SKU && (
             <>
               <span className="text-neutral-700">·</span>
-              <span className="font-mono text-[10px] text-neutral-600 uppercase">{review.productId.SKU}</span>
+              <span className="font-mono text-xs text-neutral-600 uppercase">{review.productId.SKU}</span>
             </>
           )}
         </div>
@@ -74,7 +74,7 @@ function ReviewCard({ review, onApprove, onDelete, onReply }) {
       {/* Admin Reply */}
       {review.adminReply?.text && (
         <div className="rounded-xl bg-neutral-900 border border-neutral-700 px-4 py-3">
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+          <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
             <MessageSquare className="h-3 w-3" /> Admin Reply
           </p>
           <p className="text-sm text-neutral-300 leading-relaxed">{review.adminReply.text}</p>
@@ -194,7 +194,7 @@ export default function ReviewsPage() {
             className={`flex items-center gap-2 px-5 py-1.5 rounded-lg text-xs font-bold transition-all ${tab === key ? "bg-white text-black" : "text-neutral-500 hover:text-neutral-300"}`}>
             {label}
             {key === "pending" && tab === "pending" && reviews.length > 0 && (
-              <span className="flex h-4 w-4 items-center justify-center rounded bg-yellow-500 text-black text-[9px] font-black">
+              <span className="flex h-4 w-4 items-center justify-center rounded bg-yellow-500 text-black text-xs font-black">
                 {reviews.length}
               </span>
             )}
@@ -255,7 +255,7 @@ export default function ReviewsPage() {
                 <p className="text-sm text-neutral-400 italic">"{replyModal.comment}"</p>
               </div>
               <div>
-                <label className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block mb-2">Your reply</label>
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest block mb-2">Your reply</label>
                 <textarea
                   rows={4}
                   value={replyText}

@@ -65,7 +65,7 @@ const StepBar = ({ current }) => (
             }`}>
               {done ? '✓' : idx}
             </div>
-            <span className={`hidden sm:block text-[9px] uppercase tracking-widest font-bold transition-colors ${
+            <span className={`hidden sm:block text-xs uppercase tracking-widest font-bold transition-colors ${
               active ? 'text-gold' : done ? 'text-white/60' : 'text-white/20'
             }`}>{label}</span>
           </div>
@@ -81,7 +81,7 @@ const StepBar = ({ current }) => (
 // ── Input component ──────────────────────────────────
 const Field = ({ label, error, children }) => (
   <div className="space-y-1.5">
-    <label className="text-[10px] uppercase tracking-widest text-white/40 font-bold ml-1">{label}</label>
+    <label className="text-xs uppercase tracking-widest text-white/40 font-bold ml-1">{label}</label>
     {children}
     {error && (
       <p className="text-red-400 text-xs flex items-center gap-1 ml-1">
@@ -264,11 +264,11 @@ const CheckoutModal = () => {
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-3">
               <div className="w-12 h-8 flex items-center justify-center">
-                <img src={logo} alt="Queens Logo" className="w-full h-full object-contain" />
+                <img src={logo} alt="Queens Fashion Store Logo" className="w-full h-full object-contain" />
               </div>
               <div className="h-8 w-px bg-white/10 hidden sm:block" />
               <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-gold font-bold">
+                <p className="text-xs uppercase tracking-[0.2em] text-gold font-bold">
                   Checkout
                 </p>
                 <p className="text-white/40 text-xs mt-0.5">
@@ -586,7 +586,7 @@ const CheckoutModal = () => {
           </div>
 
           {/* Trust signal */}
-          <p className="text-center text-white/20 text-[10px] mt-3 flex items-center justify-center gap-1.5">
+          <p className="text-center text-white/20 text-xs mt-3 flex items-center justify-center gap-1.5">
             <Lock size={12} /> Secured by Paystack · SSL encrypted
           </p>
         </div>

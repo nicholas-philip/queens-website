@@ -32,6 +32,8 @@ import AccountsPage       from "./pages/accounts/AccountsPage"
 import SettingsPage       from "./pages/settings/SettingsPage"
 import ReviewsPage        from "./pages/reviews/ReviewsPage"
 import NotificationsPage  from "./pages/notifications/NotificationsPage"
+import BlogPage           from "./pages/blog/BlogPage"
+import BlogFormPage       from "./pages/blog/BlogFormPage"
 
 /* ─────────────────────────────────────────────
    Guards
@@ -150,9 +152,12 @@ function AppRoutes() {
         <Route path="invoices"       element={<PermissionRoute permission="Invoices"><InvoicesPage /></PermissionRoute>} />
         <Route path="invoices/:id"   element={<PermissionRoute permission="Invoices"><InvoiceDetailPage /></PermissionRoute>} />
 
-        {/* Community */}
+        {/* Community / Content */}
         <Route path="reviews"       element={<PermissionRoute permission="Reviews"><ReviewsPage /></PermissionRoute>} />
         <Route path="notifications" element={<PermissionRoute permission="Notifications"><NotificationsPage /></PermissionRoute>} />
+        <Route path="blog"          element={<PermissionRoute><BlogPage /></PermissionRoute>} />
+        <Route path="blog/new"      element={<PermissionRoute><BlogFormPage /></PermissionRoute>} />
+        <Route path="blog/:id/edit" element={<PermissionRoute><BlogFormPage /></PermissionRoute>} />
 
         {/* System */}
         <Route path="accounts" element={<PermissionRoute permission="Accounts" requiredRole="SuperAdmin"><AccountsPage /></PermissionRoute>} />

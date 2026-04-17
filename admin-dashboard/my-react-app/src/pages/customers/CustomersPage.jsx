@@ -114,7 +114,7 @@ export default function CustomersPage() {
                             <Link to={`/customers/${c._id}`} className="font-bold text-white hover:text-yellow-500 transition-colors">
                                 {c.name}
                             </Link>
-                            <span className="text-[10px] text-neutral-600 font-bold uppercase tracking-wider">{c.role || 'Customer'}</span>
+                            <span className="text-xs text-neutral-600 font-bold uppercase tracking-wider">{c.role || 'Customer'}</span>
                         </div>
                     </div>
                   </TableCell>
@@ -126,7 +126,7 @@ export default function CustomersPage() {
                            <Mail className="h-3 w-3 text-neutral-600" /> {c.email || '—'}
                         </div>
                         {c.phone && (
-                            <div className="flex items-center gap-2 text-[10px] text-neutral-600">
+                            <div className="flex items-center gap-2 text-xs text-neutral-600">
                                 <Phone className="h-2.5 w-2.5" /> {c.phone}
                             </div>
                         )}
@@ -151,7 +151,7 @@ export default function CustomersPage() {
                   {/* Status */}
                   <TableCell>
                     <span className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border",
+                        "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border",
                         c.isBlocked ? "bg-red-500/10 border-red-500/20 text-red-500" : "bg-green-500/10 border-green-500/20 text-green-500"
                     )}>
                         {c.isBlocked ? "Blocked" : "Active"}

@@ -83,7 +83,7 @@ export default function ProductDetailPage() {
                 <div className="flex items-center gap-3">
                     <h1 className="text-3xl font-bold text-white tracking-tight">{product.title}</h1>
                     <span className={cn(
-                        "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border",
+                        "px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest border",
                         product.status === 'Active' ? "bg-green-500/10 border-green-500/20 text-green-500" : 
                         product.status === 'Out of Stock' ? "bg-red-500/10 border-red-500/20 text-red-500" :
                         "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"
@@ -169,7 +169,7 @@ export default function ProductDetailPage() {
 
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 space-y-6">
                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Pricing Strategy</span>
+                    <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Pricing Strategy</span>
                     <Tag className="h-4 w-4 text-yellow-500/50" />
                  </div>
                  <div className="flex items-end gap-3">
@@ -181,7 +181,7 @@ export default function ProductDetailPage() {
                  {product.discountPrice && (
                     <div className="px-3 py-1 bg-yellow-500/10 border border-yellow-500/20 rounded-lg inline-flex items-center gap-2">
                         <Activity className="h-3 w-3 text-yellow-500" />
-                        <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">
+                        <span className="text-xs font-bold text-yellow-500 uppercase tracking-widest">
                             Save {Math.round(((product.price - product.discountPrice) / product.price) * 100)}% Today
                         </span>
                     </div>
@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
                     <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl w-fit mb-4">
                         <ShoppingCart className="h-4 w-4 text-blue-500" />
                     </div>
-                    <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Total Sold</p>
+                    <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Total Sold</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.totalSold || 0}</p>
                 </div>
                 <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
@@ -208,7 +208,7 @@ export default function ProductDetailPage() {
                     )}>
                         <Box className={cn("h-4 w-4", product.stockQuantity <= 5 ? "text-red-500" : "text-green-500")} />
                     </div>
-                    <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Current Stock</p>
+                    <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Current Stock</p>
                     <p className={cn("text-2xl font-bold tracking-tight", product.stockQuantity <= 5 ? "text-red-500" : "text-white")}>
                         {product.stockQuantity}
                     </p>
@@ -217,21 +217,21 @@ export default function ProductDetailPage() {
                     <div className="p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl w-fit mb-4">
                         <Star className="h-4 w-4 text-yellow-500" />
                     </div>
-                    <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Avg Rating</p>
+                    <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Avg Rating</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.averageRating || '—'}</p>
                 </div>
                 <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className="p-2 bg-pink-500/10 border border-pink-500/20 rounded-xl w-fit mb-4">
                         <Heart className="h-4 w-4 text-pink-500" />
                     </div>
-                    <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-1">Wishlist Saved</p>
+                    <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Wishlist Saved</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.wishlistCount || 0}</p>
                 </div>
             </div>
 
             {/* Description */}
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
-                <h3 className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em] mb-4">Product Narrative</h3>
+                <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-[0.2em] mb-4">Product Narrative</h3>
                 <p className="text-neutral-300 leading-relaxed font-normal text-lg">
                     {product.description}
                 </p>
@@ -239,7 +239,7 @@ export default function ProductDetailPage() {
                 {product.tags?.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-8">
                         {product.tags.map(tag => (
-                            <span key={tag} className="px-3 py-1.5 bg-black/40 border border-neutral-800 rounded-xl text-[10px] font-bold text-neutral-500 uppercase tracking-wider hover:border-yellow-500/30 hover:text-yellow-500 transition-all cursor-default">
+                            <span key={tag} className="px-3 py-1.5 bg-black/40 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-500 uppercase tracking-wider hover:border-yellow-500/30 hover:text-yellow-500 transition-all cursor-default">
                                 {tag}
                             </span>
                         ))}
@@ -250,7 +250,7 @@ export default function ProductDetailPage() {
                     <div className="flex flex-col gap-6 mt-8 border-t border-neutral-800/50 pt-6">
                         {product.sizes?.length > 0 && (
                             <div>
-                                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Sizes</h4>
+                                <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Sizes</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {product.sizes.map(size => (
                                         <span key={size} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-400 cursor-default hover:border-yellow-500/30 hover:text-yellow-500 transition-all">{size}</span>
@@ -260,7 +260,7 @@ export default function ProductDetailPage() {
                         )}
                         {product.colors?.length > 0 && (
                             <div>
-                                <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Colors</h4>
+                                <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-3">Available Colors</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {product.colors.map(color => (
                                         <span key={color} className="px-3 py-1.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-400 cursor-default hover:border-yellow-500/30 hover:text-yellow-500 transition-all">{color}</span>
@@ -276,14 +276,14 @@ export default function ProductDetailPage() {
             <div className="flex items-center justify-between px-4">
                 <div className="flex gap-10">
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-neutral-700 uppercase tracking-widest mb-1">First Listed</span>
+                        <span className="text-xs font-bold text-neutral-700 uppercase tracking-widest mb-1">First Listed</span>
                         <span className="text-xs font-bold text-neutral-500 flex items-center gap-2">
                             <Calendar className="h-3.5 w-3.5" />
                             {formatDate(product.createdAt)}
                         </span>
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-[10px] font-bold text-neutral-700 uppercase tracking-widest mb-1">Merchant Category</span>
+                        <span className="text-xs font-bold text-neutral-700 uppercase tracking-widest mb-1">Merchant Category</span>
                         <span className="text-xs font-bold text-neutral-500 flex items-center gap-2 lowercase">
                             <Package className="h-3.5 w-3.5" />
                             {product.category?.name || 'Standard'}
@@ -291,7 +291,7 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
                 <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-neutral-700 uppercase tracking-widest mb-1">Global Identifier (SKU)</span>
+                    <span className="text-xs font-bold text-neutral-700 uppercase tracking-widest mb-1">Global Identifier (SKU)</span>
                     <span className="text-xs font-mono font-bold text-neutral-500 uppercase decoration-yellow-500/30 underline decoration-2 underline-offset-4">{product.SKU}</span>
                 </div>
             </div>
@@ -303,7 +303,7 @@ export default function ProductDetailPage() {
         <div className="p-8 space-y-8">
           <div className="flex items-center justify-between p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl">
             <div>
-                <p className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest mb-1">Current Balance</p>
+                <p className="text-xs font-bold text-yellow-500 uppercase tracking-widest mb-1">Current Balance</p>
                 <p className="text-2xl font-bold text-white tracking-tighter">{product.stockQuantity} Units</p>
             </div>
             <Box className="h-10 w-10 text-yellow-500/20" />
@@ -334,7 +334,7 @@ export default function ProductDetailPage() {
                 <Plus className="h-5 w-5" />
               </button>
             </div>
-            <p className="text-[10px] text-neutral-600 font-medium italic ml-1 italic text-center">Use positive numbers to add stock, and negative numbers to subtract.</p>
+            <p className="text-xs text-neutral-600 font-medium italic ml-1 italic text-center">Use positive numbers to add stock, and negative numbers to subtract.</p>
           </div>
 
           <div className="space-y-4">

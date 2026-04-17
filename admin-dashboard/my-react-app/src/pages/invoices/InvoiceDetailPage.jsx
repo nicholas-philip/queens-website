@@ -70,7 +70,7 @@ export default function InvoiceDetailPage() {
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-yellow-500 flex items-center justify-center font-bold text-black text-xl shadow-lg print:border print:border-neutral-200">Q</div>
-                    <span className="text-2xl font-bold text-white tracking-tighter print:text-black uppercase">Queens Luxury</span>
+                    <span className="text-2xl font-bold text-white tracking-tighter print:text-black uppercase">Queens Fashion Store Luxury</span>
                 </div>
                 <div className="text-xs font-bold text-neutral-500 leading-relaxed uppercase tracking-widest print:text-neutral-500">
                     Accra, Ghana<br />
@@ -83,7 +83,7 @@ export default function InvoiceDetailPage() {
                 <h2 className="text-4xl font-bold text-white tracking-tighter print:text-black">INVOICE</h2>
                 <p className="font-mono text-sm text-yellow-500/80 font-bold print:text-neutral-600">{invoice.invoiceNumber || `INV-${invoice._id.slice(-8).toUpperCase()}`}</p>
                 <div className={cn(
-                    "inline-flex items-center gap-2 px-3 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-widest mt-4",
+                    "inline-flex items-center gap-2 px-3 py-1 rounded-lg border text-xs font-bold uppercase tracking-widest mt-4",
                     invoice.status === 'Paid' ? "bg-green-500/10 border-green-500/20 text-green-500 print:bg-green-50 print:text-green-600" : 
                     isOverdue ? "bg-red-500/10 border-red-500/20 text-red-500 print:bg-red-50 print:text-red-600" :
                     "bg-yellow-500/10 border-yellow-500/20 text-yellow-500 print:bg-yellow-50 print:text-yellow-600"
@@ -97,7 +97,7 @@ export default function InvoiceDetailPage() {
         {/* Stakeholders */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 p-10 border-b border-neutral-800/50 print:border-neutral-200">
             <div className="space-y-4">
-                <h3 className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-[0.2em] flex items-center gap-2">
                     <User className="h-3 w-3" /> Billed To
                 </h3>
                 <div>
@@ -111,13 +111,13 @@ export default function InvoiceDetailPage() {
 
             <div className="grid grid-cols-2 gap-8 text-right md:text-left">
                 <div className="space-y-1">
-                    <h3 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2 justify-end md:justify-start">
+                    <h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2 justify-end md:justify-start">
                         <Calendar className="h-3 w-3" /> Date Issued
                     </h3>
                     <p className="text-sm font-bold text-neutral-300 print:text-black">{formatDate(invoice.issuedDate || invoice.createdAt)}</p>
                 </div>
                 <div className="space-y-1">
-                    <h3 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2 justify-end md:justify-start">
+                    <h3 className="text-xs font-bold text-neutral-600 uppercase tracking-widest flex items-center gap-2 justify-end md:justify-start">
                         <Clock className="h-3 w-3" /> Due Date
                     </h3>
                     <p className={cn(
@@ -133,10 +133,10 @@ export default function InvoiceDetailPage() {
             <table className="w-full text-sm">
                 <thead>
                     <tr className="border-b border-neutral-800 print:border-neutral-300">
-                        <th className="py-4 text-left text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Item Description</th>
-                        <th className="py-4 text-center text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Quantity</th>
-                        <th className="py-4 text-right text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Unit Price</th>
-                        <th className="py-4 text-right text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Extended</th>
+                        <th className="py-4 text-left text-xs font-bold text-neutral-500 uppercase tracking-widest">Item Description</th>
+                        <th className="py-4 text-center text-xs font-bold text-neutral-500 uppercase tracking-widest">Quantity</th>
+                        <th className="py-4 text-right text-xs font-bold text-neutral-500 uppercase tracking-widest">Unit Price</th>
+                        <th className="py-4 text-right text-xs font-bold text-neutral-500 uppercase tracking-widest">Extended</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-neutral-800/50 print:divide-neutral-100">
@@ -144,7 +144,7 @@ export default function InvoiceDetailPage() {
                         <tr key={i} className="group hover:bg-white/[0.01] transition-colors">
                             <td className="py-6">
                                 <p className="font-bold text-white print:text-black mb-1">{item.title}</p>
-                                <p className="text-[10px] font-mono text-neutral-600 uppercase">{item.SKU}</p>
+                                <p className="text-xs font-mono text-neutral-600 uppercase">{item.SKU}</p>
                             </td>
                             <td className="py-6 text-center text-neutral-400 print:text-black font-medium">{item.quantity}</td>
                             <td className="py-6 text-right text-neutral-400 print:text-black font-medium">{formatCurrency(item.price)}</td>
@@ -158,17 +158,17 @@ export default function InvoiceDetailPage() {
             <div className="mt-10 flex justify-end">
                 <div className="w-full md:w-80 space-y-4 pt-10 border-t border-neutral-800 print:border-neutral-300">
                     <div className="flex justify-between text-neutral-500 print:text-neutral-600">
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Gross Subtotal</span>
+                        <span className="text-xs font-bold uppercase tracking-widest">Gross Subtotal</span>
                         <span className="font-medium">{formatCurrency(invoice.subtotal)}</span>
                     </div>
                     {invoice.discount > 0 && (
                         <div className="flex justify-between text-green-500">
-                            <span className="text-[10px] font-bold uppercase tracking-widest">Store Credits / Promo</span>
+                            <span className="text-xs font-bold uppercase tracking-widest">Store Credits / Promo</span>
                             <span className="font-medium">-{formatCurrency(invoice.discount)}</span>
                         </div>
                     )}
                     <div className="flex justify-between text-neutral-500 print:text-neutral-600">
-                        <span className="text-[10px] font-bold uppercase tracking-widest">Logistics / Handling</span>
+                        <span className="text-xs font-bold uppercase tracking-widest">Logistics / Handling</span>
                         <span className="font-medium">{formatCurrency(invoice.shippingCharge || 0)}</span>
                     </div>
                     <div className="flex justify-between items-center bg-black/40 border border-neutral-800 rounded-2xl p-6 mt-6 print:bg-neutral-50 print:border-neutral-200">
@@ -182,13 +182,13 @@ export default function InvoiceDetailPage() {
         {/* Note / Footer */}
         {invoice.notes && (
             <div className="m-10 p-6 bg-black/40 border border-neutral-800 rounded-2xl print:bg-transparent print:border-0 print:border-t print:border-neutral-100">
-                <h4 className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mb-2">Internal Remarks</h4>
+                <h4 className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-2">Internal Remarks</h4>
                 <p className="text-xs text-neutral-400 leading-relaxed font-medium print:text-neutral-600">{invoice.notes}</p>
             </div>
         )}
 
-        <div className="p-10 bg-black/20 border-t border-neutral-800/50 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold text-neutral-700 uppercase tracking-[0.3em] print:hidden">
-            <span>Powered by Queens Secure Billing</span>
+        <div className="p-10 bg-black/20 border-t border-neutral-800/50 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold text-neutral-700 uppercase tracking-[0.3em] print:hidden">
+            <span>Powered by Queens Fashion Store Secure Billing</span>
             <span>Ref: {invoice._id}</span>
         </div>
       </div>

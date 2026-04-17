@@ -15,14 +15,14 @@ const TOOLTIP_STYLE = {
   backgroundColor: "#0a0a0a",
   border: "1px solid #262626",
   borderRadius: "10px",
-  fontSize: "12px",
+  fontSize: "14px",
   color: "#fff",
 }
 
 const LABEL_STYLE = {
   color: "#737373",
   fontWeight: 700,
-  fontSize: 11,
+  fontSize: 13,
 }
 
 export default function AnalyticsPage() {
@@ -87,7 +87,7 @@ export default function AnalyticsPage() {
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Revenue</h3>
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">Last {days} days</p>
+            <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Last {days} days</p>
           </div>
         </div>
 
@@ -105,14 +105,14 @@ export default function AnalyticsPage() {
                 dataKey="date"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 10, fill: "#525252", fontWeight: 600 }}
+                tick={{ fontSize: 11, fill: "#525252", fontWeight: 700 }}
                 tickFormatter={(d) => d?.slice(5)}
                 dy={8}
               />
               <YAxis
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 10, fill: "#525252", fontWeight: 600 }}
+                tick={{ fontSize: 11, fill: "#525252", fontWeight: 700 }}
                 tickFormatter={(v) => `GH₵${(v / 1000).toFixed(0)}k`}
                 width={52}
               />
@@ -146,7 +146,7 @@ export default function AnalyticsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-white">Order Fulfilment</h3>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">By status</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">By status</p>
             </div>
           </div>
 
@@ -183,9 +183,9 @@ export default function AnalyticsPage() {
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                    <span className="text-[11px] font-medium text-neutral-400">{item.status}</span>
+                    <span className="text-xs font-medium text-neutral-400">{item.status}</span>
                   </div>
-                  <span className="text-[11px] font-bold text-white ml-3">{item.count}</span>
+                  <span className="text-xs font-bold text-white ml-3">{item.count}</span>
                 </div>
               ))}
             </div>
@@ -200,7 +200,7 @@ export default function AnalyticsPage() {
             </div>
             <div>
               <h3 className="text-sm font-bold text-white">Sales by Category</h3>
-              <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">Revenue breakdown</p>
+              <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Revenue breakdown</p>
             </div>
           </div>
 
@@ -224,7 +224,7 @@ export default function AnalyticsPage() {
                   type="category"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 11, fill: "#a3a3a3", fontWeight: 600 }}
+                  tick={{ fontSize: 12, fill: "#a3a3a3", fontWeight: 700 }}
                   width={90}
                 />
                 <Tooltip
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
           </div>
           <div>
             <h3 className="text-sm font-bold text-white">Top Products</h3>
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest font-bold">By units sold</p>
+            <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">By units sold</p>
           </div>
         </div>
 
@@ -271,9 +271,9 @@ export default function AnalyticsPage() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-white truncate">{p.title}</p>
                 <div className="flex items-center gap-3 mt-0.5">
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">{p.totalSold} sold</span>
+                  <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{p.totalSold} sold</span>
                   {p.averageRating && (
-                    <span className="flex items-center gap-1 text-[10px] font-bold text-yellow-500">
+                    <span className="flex items-center gap-1 text-xs font-bold text-yellow-500">
                       <Star className="h-2.5 w-2.5 fill-yellow-500" />
                       {p.averageRating}
                     </span>

@@ -52,12 +52,12 @@ const Cart = () => {
                       <div className="flex flex-wrap items-center gap-1.5 mb-3">
                         <p className="text-xs text-base-content/50 font-medium">{item.product.category?.name || item.product.category}</p>
                         {item.product.selectedSize && (
-                          <span className="text-[10px] px-2 py-0.5 bg-base-200 text-base-content/70 rounded-full font-black uppercase">
+                          <span className="text-xs px-2 py-0.5 bg-base-200 text-base-content/70 rounded-full font-black uppercase">
                             {item.product.selectedSize}
                           </span>
                         )}
                         {item.product.selectedColor && (
-                          <span className="text-[10px] px-2 py-0.5 bg-base-200 text-base-content/70 rounded-full font-black capitalize">
+                          <span className="text-xs px-2 py-0.5 bg-base-200 text-base-content/70 rounded-full font-black capitalize">
                             {item.product.selectedColor}
                           </span>
                         )}
@@ -112,18 +112,18 @@ const Cart = () => {
               </div>
               
               <div className="flex justify-between items-end mb-6">
-                <span className="text-[11px] font-black text-base-content/50 uppercase tracking-widest">Total</span>
+                <span className="text-xs font-black text-base-content/50 uppercase tracking-widest">Total</span>
                 <span className="text-2xl font-black text-primary">GHS {cartTotal().toFixed(2)}</span>
               </div>
               
               <button 
                 onClick={() => setCheckoutOpen(true)}
-                className="w-full py-4 bg-neutral text-neutral-content rounded-2xl font-black text-[13px] uppercase tracking-widest hover:brightness-90 transition-all shadow-xl shadow-neutral/20 active:scale-95 flex items-center justify-center gap-2"
+                className="w-full py-4 bg-neutral text-neutral-content rounded-2xl font-black text-sm uppercase tracking-widest hover:brightness-90 transition-all shadow-xl shadow-neutral/20 active:scale-95 flex items-center justify-center gap-2"
               >
                 <ShoppingBag size={18} /> Checkout Now
               </button>
               
-              <p className="text-[10px] text-center text-base-content/30 mt-5 flex items-center justify-center gap-1.5 font-bold tracking-widest uppercase">
+              <p className="text-xs text-center text-base-content/30 mt-5 flex items-center justify-center gap-1.5 font-bold tracking-widest uppercase">
                 <Lock size={12} /> SSL Encrypted Checkout
               </p>
             </div>

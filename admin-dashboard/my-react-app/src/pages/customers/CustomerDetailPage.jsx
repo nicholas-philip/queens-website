@@ -59,7 +59,7 @@ export default function CustomerDetailPage() {
                 <div className="flex items-center gap-3">
                     <h1 className="text-2xl font-bold text-white tracking-tight">{customer.name}</h1>
                     <span className={cn(
-                        "px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all hover:scale-105 active:scale-95 cursor-default shadow-lg",
+                        "px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all hover:scale-105 active:scale-95 cursor-default shadow-lg",
                         customer.status === 'Active' ? "bg-green-500/10 border-green-500/20 text-green-500 shadow-green-500/5" : 
                         "bg-red-500/10 border-red-500/20 text-red-500 shadow-red-500/5"
                     )}>
@@ -110,7 +110,7 @@ export default function CustomerDetailPage() {
                         </div>
                         <div className="text-left">
                             <p className="text-xs font-bold text-neutral-300 tracking-wide transition-colors group-hover:text-white capitalize">{customer.address?.city}, {customer.address?.state}</p>
-                            <p className="text-[10px] font-medium text-neutral-600 mt-1 uppercase tracking-tighter">Verified Delivery Hub</p>
+                            <p className="text-xs font-medium text-neutral-600 mt-1 uppercase tracking-tighter">Verified Delivery Hub</p>
                         </div>
                     </div>
                 </div>
@@ -124,16 +124,16 @@ export default function CustomerDetailPage() {
                 </div>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between p-4 bg-black/20 rounded-2xl border border-neutral-900/50">
-                        <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Lifetime Value</span>
+                        <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">Lifetime Value</span>
                         <span className="text-lg font-bold text-white tracking-tighter">{formatCurrency(stats.totalSpent || 0)}</span>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-black/20 rounded-2xl border border-neutral-900/50">
-                        <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Order Fulfillment</span>
+                        <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">Order Fulfillment</span>
                         <span className="text-lg font-bold text-white tracking-tighter">{stats.orderCount || 0} Ships</span>
                     </div>
                     <div className="flex items-center justify-between p-4 bg-black/20 rounded-2xl border border-neutral-900/50">
-                        <span className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest">Merchant Tier</span>
-                        <span className="px-3 py-1 bg-yellow-500 rounded-lg text-black text-[10px] font-bold uppercase tracking-widest">Elite</span>
+                        <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">Merchant Tier</span>
+                        <span className="px-3 py-1 bg-yellow-500 rounded-lg text-black text-xs font-bold uppercase tracking-widest">Elite</span>
                     </div>
                 </div>
             </div>
@@ -149,7 +149,7 @@ export default function CustomerDetailPage() {
                         <h3 className="text-lg font-bold text-white tracking-tight">Consignment Registry</h3>
                         <p className="text-xs text-neutral-500 mt-1 uppercase tracking-widest font-bold">Recent activity and fulfillment</p>
                     </div>
-                    <Link to={`/orders?customerId=${id}`} className="px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-[10px] font-bold text-neutral-400 hover:text-white hover:border-neutral-700 transition-all uppercase tracking-widest">
+                    <Link to={`/orders?customerId=${id}`} className="px-4 py-2 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-400 hover:text-white hover:border-neutral-700 transition-all uppercase tracking-widest">
                         View Legacy
                     </Link>
                 </div>
@@ -193,7 +193,7 @@ export default function CustomerDetailPage() {
                                                 order.currentStatus === 'Delivered' ? "bg-green-500 shadow-green-500/50" : 
                                                 order.currentStatus === 'Cancelled' ? "bg-red-500 shadow-red-500/50" : "bg-yellow-500 shadow-yellow-500/50"
                                             )} />
-                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">
+                                            <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">
                                                 {order.currentStatus}
                                             </span>
                                         </div>
@@ -208,27 +208,27 @@ export default function CustomerDetailPage() {
             {/* Quick Actions / Store Context */}
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group">
-                    <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <AlertCircle className="h-3 w-3 text-red-500" /> Administrative Risk
                     </h4>
                     <div className="bg-black/40 border border-neutral-800 rounded-2xl p-6 transition-all group-hover:border-red-500/20">
                         <p className="text-xs text-neutral-400 font-medium leading-relaxed mb-6">
                             Restrict this partner from placing new orders on the storefront.
                         </p>
-                        <button className="w-full py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-[10px] font-bold text-red-500 uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
+                        <button className="w-full py-2.5 bg-red-500/10 border border-red-500/20 rounded-xl text-xs font-bold text-red-500 uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
                             Restrict Partner Access
                         </button>
                     </div>
                 </div>
                 <div>
-                    <h4 className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <CheckCircle2 className="h-3 w-3 text-green-500" /> Verified Status
                     </h4>
                     <div className="bg-black/40 border border-neutral-800 rounded-2xl p-6">
                         <p className="text-xs text-neutral-400 font-medium leading-relaxed mb-6">
                             This account has been verified against our KYC standards and is eligible for global shipping.
                         </p>
-                        <div className="flex items-center gap-2 px-4 py-2.5 bg-green-500/5 border border-green-500/10 rounded-xl text-green-500 font-bold text-[10px] uppercase tracking-widest justify-center">
+                        <div className="flex items-center gap-2 px-4 py-2.5 bg-green-500/5 border border-green-500/10 rounded-xl text-green-500 font-bold text-xs uppercase tracking-widest justify-center">
                             Verified Since 2024
                         </div>
                     </div>

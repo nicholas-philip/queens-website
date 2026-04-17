@@ -106,7 +106,7 @@ const TrackOrder = () => {
                   <button 
                     onClick={handleClaim} 
                     disabled={pinning}
-                    className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-black text-primary uppercase tracking-widest hover:bg-primary/20 transition-all flex items-center gap-1.5"
+                    className="px-4 py-2 rounded-xl bg-primary/10 border border-primary/20 text-xs font-black text-primary uppercase tracking-widest hover:bg-primary/20 transition-all flex items-center gap-1.5"
                   >
                     {pinning ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
                     {pinning ? 'Syncing...' : 'Pin to My History'}

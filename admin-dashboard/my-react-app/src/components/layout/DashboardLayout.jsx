@@ -88,6 +88,7 @@ export default function DashboardLayout() {
     if (type === "product") navigate(`/products/${id}`)
     if (type === "order") navigate(`/orders/${id}`)
     if (type === "customer") navigate(`/customers/${id}`)
+    if (type === "blog") navigate(`/blog/${id}/edit`)
   }
 
   return (
@@ -96,8 +97,8 @@ export default function DashboardLayout() {
       {/* ── Mobile Sidebar Header ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-base-100 border-b border-base-300 z-50 flex items-center justify-between px-6">
         <div className="flex items-center gap-2">
-            <img src={logo} alt="Queens Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]" />
-            <span className="font-bold text-base-content tracking-tight">Queens Admin</span>
+            <img src={logo} alt="Queens Fashion Store Logo" className="h-8 w-8 object-contain drop-shadow-[0_0_8px_rgba(212,175,55,0.4)]" />
+            <span className="font-bold text-base-content tracking-tight">Queens Fashion Store Admin</span>
         </div>
 
         {/* Hide hamburger when sidebar is open */}
@@ -166,58 +167,75 @@ export default function DashboardLayout() {
                              </div>
                            ) : searchResults ? (
                              <div className="max-h-[400px] overflow-auto">
-                               {searchResults.products?.length > 0 && (
+                               {searchResults.products?.data?.length > 0 && (
                                  <div>
-                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Products</div>
-                                   {searchResults.products.map(p => (
+                                   <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Products</div>
+                                   {searchResults.products.data.map(p => (
                                      <button key={p._id} onClick={() => navigateToResult('product', p._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
                                        <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden">
                                           {p.images?.[0] ? <img src={p.images[0]} className="h-full w-full object-cover" /> : <Package className="h-4 w-4 text-base-content/30" />}
                                        </div>
                                        <div>
                                           <div className="text-xs font-bold text-base-content">{p.title}</div>
-                                          <div className="text-[10px] text-base-content/40 font-mono uppercase">{p.SKU}</div>
+                                          <div className="text-xs text-base-content/40 font-mono uppercase">{p.SKU}</div>
                                        </div>
                                      </button>
                                    ))}
                                  </div>
                                )}
 
-                               {searchResults.orders?.length > 0 && (
+                               {searchResults.orders?.data?.length > 0 && (
                                  <div className="border-t border-base-300/50">
-                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Orders</div>
-                                   {searchResults.orders.map(o => (
+                                   <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Orders</div>
+                                   {searchResults.orders.data.map(o => (
                                      <button key={o._id} onClick={() => navigateToResult('order', o._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
                                        <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center">
                                           <ShoppingCart className="h-4 w-4 text-base-content/40" />
                                        </div>
                                        <div>
                                           <div className="text-xs font-bold text-base-content">{o.orderNumber}</div>
-                                          <div className="text-[10px] text-base-content/40 uppercase font-bold">{o.customerDetails?.name} · {o.currentStatus}</div>
+                                          <div className="text-xs text-base-content/40 uppercase font-bold">{o.customerDetails?.name} · {o.currentStatus}</div>
                                        </div>
                                      </button>
                                    ))}
                                  </div>
                                )}
 
-                               {searchResults.customers?.length > 0 && (
+                               {searchResults.customers?.data?.length > 0 && (
                                  <div className="border-t border-base-300/50">
-                                   <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Customers</div>
-                                   {searchResults.customers.map(c => (
+                                   <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Customers</div>
+                                   {searchResults.customers.data.map(c => (
                                      <button key={c._id} onClick={() => navigateToResult('customer', c._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
                                        <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center">
                                           <UserIcon className="h-4 w-4 text-base-content/40" />
                                        </div>
                                        <div>
                                           <div className="text-xs font-bold text-base-content">{c.name}</div>
-                                          <div className="text-[10px] text-base-content/40 uppercase font-bold">{c.email || c.phone}</div>
+                                          <div className="text-xs text-base-content/40 uppercase font-bold">{c.email || c.phone}</div>
+                                       </div>
+                                     </button>
+                                   ))}
+                                 </div>
+                               )}
+
+                               {searchResults.blogPosts?.data?.length > 0 && (
+                                 <div className="border-t border-base-300/50">
+                                   <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-primary/60 border-b border-base-300/50">Blog Posts</div>
+                                   {searchResults.blogPosts.data.map(post => (
+                                     <button key={post._id} onClick={() => navigateToResult('blog', post._id)} className="w-full text-left px-4 py-3 hover:bg-base-200 flex items-center gap-3 transition-colors">
+                                       <div className="h-8 w-8 rounded-lg bg-base-200 border border-base-300 flex items-center justify-center overflow-hidden">
+                                          {post.coverImage ? <img src={post.coverImage} className="h-full w-full object-cover" /> : <Package className="h-4 w-4 text-base-content/40" />}
+                                       </div>
+                                       <div>
+                                          <div className="text-xs font-bold text-base-content">{post.title}</div>
+                                          <div className="text-xs text-base-content/40 uppercase font-bold">{post.category} · {post.isPublished ? 'Published' : 'Draft'}</div>
                                        </div>
                                      </button>
                                    ))}
                                  </div>
                                )}
                                
-                               {!searchResults.products?.length && !searchResults.orders?.length && !searchResults.customers?.length && (
+                               {!searchResults.products?.data?.length && !searchResults.orders?.data?.length && !searchResults.customers?.data?.length && !searchResults.blogPosts?.data?.length && (
                                  <div className="p-8 text-center">
                                    <p className="text-xs font-bold text-base-content/30 uppercase tracking-widest italic">No matches found</p>
                                  </div>
@@ -248,7 +266,7 @@ export default function DashboardLayout() {
                 <div className="flex items-center gap-3">
                     <div className="text-right hidden sm:block">
                         <div className="text-sm font-bold text-base-content leading-tight">{admin?.name || "Admin"}</div>
-                        <div className="text-[10px] text-primary font-bold uppercase tracking-widest leading-none mt-1">{admin?.role || "Manager"}</div>
+                        <div className="text-xs text-primary font-bold uppercase tracking-widest leading-none mt-1">{admin?.role || "Manager"}</div>
                     </div>
                     <div className="w-10 h-10 rounded-xl bg-base-300 border border-base-300 flex items-center justify-center font-black text-base-content shadow-inner">
                         {admin?.name?.charAt(0) || "Q"}

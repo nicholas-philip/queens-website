@@ -59,7 +59,7 @@ export function ToastProvider({ children }) {
             style={{ animation: "slideInRight 0.25s ease" }}
           >
             {icons[toast.type]}
-            <p className="text-sm font-bold text-white leading-snug flex-1">{toast.message}</p>
+            <p className="text-base font-black tracking-wide text-white leading-snug flex-1">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
               className="text-neutral-500 hover:text-neutral-200 transition-colors shrink-0 mt-0.5"

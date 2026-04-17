@@ -18,6 +18,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TrackOrder from './pages/TrackOrder';
 // import Rewards from './pages/Rewards'; // Temporarily deactivated
 import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
 
 // Phase 2 Interactive Extensibility Pages
 import BeautyQuiz from './pages/BeautyQuiz';
@@ -73,6 +74,7 @@ const App = () => {
             <Route path="/track" element={<TrackOrder />} />
             {/* <Route path="/rewards" element={<Rewards />} /> */} {/* Deactivated */}
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
 
             {/* Phase 2 Interactive Extensibility Routes */}
             <Route path="/quiz" element={<BeautyQuiz />} />

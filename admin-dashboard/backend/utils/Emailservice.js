@@ -29,7 +29,7 @@ const sendEmail = async (to, subject, html) => {
     }
 
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || `"Queens Store" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_FROM || `"Queens Fashion Store" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       html,
@@ -162,7 +162,7 @@ const sendReviewReplyEmail = async (review, product, replyText) => {
         <span style="font-size:32px;">👑</span>
       </div>
       <h2 style="margin:0; font-size:24px; letter-spacing:-0.5px;">Official Reply Received</h2>
-      <p style="color:${THEME.muted}; font-size:14px; margin-top:8px;">Queens has responded to your review</p>
+      <p style="color:${THEME.muted}; font-size:14px; margin-top:8px;">Queens Fashion Store has responded to your review</p>
     </div>
 
     <div style="background-color:rgba(255,255,255,0.03); border:1px solid #262626; border-radius:20px; padding:30px; margin-bottom:30px;">
@@ -173,7 +173,7 @@ const sendReviewReplyEmail = async (review, product, replyText) => {
       
       <div style="height:1px; background:#262626; margin-bottom:24px;"></div>
       
-      <p style="color:${THEME.primary}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; font-weight:bold;">Queens Response</p>
+      <p style="color:${THEME.primary}; font-size:12px; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; font-weight:bold;">Queens Fashion Store Response</p>
       <p style="margin:0; color:#fff; font-size:16px; line-height:1.6;">
         ${replyText}
       </p>

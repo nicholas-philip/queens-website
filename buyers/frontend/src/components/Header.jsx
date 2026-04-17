@@ -70,7 +70,7 @@ const Header = () => {
     <>
       <header className="fixed top-0 left-0 right-0 z-50">
         {/* Top Utility Bar */}
-        <div className="bg-[#050505] text-white py-2 px-4 md:px-6 text-[10px] md:text-[11px] font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
+        <div className="bg-[#050505] text-white py-2 px-4 md:px-6 text-xs md:text-xs font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
           {/* Left: Promo */}
           <div className="flex w-full md:w-auto justify-center md:justify-start items-center gap-3 uppercase italic">
             <span className="text-primary tracking-widest animate-pulse truncate">✦ Free Delivery on orders above GHS 500 ✦</span>
@@ -91,7 +91,7 @@ const Header = () => {
 
         {/* Main Header */}
         <div className={`transition-all duration-500 border-b ${isScrolled ? 'bg-base-100 shadow-[0_10px_40px_rgba(0,0,0,0.1)] border-primary/20 py-2' : 'bg-base-100/95 backdrop-blur-3xl border-base-200 py-3 md:py-6'}`}>
-          <div className="max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between gap-2 md:gap-12">
+          <div className="max-w-[1440px] mx-auto px-4uuuiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii md:px-8 flex items-center justify-between gap-2 md:gap-12">
             
             {/* Logo */}
             <Link to="/" className="flex items-center group flex-shrink-0">
@@ -102,7 +102,7 @@ const Header = () => {
             </Link>
 
             {/* Desktop Nav Links */}
-            <nav className="hidden lg:flex items-center gap-8 text-[12px] font-black uppercase tracking-[0.12em] text-base-content">
+            <nav className="hidden lg:flex items-center gap-8 text-sm font-black uppercase tracking-[0.12em] text-base-content">
                <Link to="/" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Home
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
@@ -143,7 +143,7 @@ const Header = () => {
                               onClick={() => setShowCatDropdown(false)}
                               className="group flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
                             >
-                              <span className="font-black text-[12px] uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
+                              <span className="font-black text-sm uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
                               <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5]" />
                             </Link>
                           ))
@@ -208,7 +208,7 @@ const Header = () => {
                           exit={{ opacity: 0, y: 10, scale: 0.98 }}
                           className="absolute top-full mt-3 right-0 w-[420px] bg-base-100 border-2 border-primary/20 shadow-[0_40px_80px_rgba(0,0,0,0.2)] rounded-[2.5rem] py-6 z-50 overflow-hidden backdrop-blur-3xl"
                         >
-                          <div className="px-8 mb-4 flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-base-content/40">
+                          <div className="px-8 mb-4 flex justify-between items-center text-xs font-black uppercase tracking-widest text-base-content/40">
                              <span>Results For "{debouncedSearch}"</span>
                              {isSearching && <span className="animate-pulse text-primary italic">Analyzing...</span>}
                           </div>
@@ -239,13 +239,13 @@ const Header = () => {
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="text-[11px] font-black uppercase tracking-widest text-base-content truncate group-hover:text-primary transition-colors">
+                                  <h4 className="text-xs font-black uppercase tracking-widest text-base-content truncate group-hover:text-primary transition-colors">
                                     {product.title}
                                   </h4>
                                   <div className="flex items-center gap-2 mt-1">
                                     <span className="text-xs font-black text-primary">GHS {product.discountPrice || product.price}</span>
                                     {product.discountPrice && (
-                                      <span className="text-[10px] line-through opacity-30">GHS {product.price}</span>
+                                      <span className="text-xs line-through opacity-30">GHS {product.price}</span>
                                     )}
                                   </div>
                                 </div>
@@ -264,7 +264,7 @@ const Header = () => {
                                    setShowSearchOverlay(false);
                                    setSearchQuery('');
                                  }}
-                                 className="w-full py-3 bg-neutral text-neutral-content rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center hover:bg-neutral-focus transition-all"
+                                 className="w-full py-3 bg-neutral text-neutral-content rounded-2xl text-xs font-black uppercase tracking-[0.2em] flex items-center justify-center hover:bg-neutral-focus transition-all"
                                >
                                  View All Results ({suggestions.length})
                                </Link>
@@ -289,7 +289,7 @@ const Header = () => {
                   >
                       <Heart size={20} />
                       {wishlistCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-content text-[9px] font-black flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(201,168,76,0.5)] pointer-events-none ring-4 ring-base-100">
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-content text-xs font-black flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(201,168,76,0.5)] pointer-events-none ring-4 ring-base-100">
                           {wishlistCount}
                         </span>
                       )}
@@ -300,7 +300,7 @@ const Header = () => {
                   >
                      <ShoppingBag size={18} className="md:w-[22px] md:h-[22px]" />
                      {itemCount > 0 && (
-                       <span className="absolute -top-1 -right-1 w-5 h-5 md:w-6 md:h-6 bg-primary text-primary-content text-[9px] md:text-[11px] font-black flex items-center justify-center rounded-full shadow-[0_0_20px_rgba(201,168,76,0.5)] pointer-events-none ring-4 ring-base-100 animate-bounce">
+                       <span className="absolute -top-1 -right-1 w-5 h-5 md:w-6 md:h-6 bg-primary text-primary-content text-xs md:text-xs font-black flex items-center justify-center rounded-full shadow-[0_0_20px_rgba(201,168,76,0.5)] pointer-events-none ring-4 ring-base-100 animate-bounce">
                          {itemCount}
                        </span>
                      )}
@@ -309,7 +309,7 @@ const Header = () => {
 
                <button className="lg:hidden text-primary p-1 md:p-2 flex flex-col items-center justify-center gap-0.5 hover:bg-primary/5 rounded-xl md:rounded-2xl transition-all border border-transparent hover:border-primary/20 ml-1 md:ml-0" onClick={() => setIsMenuOpen(true)}>
                   <Menu size={26} className="md:w-[34px] md:h-[34px]" strokeWidth={2.5} />
-                  <span className="text-[7px] md:text-[8px] font-bold uppercase tracking-[0.3em]">Menu</span>
+                  <span className="text-xs md:text-xs font-bold uppercase tracking-[0.3em]">Menu</span>
                </button>
             </div>
           </div>
@@ -339,7 +339,7 @@ const Header = () => {
               <div className="p-6 flex justify-between items-center bg-[#050505] text-white">
                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center">
                   <div className="w-24 h-12 flex items-center justify-center">
-                    <img src={logo} alt="Queens Logo" className="w-full h-full object-contain" />
+                    <img src={logo} alt="Queens Fashion Store Logo" className="w-full h-full object-contain" />
                   </div>
                 </Link>
                 <button 
@@ -413,14 +413,14 @@ const Header = () => {
                   <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-primary italic">
                     My Wishlist
                     <div className="flex items-center gap-2">
-                       {wishlistCount > 0 && <span className="w-5 h-5 bg-primary text-primary-content text-[10px] flex items-center justify-center rounded-full font-black">{wishlistCount}</span>}
+                       {wishlistCount > 0 && <span className="w-5 h-5 bg-primary text-primary-content text-xs flex items-center justify-center rounded-full font-black">{wishlistCount}</span>}
                        <Heart size={16} className="fill-primary/10" />
                     </div>
                   </Link>
 
                   {/* Divider */}
                   <div className="my-3 border-t border-base-200" />
-                  <p className="px-4 text-[9px] font-black uppercase tracking-[0.25em] text-base-content/30 mb-1">Support</p>
+                  <p className="px-4 text-xs font-black uppercase tracking-[0.25em] text-base-content/30 mb-1">Support</p>
 
                   <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl bg-primary/10 border border-primary/20 text-primary font-black tracking-tight transition-all active:scale-95 shadow-sm">
                     My Order History

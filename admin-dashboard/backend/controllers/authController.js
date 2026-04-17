@@ -78,7 +78,7 @@ const registerAdmin = async (req, res) => {
 
   res.status(201).json({
     success: true,
-    message: "Welcome to the Queens Admin Dashboard!",
+    message: "Welcome to the Queens Fashion Store Admin Dashboard!",
     token,
     admin: {
       _id:          admin._id,

@@ -80,7 +80,7 @@ app.use("/api/gift-cards",  require("./routes/giftCardRoutes"));
 app.get("/", (req, res) => {
   res.status(200).json({ 
     success: true, 
-    message: "🚀 Queens Buyer API is live and well!", 
+    message: "🚀 Queens Fashion Store Buyer API is live and well!", 
   });
 });
 

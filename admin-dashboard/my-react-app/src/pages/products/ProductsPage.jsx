@@ -140,21 +140,21 @@ export default function ProductsPage() {
                         {p.images?.[0] ? (
                           <img src={p.images[0]} alt={p.title} className="h-full w-full object-cover" />
                         ) : (
-                          <div className="h-full w-full flex items-center justify-center text-neutral-600 text-[10px] font-bold uppercase">{p.title?.[0]}</div>
+                          <div className="h-full w-full flex items-center justify-center text-neutral-600 text-xs font-bold uppercase">{p.title?.[0]}</div>
                         )}
                       </div>
                       <div className="min-w-0">
                         <Link to={`/products/${p._id}`} className="font-bold text-white hover:text-yellow-500 transition-colors truncate block">
                             {truncate(p.title, 40)}
                         </Link>
-                        <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest mt-1">{p.category?.name || "Uncategorized"}</p>
+                        <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mt-1">{p.category?.name || "Uncategorized"}</p>
                       </div>
                     </div>
                   </TableCell>
 
                   {/* SKU */}
                   <TableCell>
-                    <span className="font-mono text-[11px] font-bold text-neutral-500 bg-black/40 border border-neutral-800 px-2 py-1 rounded-lg">
+                    <span className="font-mono text-xs font-bold text-neutral-500 bg-black/40 border border-neutral-800 px-2 py-1 rounded-lg">
                       {p.SKU || "NO-SKU"}
                     </span>
                   </TableCell>
@@ -164,7 +164,7 @@ export default function ProductsPage() {
                     <div className="flex flex-col">
                       <span className="font-bold text-white">{formatCurrency(p.discountPrice || p.price)}</span>
                       {p.discountPrice && (
-                        <span className="text-[10px] text-neutral-600 line-through decoration-red-500/50">{formatCurrency(p.price)}</span>
+                        <span className="text-xs text-neutral-600 line-through decoration-red-500/50">{formatCurrency(p.price)}</span>
                       )}
                     </div>
                   </TableCell>
@@ -194,7 +194,7 @@ export default function ProductsPage() {
                     <button 
                         onClick={() => toggleStatus(p._id, p.status)}
                         className={cn(
-                            "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all hover:scale-105 active:scale-95",
+                            "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider border transition-all hover:scale-105 active:scale-95",
                             p.status === 'Active' ? "bg-green-500/10 border-green-500/20 text-green-500" : 
                             p.status === 'Out of Stock' ? "bg-red-500/10 border-red-500/20 text-red-500" :
                             "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"

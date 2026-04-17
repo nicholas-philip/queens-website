@@ -176,3 +176,12 @@ export const exportAPI = {
 export const searchAPI = {
   global: (q, limit = 5) => api.get(`/admin/search?q=${q}&limit=${limit}`),
 }
+
+export const blogAPI = {
+  getAll: (p)     => api.get("/admin/blog", { params: p }),
+  getById: (id)   => api.get(`/admin/blog/${id}`),
+  create: (d)     => api.post("/admin/blog", d, { headers: { "Content-Type": "multipart/form-data" } }),
+  update: (id, d) => api.put(`/admin/blog/${id}`, d, { headers: { "Content-Type": "multipart/form-data" } }),
+  publish: (id)   => api.patch(`/admin/blog/${id}/publish`),
+  delete: (id)    => api.delete(`/admin/blog/${id}`),
+}

@@ -404,6 +404,7 @@ const Order4    = require("../models/Order");
 const Customer4 = require("../models/Customer");
 const Invoice4  = require("../models/Invoice");
 const Coupon4   = require("../models/Coupon");
+const Blog4     = require("../models/Blog");
 
 const globalSearch = async (req, res) => {
   const { q, limit = 5 } = req.query;
@@ -412,15 +413,16 @@ const globalSearch = async (req, res) => {
   const regex   = { $regex: q.trim(), $options: "i" };
   const maxRes  = Math.min(parseInt(limit), 20);
 
-  const [products, orders, customers, invoices, coupons] = await Promise.all([
+  const [products, orders, customers, invoices, coupons, blogPosts] = await Promise.all([
     Product4.find({ $or: [{ title: regex }, { SKU: regex }, { tags: regex }] }).limit(maxRes).select("title SKU price status images stockQuantity").populate("category","name"),
     Order4.find({ $or: [{ orderNumber: regex }, { "customerDetails.name": regex }, { "customerDetails.phone": regex }] }).limit(maxRes).select("orderNumber customerDetails.name customerDetails.phone total currentStatus createdAt"),
     Customer4.find({ $or: [{ name: regex }, { phone: regex }, { email: regex }] }).limit(maxRes).select("name phone email totalOrders totalSpent lastOrderDate"),
     Invoice4.find({ $or: [{ invoiceNumber: regex }, { customerName: regex }] }).limit(maxRes).select("invoiceNumber customerName amount status issuedDate"),
     Coupon4.find({ code: regex }).limit(maxRes).select("code discountType discountValue isActive expiryDate usedCount"),
+    Blog4.find({ $or: [{ title: regex }, { excerpt: regex }] }).limit(maxRes).select("title excerpt slug coverImage category isPublished"),
   ]);
 
-  const total = products.length + orders.length + customers.length + invoices.length + coupons.length;
+  const total = products.length + orders.length + customers.length + invoices.length + coupons.length + blogPosts.length;
   res.status(200).json({
     success: true, query: q.trim(), total,
     results: {
@@ -429,6 +431,7 @@ const globalSearch = async (req, res) => {
       customers: { count: customers.length, data: customers },
       invoices:  { count: invoices.length,  data: invoices  },
       coupons:   { count: coupons.length,   data: coupons   },
+      blogPosts: { count: blogPosts.length, data: blogPosts },
     },
   });
 };

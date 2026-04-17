@@ -127,7 +127,7 @@ export default function InvoicesPage() {
                   <TableCell>
                     <div className="flex flex-col">
                         <span className="font-bold text-base-content/80">{i.customerName || "Guest Customer"}</span>
-                        <span className="text-[10px] text-base-content/40 font-bold uppercase tracking-tight">{i.customerPhone}</span>
+                        <span className="text-xs text-base-content/40 font-bold uppercase tracking-tight">{i.customerPhone}</span>
                     </div>
                   </TableCell>
 
@@ -152,7 +152,7 @@ export default function InvoicesPage() {
                   {/* Status Badge */}
                   <TableCell>
                     <span className={cn(
-                        "px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest border transition-all hover:scale-105 active:scale-95 cursor-default",
+                        "px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all hover:scale-105 active:scale-95 cursor-default",
                         i.status === 'Paid' ? "bg-green-500/10 border-green-500/20 text-green-500" : 
                         i.status === 'Overdue' ? "bg-red-500/10 border-red-500/20 text-red-500" :
                         "bg-yellow-500/10 border-yellow-500/20 text-yellow-500"

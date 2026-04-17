@@ -151,7 +151,7 @@ const ProductDetails = () => {
           <div className="space-y-8">
 
             <div>
-              <span className="text-[11px] font-black uppercase tracking-[0.25em] text-primary mb-4 block">
+              <span className="text-xs font-black uppercase tracking-[0.25em] text-primary mb-4 block">
                 Premium Selection
               </span>
 
@@ -202,11 +202,11 @@ const ProductDetails = () => {
             {(product.sizes?.length > 0 || product.colors?.length > 0) && (
               <div className="space-y-8 pt-10 border-t border-base-200/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-black uppercase tracking-[0.2em] text-base-content/40">
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-base-content/40">
                     Variation Available
                   </span>
                   {product.hasVariants && (
-                    <span className="text-[10px] font-bold text-primary cursor-pointer hover:underline">
+                    <span className="text-xs font-bold text-primary cursor-pointer hover:underline">
                       Size Guide
                     </span>
                   )}
@@ -327,7 +327,7 @@ const ProductDetails = () => {
                     if (product.colors?.length > 0 && !selectedColor) return alert("Please select a color before adding to cart");
                     addToCart({ ...product, selectedSize, selectedColor }, quantity);
                   }}
-                  className="btn btn-primary h-14 flex-1 gap-3 rounded-[1.25rem] font-black text-[13px] uppercase tracking-widest shadow-xl shadow-primary/20 border-none group"
+                  className="btn btn-primary h-14 flex-1 gap-3 rounded-[1.25rem] font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 border-none group"
                 >
                   <ShoppingBag size={20} className="group-hover:scale-110 transition-transform" />
                   Add to Cart
@@ -340,7 +340,7 @@ const ProductDetails = () => {
                     addToCart({ ...product, selectedSize, selectedColor }, quantity);
                     setCheckoutOpen(true);
                   }}
-                  className="btn btn-neutral h-14 flex-1 rounded-[1.25rem] font-black text-[13px] uppercase tracking-widest bg-[#000] border-none hover:bg-zinc-800"
+                  className="btn btn-neutral h-14 flex-1 rounded-[1.25rem] font-black text-sm uppercase tracking-widest bg-[#000] border-none hover:bg-zinc-800"
                 >
                   Checkout Now
                 </button>
@@ -352,15 +352,15 @@ const ProductDetails = () => {
               <div className="flex items-center gap-4 bg-base-200/20 p-5 rounded-3xl transition-colors hover:bg-base-200/40">
                 <div className="p-3 bg-primary/10 rounded-2xl"><Truck size={20} className="text-primary" /></div>
                 <div>
-                  <p className="font-black text-[11px] uppercase tracking-wider">Swift Delivery</p>
-                  <p className="text-[10px] font-bold opacity-40">Within 24-48 Hours</p>
+                  <p className="font-black text-xs uppercase tracking-wider">Swift Delivery</p>
+                  <p className="text-xs font-bold opacity-40">Within 24-48 Hours</p>
                 </div>
               </div>
               <div className="flex items-center gap-4 bg-base-200/20 p-5 rounded-3xl transition-colors hover:bg-base-200/40">
                 <div className="p-3 bg-primary/10 rounded-2xl"><ShieldCheck size={20} className="text-primary" /></div>
                 <div>
-                  <p className="font-black text-[11px] uppercase tracking-wider">Safe Checkout</p>
-                  <p className="text-[10px] font-bold opacity-40">SSL Encrypted Hub</p>
+                  <p className="font-black text-xs uppercase tracking-wider">Safe Checkout</p>
+                  <p className="text-xs font-bold opacity-40">SSL Encrypted Hub</p>
                 </div>
               </div>
             </div>

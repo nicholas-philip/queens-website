@@ -12,7 +12,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    console.error('Queens Admin App Error:', error, info);
+    console.error('Queens Fashion Store Admin App Error:', error, info);
   }
 
   render() {

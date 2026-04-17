@@ -160,11 +160,11 @@ export default function CategoriesPage() {
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-neutral-600 gap-2">
                     <Tag className="h-8 w-8 opacity-50" />
-                    <span className="text-[10px] uppercase font-bold tracking-widest">No Cover</span>
+                    <span className="text-xs uppercase font-bold tracking-widest">No Cover</span>
                   </div>
                 )}
                 <div className="absolute top-3 right-3">
-                    <span className={`px-2 py-1 rounded-md text-[9px] font-bold uppercase tracking-widest shadow-lg ${
+                    <span className={`px-2 py-1 rounded-md text-xs font-bold uppercase tracking-widest shadow-lg ${
                         cat.isActive !== false ? 'bg-green-500 text-black' : 'bg-neutral-800 text-neutral-400'
                     }`}>
                         {cat.isActive !== false ? "Active" : "Hidden"}
@@ -175,7 +175,7 @@ export default function CategoriesPage() {
               <div className="flex-1">
                 <div className="flex items-center justify-between gap-3 mb-1">
                     <h3 className="font-bold text-lg text-white truncate">{cat.name}</h3>
-                    <div className="px-2 py-0.5 bg-neutral-800 rounded-lg border border-neutral-700 font-mono text-[10px] font-bold text-yellow-500 whitespace-nowrap">
+                    <div className="px-2 py-0.5 bg-neutral-800 rounded-lg border border-neutral-700 font-mono text-xs font-bold text-yellow-500 whitespace-nowrap">
                         {cat.productCount || 0} ITEMS
                     </div>
                 </div>
@@ -217,12 +217,12 @@ export default function CategoriesPage() {
               ) : (
                 <div className="text-center">
                   <ImageIcon className="h-8 w-8 text-neutral-500 mx-auto mb-2 group-hover:text-yellow-500 transition-colors" />
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500">Upload</span>
+                  <span className="text-xs font-bold uppercase tracking-widest text-neutral-500">Upload</span>
                 </div>
               )}
             </div>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-3">Cover Image Output</p>
+            <p className="text-xs text-neutral-500 uppercase tracking-widest mt-3">Cover Image Output</p>
           </div>
 
           <div>

@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app"
 import { getAuth, GoogleAuthProvider } from "firebase/auth"
 
-// Queens Firebase Configuration
+// Queens Fashion Store Firebase Configuration
 // Environment variables are loaded via Vite (VITE_ prefix required)
 const firebaseConfig = {
   apiKey:            import.meta.env.VITE_FIREBASE_API_KEY,

@@ -106,7 +106,7 @@ const createProduct = catchAsync(async (req, res) => {
 
   // 🔔 Send Real-time Push Notification to all subscribed devices
   try {
-    const notificationTitle = "Queens Luxe - New Arrival! ✨";
+    const notificationTitle = "Queens Fashion Store - New Arrival! ✨";
     const notificationBody = `Just added: ${product.title}. Shop the latest elegance today!`;
     const notificationData = {
         type: "NEW_PRODUCT",

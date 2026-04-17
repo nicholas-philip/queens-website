@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 
 const SettingsSchema = new mongoose.Schema(
   {
-    storeName: { type: String, default: "Queens Storefront" },
+    storeName: { type: String, default: "Queens Fashion Store" },
     storeEmail: { type: String, default: "hello@queens.shop" },
     storePhone: { type: String, default: "+233000000000" },
     storeAddress: { type: String, default: "Accra, Ghana" },

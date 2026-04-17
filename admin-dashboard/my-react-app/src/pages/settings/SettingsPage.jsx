@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react"
 import {
   Store, DollarSign, Bell, Globe, Shield,
   Upload, ToggleLeft, ToggleRight, Loader2,
-  ChevronRight, Pencil, Check, X,
+  ChevronRight, Pencil, X,
 } from "lucide-react"
 import { settingsAPI } from "../../libs/api"
 import { useToast } from "../../context/ToastContext"
@@ -60,8 +60,8 @@ function EditableField({ label, hint, name, value, type = "text", onSave, multil
 
       {/* Label */}
       <div className="w-44 shrink-0 pt-0.5">
-        <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.12em]">{label}</p>
-        {hint && <p className="text-[10px] text-neutral-700 mt-0.5 leading-relaxed">{hint}</p>}
+        <p className="text-xs font-bold text-neutral-500 uppercase tracking-[0.12em]">{label}</p>
+        {hint && <p className="text-xs text-neutral-700 mt-0.5 leading-relaxed">{hint}</p>}
       </div>
 
       {/* Value / Input */}
@@ -110,15 +110,15 @@ function EditableField({ label, hint, name, value, type = "text", onSave, multil
               type="button"
               onClick={commit}
               disabled={saving}
-              className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 text-black text-[11px] font-bold transition-all shadow-[0_2px_10px_rgba(212,160,23,0.25)] disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 text-black text-xs font-bold transition-all shadow-[0_2px_10px_rgba(212,160,23,0.25)] disabled:opacity-50"
             >
-              {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+              {saving && <Loader2 className="h-3 w-3 animate-spin" />}
               Save
             </button>
             <button
               type="button"
               onClick={cancel}
-              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 text-[11px] transition-all"
+              className="flex items-center gap-1 px-2 py-1 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-400 text-xs transition-all"
             >
               <X className="h-3 w-3" />
             </button>
@@ -127,7 +127,7 @@ function EditableField({ label, hint, name, value, type = "text", onSave, multil
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-800/70 hover:bg-neutral-800 border border-neutral-700/50 hover:border-yellow-600/30 text-neutral-500 hover:text-yellow-500 text-[11px] font-bold transition-all duration-150"
+            className="opacity-0 group-hover:opacity-100 flex items-center gap-1 px-2.5 py-1 rounded-lg bg-neutral-800/70 hover:bg-neutral-800 border border-neutral-700/50 hover:border-yellow-600/30 text-neutral-500 hover:text-yellow-500 text-xs font-bold transition-all duration-150"
           >
             <Pencil className="h-3 w-3" /> Edit
           </button>
@@ -304,7 +304,7 @@ export default function SettingsPage() {
 
       {/* ── Page Header ── */}
       <div className="mb-10">
-        <div className="flex items-center gap-2 text-[10px] text-neutral-600 uppercase tracking-widest mb-3 font-bold">
+        <div className="flex items-center gap-2 text-xs text-neutral-600 uppercase tracking-widest mb-3 font-bold">
           <span>Admin</span>
           <ChevronRight className="h-3 w-3" />
           <span className="text-yellow-600">Settings</span>
@@ -322,8 +322,8 @@ export default function SettingsPage() {
           {/* Logo row */}
           <div className="group flex items-center gap-4 py-3.5 border-b border-neutral-800/40">
             <div className="w-44 shrink-0">
-              <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.12em]">Store Logo</p>
-              <p className="text-[10px] text-neutral-700 mt-0.5">Square PNG/JPG · max 2MB</p>
+              <p className="text-xs font-bold text-neutral-500 uppercase tracking-[0.12em]">Store Logo</p>
+              <p className="text-xs text-neutral-700 mt-0.5">Square PNG/JPG · max 2MB</p>
             </div>
             <div className="flex items-center gap-4 flex-1">
               <div className="h-12 w-12 rounded-xl border border-dashed border-neutral-700 overflow-hidden bg-black/30 flex items-center justify-center shrink-0">
@@ -334,7 +334,7 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="opacity-0 group-hover:opacity-100 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-800/70 hover:bg-neutral-800 border border-neutral-700/50 hover:border-yellow-600/30 text-neutral-500 hover:text-yellow-500 text-[11px] font-bold transition-all duration-150"
+                className="opacity-0 group-hover:opacity-100 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-800/70 hover:bg-neutral-800 border border-neutral-700/50 hover:border-yellow-600/30 text-neutral-500 hover:text-yellow-500 text-xs font-bold transition-all duration-150"
               >
                 <Upload className="h-3 w-3" /> Upload
               </button>

@@ -145,8 +145,8 @@ export default function CartDrawer() {
             <div className="p-6 border-t border-base-200 bg-base-50 flex-shrink-0">
               <div className="flex justify-between items-end mb-6">
                 <div>
-                  <p className="text-[10px] uppercase tracking-widest font-bold text-base-content/50">Subtotal</p>
-                  <p className="text-[10px] text-base-content/40 mt-0.5">Tax and shipping calculated at checkout.</p>
+                  <p className="text-xs uppercase tracking-widest font-bold text-base-content/50">Subtotal</p>
+                  <p className="text-xs text-base-content/40 mt-0.5">Tax and shipping calculated at checkout.</p>
                 </div>
                 <p className="text-xl font-black text-neutral">GHS {total.toFixed(2)}</p>
               </div>
@@ -156,7 +156,7 @@ export default function CartDrawer() {
                   setCartOpen(false);
                   setCheckoutOpen(true);
                 }}
-                className="w-full py-4 bg-neutral hover:bg-neutral-focus text-neutral-content rounded-[1.25rem] font-black text-[13px] uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl shadow-neutral/20 border-none group"
+                className="w-full py-4 bg-neutral hover:bg-neutral-focus text-neutral-content rounded-[1.25rem] font-black text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xl shadow-neutral/20 border-none group"
               >
                 Checkout Now <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>

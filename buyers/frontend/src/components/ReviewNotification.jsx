@@ -79,7 +79,7 @@ export default function ReviewNotification() {
               
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Official Reply</span>
+                  <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">Official Reply</span>
                   <button 
                     onClick={() => setShow(false)}
                     className="text-white/30 hover:text-white transition-colors"
@@ -89,10 +89,10 @@ export default function ReviewNotification() {
                 </div>
                 
                 <h4 className="text-sm font-black mb-1 leading-tight">
-                  Queens responded to your feedback!
+                  Queens Fashion Store responded to your feedback!
                 </h4>
                 
-                <p className="text-[11px] text-white/50 font-bold mb-4 line-clamp-2 italic">
+                <p className="text-xs text-white/50 font-bold mb-4 line-clamp-2 italic">
                   "{replies[0]?.adminReply.text}"
                 </p>
                 
@@ -100,7 +100,7 @@ export default function ReviewNotification() {
                   <Link
                     to={`/product/${replies[0]?.productId.slug || replies[0]?.productId._id}`}
                     onClick={() => handleDismiss(replies[0]?._id)}
-                    className="flex-1 btn btn-primary btn-sm h-10 rounded-xl font-black text-[10px] uppercase tracking-widest border-none text-neutral"
+                    className="flex-1 btn btn-primary btn-sm h-10 rounded-xl font-black text-xs uppercase tracking-widest border-none text-neutral"
                   >
                     View Product <ChevronRight size={14} className="ml-1" />
                   </Link>
@@ -116,10 +116,10 @@ export default function ReviewNotification() {
 
             {replies.length > 1 && (
               <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[9px] font-black text-white/20 uppercase tracking-[0.2em]">{replies.length - 1} more response{replies.length > 2 ? 's' : ''}</span>
+                <span className="text-xs font-black text-white/20 uppercase tracking-[0.2em]">{replies.length - 1} more response{replies.length > 2 ? 's' : ''}</span>
                 <button 
                   onClick={handleMarkAllSeen}
-                  className="text-[9px] font-black text-primary uppercase tracking-[0.2em] hover:underline"
+                  className="text-xs font-black text-primary uppercase tracking-[0.2em] hover:underline"
                 >
                   Clear All
                 </button>

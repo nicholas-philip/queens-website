@@ -20,7 +20,7 @@ const ReturnPolicy = () => {
             <section className="bg-error/10 border-l-4 border-error p-5 sm:p-8 rounded-2xl">
               <h3 className="text-error font-extrabold text-lg sm:text-xl mb-2 sm:mb-3 flex items-center gap-2">Strict No-Refund Policy</h3>
               <p className="text-error/80 font-medium text-sm sm:text-base">
-                At <strong className="font-extrabold">Queens</strong>, we prioritize hygiene and the high quality of our beauty and jewelry products. 
+                At <strong className="font-extrabold">Queens Fashion Store</strong>, we prioritize hygiene and the high quality of our beauty and jewelry products. 
                 Because of this, <strong>all orders are final and are not refundable</strong> once they have been dispatched.
               </p>
             </section>
@@ -43,7 +43,7 @@ const ReturnPolicy = () => {
             </section>
 
             <div className="pt-6 sm:pt-10 border-t border-base-200 text-center font-bold text-base-content/30 text-xs sm:text-sm uppercase tracking-widest mt-8 sm:mt-12">
-              Thank you for choosing Queens and supporting our commitment to quality.
+              Thank you for choosing Queens Fashion Store and supporting our commitment to quality.
             </div>
           </div>
         </motion.div>

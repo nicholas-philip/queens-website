@@ -9,9 +9,9 @@ const { wrap, THEME } = require("./emailLayout");
 
 // ── 1. EMAIL VERIFICATION ─────────────────────────
 const verifyEmailTemplate = (adminName, verificationUrl, plainCode) => ({
-  subject: "Queens: Verify your admin email address",
+  subject: "Queens Fashion Store: Verify your admin email address",
   html: wrap("Verify Your Email", `
-    <h2>Welcome to Queens, ${adminName}! 👋</h2>
+    <h2>Welcome to Queens Fashion Store, ${adminName}! 👋</h2>
     <p style="text-align:center">Your admin account is almost ready. Verify your email to unlock the dashboard.</p>
     <div style="background-color: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 16px; padding: 24px; margin: 30px 0; text-align: center;">
       <span style="font-size: 13px; color: ${THEME.muted}; text-transform: uppercase; font-weight: 600; letter-spacing: 1px;">Verification Code</span>
@@ -29,7 +29,7 @@ const verifyEmailTemplate = (adminName, verificationUrl, plainCode) => ({
 
 // ── 2. FORGOT PASSWORD ────────────────────────────
 const passwordResetTemplate = (adminName, resetUrl, plainCode) => ({
-  subject: "Queens: Reset your admin password",
+  subject: "Queens Fashion Store: Reset your admin password",
   html: wrap("Password Reset Request", `
     <h2>Password Reset Requested 🔐</h2>
     <p style="text-align:center">We received a request to reset the password for <strong>${adminName}</strong>.</p>
@@ -50,7 +50,7 @@ const passwordResetTemplate = (adminName, resetUrl, plainCode) => ({
 
 // ── 3. WELCOME (post-verification) ───────────────
 const welcomeTemplate = (adminName, loginUrl) => ({
-  subject: "Queens: Your admin account is active 🎉",
+  subject: "Queens Fashion Store: Your admin account is active 🎉",
   html: wrap("Account Verified!", `
     <div style="text-align: center;">
        <div style="background-color: rgba(34,197,94,0.1); border: 1px solid ${THEME.success}; padding: 12px 24px; border-radius: 40px; display: inline-block; margin-bottom: 20px;">
@@ -67,10 +67,10 @@ const welcomeTemplate = (adminName, loginUrl) => ({
 
 // ── 4. PASSWORD CHANGED ALERT ─────────────────────
 const passwordChangedTemplate = (adminName) => ({
-  subject: "Queens Security Alert: Password Changed",
+  subject: "Queens Fashion Store Security Alert: Password Changed",
   html: wrap("Password Changed", `
     <h2 style="text-align:center">Security Alert 🛡️</h2>
-    <p style="text-align:center">Hi ${adminName}, the password for your Queens admin account was successfully updated.</p>
+    <p style="text-align:center">Hi ${adminName}, the password for your Queens Fashion Store admin account was successfully updated.</p>
     <div style="background-color: rgba(34,197,94,0.1); border: 1px solid ${THEME.success}; padding: 20px; border-radius: 16px; margin: 30px 0; text-align: center;">
       <p style="color: ${THEME.success}; font-size: 15px; font-weight: 600; margin-bottom: 0;">✓ Password Updated</p>
     </div>
@@ -83,11 +83,11 @@ const passwordChangedTemplate = (adminName) => ({
 
 // ── 5. NEW ADMIN INVITATION ───────────────────────
 const newAdminInviteTemplate = (adminName, inviterName, tempPassword, loginUrl) => ({
-  subject: "You've been invited to Queens Admin Dashboard",
+  subject: "You've been invited to Queens Fashion Store Admin Dashboard",
   html: wrap("Admin Invitation 👑", `
     <h2>Welcome to the Team, ${adminName}!</h2>
     <p style="text-align:center">
-      <strong>${inviterName}</strong> has added you as an admin on the Queens Dashboard.
+      <strong>${inviterName}</strong> has added you as an admin on the Queens Fashion Store.
       Your account is already active and you can sign in immediately with the credentials below:
     </p>
     <div style="background-color: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 20px; padding: 24px; margin: 30px 0;">

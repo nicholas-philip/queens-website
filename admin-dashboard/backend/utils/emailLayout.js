@@ -2,7 +2,7 @@
 // utils/emailLayout.js
 //
 // Shared HTML wrapper for all transactional emails.
-// Premium "Queens" aesthetic (Gold/Dark theme).
+// Premium "Queens Fashion Store" aesthetic (Gold/Dark theme).
 // =====================================================
 
 const THEME = {
@@ -64,7 +64,7 @@ const wrap = (title, body, headerTitle = "QUEENS 👑") => `
     </div>
     <div class="footer">
       <p>Luxury Fashion Store — Admin Portal</p>
-      <p>© ${new Date().getFullYear()} Queens Dashboard. All rights reserved.</p>
+      <p>© ${new Date().getFullYear()} Queens Fashion Store. All rights reserved.</p>
     </div>
   </div>
 </body>

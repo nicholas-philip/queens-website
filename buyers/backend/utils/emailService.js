@@ -43,9 +43,9 @@ const goldWrapper = (title, body) => `
 </head>
 <body>
   <div class="box">
-    <div class="head"><div class="brand">✦ Queens Storefront ✦</div></div>
+    <div class="head"><div class="brand">✦ Queens Fashion Store ✦</div></div>
     <div class="content">${body}</div>
-    <div class="foot">© ${new Date().getFullYear()} Queens Cosmetics. Professional Beauty.</div>
+    <div class="foot">© ${new Date().getFullYear()} Queens Fashion Store. Professional Beauty.</div>
   </div>
 </body>
 </html>`;
@@ -76,7 +76,7 @@ const sendNewsletterWelcome = async (email, firstName) => {
     <h2>Welcome Beauty! 💋</h2>
     <p>Hi ${firstName || ""}, thanks for joining our newsletter. Get 10% off your first luxury order with code: <b>QUEEN10</b></p>
   `);
-  await sendEmail(email, "Welcome to the Queens Family 👑", html);
+  await sendEmail(email, "Welcome to the Queens Fashion Store Family 👑", html);
 };
 
 const sendContactConfirmation = async (name, email) => {
@@ -84,7 +84,7 @@ const sendContactConfirmation = async (name, email) => {
     <h2>Message Received!</h2>
     <p>Thanks ${name}, we've received your inquiry and our team will be in touch within 24 hours.</p>
   `);
-  await sendEmail(email, "Message Received — Queens Cosmetics", html);
+  await sendEmail(email, "Message Received — Queens Fashion Store", html);
 };
 
 module.exports = { 

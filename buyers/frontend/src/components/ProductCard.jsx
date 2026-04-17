@@ -65,7 +65,7 @@ const ProductCard = ({ product }) => {
         {/* Out of Stock overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <span className="bg-black/80 backdrop-blur-md text-primary text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20 shadow-xl">
+            <span className="bg-black/80 backdrop-blur-md text-primary text-xs font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20 shadow-xl">
               Sold Out
             </span>
           </div>
@@ -73,7 +73,7 @@ const ProductCard = ({ product }) => {
 
         {/* Discount badge */}
         {discountPct > 0 && (
-          <div className="absolute top-2.5 left-2.5 z-20 bg-primary text-primary-content text-[9px] font-black px-2 py-1 rounded-lg shadow-md">
+          <div className="absolute top-2.5 left-2.5 z-20 bg-primary text-primary-content text-xs font-black px-2 py-1 rounded-lg shadow-md">
             -{discountPct}%
           </div>
         )}
@@ -96,12 +96,12 @@ const ProductCard = ({ product }) => {
         {/* Category & Rating */}
         <div className="flex justify-between items-center min-h-[1rem]">
           {categoryName ? (
-            <span className="text-[9px] uppercase tracking-[0.18em] text-primary font-black truncate">{categoryName}</span>
+            <span className="text-xs uppercase tracking-[0.18em] text-primary font-black truncate">{categoryName}</span>
           ) : <span />}
           {reviewCount > 0 && (
             <div className="flex items-center gap-1 shrink-0">
               <Star size={9} className="fill-primary text-primary" />
-              <span className="text-[9px] text-base-content/50 font-black">{rating.toFixed(1)}</span>
+              <span className="text-xs text-base-content/50 font-black">{rating.toFixed(1)}</span>
             </div>
           )}
         </div>
@@ -120,7 +120,7 @@ const ProductCard = ({ product }) => {
               GHS {displayPrice.toLocaleString()}
             </span>
             {salePrice && (
-              <span className="text-base-content/30 text-[9px] md:text-[10px] line-through font-bold">
+              <span className="text-base-content/30 text-xs md:text-xs line-through font-bold">
                 GHS {price.toLocaleString()}
               </span>
             )}

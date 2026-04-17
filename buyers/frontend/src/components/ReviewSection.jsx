@@ -66,7 +66,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                     />
                   ))}
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest opacity-40 mt-1">
+                <span className="text-xs font-black uppercase tracking-widest opacity-40 mt-1">
                   Based on {reviewCount} reviews
                 </span>
               </div>
@@ -102,7 +102,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
               
               <form onSubmit={handleSubmit} className="grid md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-4">Full Name</label>
+                  <label className="text-xs font-black uppercase tracking-widest opacity-50 ml-4">Full Name</label>
                   <input
                     type="text"
                     required
@@ -114,7 +114,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-4">Email Address</label>
+                  <label className="text-xs font-black uppercase tracking-widest opacity-50 ml-4">Email Address</label>
                   <input
                     type="email"
                     required
@@ -126,7 +126,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                 </div>
 
                 <div className="md:col-span-2 space-y-4 py-4">
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-4 block">Overall Rating</label>
+                  <label className="text-xs font-black uppercase tracking-widest opacity-50 ml-4 block">Overall Rating</label>
                   <div className="flex gap-3">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
@@ -146,7 +146,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                 </div>
 
                 <div className="md:col-span-2 space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest opacity-50 ml-4">Your Feedback</label>
+                  <label className="text-xs font-black uppercase tracking-widest opacity-50 ml-4">Your Feedback</label>
                   <textarea
                     required
                     rows="4"
@@ -186,7 +186,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
           </div>
           <div>
             <p className="font-black text-sm uppercase tracking-tight text-success">Review Submitted!</p>
-            <p className="text-[11px] font-bold opacity-60">Thank you. Your review is being moderated and will appear shortly.</p>
+            <p className="text-xs font-bold opacity-60">Thank you. Your review is being moderated and will appear shortly.</p>
           </div>
         </motion.div>
       )}
@@ -202,7 +202,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
           </div>
           <div>
             <p className="font-black text-sm uppercase tracking-tight text-error">Something went wrong</p>
-            <p className="text-[11px] font-bold opacity-60">We couldn't post your review. Please try again later.</p>
+            <p className="text-xs font-bold opacity-60">We couldn't post your review. Please try again later.</p>
           </div>
         </motion.div>
       )}
@@ -230,7 +230,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                   </div>
                   <div>
                     <h4 className="text-sm font-black uppercase tracking-tight">{review.customerName}</h4>
-                    <p className="text-[10px] font-bold opacity-30 uppercase tracking-[0.2em]">
+                    <p className="text-xs font-bold opacity-30 uppercase tracking-[0.2em]">
                       {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                     </p>
                   </div>
@@ -256,7 +256,7 @@ export default function ReviewSection({ productId, reviews = [], averageRating =
                   <div className="absolute top-0 left-0 w-1 h-full bg-primary/20 rounded-full" />
                   <div className="flex items-center gap-2 mb-2">
                     <CheckCircle size={14} className="text-primary" />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary">Queens Official Reply</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-primary">Queens Fashion Store Official Reply</span>
                   </div>
                   <p className="text-xs font-bold text-base-content/60 leading-relaxed">
                     {review.adminReply.text}

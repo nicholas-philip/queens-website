@@ -104,7 +104,7 @@ export default function NotificationsPage() {
           <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-3">
             Notifications
             {unreadCount > 0 && (
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-[10px] font-black text-black">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-xs font-black text-black">
                 {unreadCount}
               </span>
             )}
@@ -186,7 +186,7 @@ export default function NotificationsPage() {
                     )}
                   </div>
                   <p className="text-xs text-neutral-500 leading-relaxed">{n.message}</p>
-                  <p className="text-[10px] font-mono text-neutral-700 mt-1.5 uppercase tracking-widest">
+                  <p className="text-xs font-mono text-neutral-700 mt-1.5 uppercase tracking-widest">
                     {formatRelativeTime(n.createdAt)}
                   </p>
                 </div>

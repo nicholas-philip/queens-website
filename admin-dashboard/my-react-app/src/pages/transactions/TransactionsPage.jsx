@@ -117,7 +117,7 @@ export default function TransactionsPage() {
                 <TableRow key={t._id}>
                   {/* Reference */}
                   <TableCell>
-                    <span className="font-mono text-[11px] font-bold text-base-content/60 bg-base-200 border border-base-300 px-2 py-1 rounded-lg">
+                    <span className="font-mono text-xs font-bold text-base-content/60 bg-base-200 border border-base-300 px-2 py-1 rounded-lg">
                       {t.reference || t._id.slice(-8).toUpperCase()}
                     </span>
                   </TableCell>
@@ -157,7 +157,7 @@ export default function TransactionsPage() {
                          {(t.status === 'Failed' || t.status === 'Error') && <XCircle className="h-3.5 w-3.5 text-red-500" />}
                          {t.status === 'Pending' && <Clock className="h-3.5 w-3.5 text-yellow-500 animate-pulse" />}
                          <span className={cn(
-                            "text-[10px] font-bold uppercase tracking-widest",
+                            "text-xs font-bold uppercase tracking-widest",
                             t.status === 'Success' ? "text-green-500" : 
                             (t.status === 'Failed' || t.status === 'Error') ? "text-red-500" : "text-yellow-500"
                          )}>

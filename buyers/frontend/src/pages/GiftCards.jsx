@@ -105,7 +105,7 @@ const GiftCards = () => {
                   <div className="w-12 sm:w-14 h-12 sm:h-14 bg-white/10 backdrop-blur-md flex items-center justify-center rounded-2xl border border-white/20">
                     <span className="text-primary font-black text-2xl sm:text-3xl font-serif italic">Q</span>
                   </div>
-                  <span className="text-white/60 font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-[9px] sm:text-[10px] bg-black/20 px-3 sm:px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
+                  <span className="text-white/60 font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-xs bg-black/20 px-3 sm:px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
                     Digital Gift Card
                   </span>
                 </div>
