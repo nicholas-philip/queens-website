@@ -46,11 +46,20 @@ const Shop = () => {
   } = useInfiniteQuery({
     queryKey: ["products", category, sort, search],
     queryFn: async ({ pageParam = 1 }) => {
+      // Translate the combined sort value into what the backend expects
+      const sortMap = {
+        "newest":     { sortBy: "createdAt", sortOrder: "desc" },
+        "price-asc":  { sortBy: "price",     sortOrder: "asc"  },
+        "price-desc": { sortBy: "price",     sortOrder: "desc" },
+        "popular":    { sortBy: "popular",   sortOrder: "desc" },
+      };
+      const { sortBy, sortOrder } = sortMap[sort] || sortMap["newest"];
       const params = {
         page: pageParam,
         limit: 12,
         category,
-        sort,
+        sortBy,
+        sortOrder,
         search,
       };
       const { data } = await api.get("/products", { params });

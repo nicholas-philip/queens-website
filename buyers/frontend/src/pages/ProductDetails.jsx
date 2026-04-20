@@ -117,7 +117,7 @@ const ProductDetails = () => {
               {(product.images?.length > 0 || product.image) ? (
                 <img
                   src={(product.images && product.images[activeImage]) || product.images?.[0] || product.image}
-                  className="w-full h-full object-cover mix-blend-multiply transition-transform duration-700 ease-out group-hover:scale-105 group-hover:drop-shadow-2xl"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 group-hover:drop-shadow-2xl"
                 />
               ) : (
                 <ShoppingBag size={64} className="text-base-content/10" />
@@ -141,7 +141,7 @@ const ProductDetails = () => {
                       : "border-transparent hover:border-base-300 scale-95 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  <img src={img} className="object-cover w-full h-full mix-blend-multiply" alt="" />
+                  <img src={img} className="object-cover w-full h-full" alt="" />
                 </button>
               ))}
             </div>
