@@ -46,7 +46,7 @@ function EditableField({ label, hint, name, value, type = "text", onSave, multil
 
   const commit = async () => {
     setSaving(true)
-    await onSave(name, draft)
+    await onSave(name, draft, label)
     setSaving(false)
     setEditing(false)
   }
@@ -229,8 +229,19 @@ export default function SettingsPage() {
   }
 
   /* Save a single field */
-  const saveField = async (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  const saveField = async (name, value, label) => {
+    // Ensure numeric fields are actually numbers
+    const numericFields = ["defaultTaxRate", "freeShippingThreshold", "minimumOrderAmount", "orderAutoCancelDays", "lowStockThreshold"]
+    let finalValue = value
+    if (numericFields.includes(name)) {
+      finalValue = Number(value)
+      if (isNaN(finalValue)) {
+        toast.error("Invalid Input", `${label} must be a number.`)
+        return
+      }
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: finalValue }))
     try {
       const form = new FormData()
       if (name.startsWith("socialLinks.")) {
@@ -245,7 +256,7 @@ export default function SettingsPage() {
         form.append(name, value)
       }
       await settingsAPI.update(form)
-      toast.success("Saved", `${label} updated.`)
+      toast.success("Saved", `${label || "Setting"} updated.`)
     } catch { toast.error("Error", "Failed to save.") }
   }
 
@@ -267,7 +278,14 @@ export default function SettingsPage() {
         if (k.startsWith("socialLinks.")) { social[k.replace("socialLinks.", "")] = flat[k]; delete flat[k] }
       })
       flat.socialLinks = JSON.stringify(social)
-      Object.entries(flat).forEach(([k, v]) => { if (v !== undefined && v !== null) form.append(k, v) })
+
+      // Parse numbers for bulk save too
+      const numericFields = ["defaultTaxRate", "freeShippingThreshold", "minimumOrderAmount", "orderAutoCancelDays", "lowStockThreshold"]
+      Object.entries(flat).forEach(([k, v]) => {
+        let val = v
+        if (numericFields.includes(k)) val = Number(v)
+        if (val !== undefined && val !== null) form.append(k, val)
+      })
       if (logoFile) form.append("logo", logoFile)
       await settingsAPI.update(form)
       toast.success("All Saved", "All settings committed successfully.")
