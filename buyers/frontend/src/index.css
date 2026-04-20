@@ -71,6 +71,17 @@
   color-scheme: dark;
 }
 
+/* =====================================================
+   DARK MODE — Prevent browser from dimming images
+   The browser's native dark mode can auto-dim images
+   when color-scheme: dark is set. We override this
+   to keep product photos at full brightness.
+   ===================================================== */
+[data-theme="queens-dark"] img,
+[data-theme="queens-dark"] video {
+  filter: none !important;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
