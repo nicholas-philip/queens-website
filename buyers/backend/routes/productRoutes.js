@@ -16,6 +16,7 @@ const {
   getCategories,
   getByCategory,
   getSizeGuides,
+  getSimilarStyles,
 } = require("../controllers/productController");
 
 // --- SHOP BROWSE ---
@@ -31,5 +32,6 @@ router.get("/category/:slug", getByCategory);
 router.get("/guides",         getSizeGuides); // Size & shade matching
 router.get("/:id",            getProductById);
 router.get("/:id/related",    getRelatedProducts);
+router.get("/:id/similar-styles", getSimilarStyles);
 
 module.exports = router;

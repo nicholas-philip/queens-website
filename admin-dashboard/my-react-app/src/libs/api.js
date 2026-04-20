@@ -73,6 +73,7 @@ export const productsAPI = {
   addVariant:    (id, d)   => api.post(`/admin/products/${id}/variants`, d),
   updateVariant: (id,v,d)  => api.put(`/admin/products/${id}/variants/${v}`, d),
   deleteVariant: (id, v)   => api.delete(`/admin/products/${id}/variants/${v}`),
+  getSimilarStyles: (id)   => api.get(`/admin/products/${id}/similar-styles`),
 }
 
 export const ordersAPI = {

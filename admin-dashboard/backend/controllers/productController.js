@@ -78,7 +78,7 @@ const getLowStockProducts = catchAsync(async (req, res) => {
 // ── GET /admin/products ───────────────────────────
 // All products with filtering, search, and pagination via filterQuery
 const getProducts = catchAsync(async (req, res) => {
-  const result = await filterQuery(Product, req.query, ["status", "category", "brand"]);
+  const result = await filterQuery(Product, req.query, ["status", "category", "brand", "price", "discountPrice"]);
   res.status(200).json({ success: true, ...result });
 });
 
@@ -279,6 +279,26 @@ const deleteProduct = catchAsync(async (req, res) => {
   res.status(200).json({ success: true, message: `Product "${product.title}" deleted.` });
 });
 
+const getSimilarStyles = catchAsync(async (req, res) => {
+  const product = await Product.findById(req.params.id).select("category price discountPrice");
+  if (!product) return res.status(404).json({ success: false, message: "Product not found." });
+
+  const currentPrice = product.discountPrice ?? product.price;
+
+  const similar = await Product.find({
+    _id: { $ne: product._id },
+    category: product.category,
+    $or: [
+      { price: currentPrice },
+      { discountPrice: currentPrice }
+    ]
+  })
+  .limit(20)
+  .select("title images price discountPrice SKU status");
+
+  res.status(200).json({ success: true, data: similar });
+});
+
 // ── POST /admin/products/:id/variants ────────────
 const addVariant = catchAsync(async (req, res) => {
   const product = await Product.findById(req.params.id);
@@ -347,6 +367,7 @@ module.exports = {
   updateProductStatus,
   adjustStock,
   deleteProduct,
+  getSimilarStyles,
   addVariant,
   updateVariant,
   deleteVariant,

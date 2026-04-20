@@ -26,7 +26,7 @@ const {
 } = require("../controllers/authController");
 
 const { getDailyRevenue, getOrdersByStatus, getTopProducts, getSalesByCategory, getAnalyticsOverview } = require("../controllers/analyticsController");
-const { getProducts, getProductById, createProduct, updateProduct, updateProductStatus, adjustStock, deleteProduct, getLowStockProducts, addVariant, updateVariant, deleteVariant } = require("../controllers/productController");
+const { getProducts, getProductById, createProduct, updateProduct, updateProductStatus, adjustStock, deleteProduct, getLowStockProducts, addVariant, updateVariant, deleteVariant, getSimilarStyles } = require("../controllers/productController");
 const { createOrder, getAllOrders, getOrderById, updateOrderStatus, addTrackingNumber, updateAdminNotes, deleteOrder, updateOrderPayment, verifyOrderPayment } = require("../controllers/orderController");
 const { getAllCustomers, getCustomerStats, getCustomerById, updateCustomerTags, updateCustomerNotes, toggleBlockCustomer, deleteCustomer } = require("../controllers/customerController");
 const { createTransaction, getAllTransactions, getTransactionSummary, getTransactionsByOrder, getTransactionById, refundTransaction } = require("../controllers/transactionController");
@@ -96,6 +96,7 @@ router.get   ("/admin/products/low-stock",           verifyAdmin, getLowStockPro
 router.get   ("/admin/products",                     verifyAdmin, getProducts);
 router.post  ("/admin/products",                     verifyAdmin, upload.array("images", 5), validate(schemas.createProduct), createProduct);
 router.get   ("/admin/products/:id",                 verifyAdmin, getProductById);
+router.get   ("/admin/products/:id/similar-styles",  verifyAdmin, getSimilarStyles);
 router.put   ("/admin/products/:id",                 verifyAdmin, upload.array("images", 5), updateProduct);
 router.patch ("/admin/products/:id/status",          verifyAdmin, updateProductStatus);
 router.patch ("/admin/products/:id/stock",           verifyAdmin, validate(schemas.adjustStock), adjustStock);

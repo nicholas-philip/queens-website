@@ -1,6 +1,6 @@
 import { useEffect, useState }              from "react"
 import { useParams, Link, useNavigate }     from "react-router-dom"
-import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle, Loader2, Heart } from "lucide-react"
+import { ArrowLeft, Pencil, Plus, Minus, Trash2, Package, Tag, Star, Calendar, ShoppingCart, Box, Activity, ChevronLeft, ChevronRight, AlertTriangle, Loader2, Heart, Sparkles } from "lucide-react"
 import { productsAPI }                      from "../../libs/api"
 import { formatCurrency, getStatusBadge, formatDate, cn } from "../../libs/utils"
 import { useToast }                         from "../../context/ToastContext"
@@ -22,6 +22,8 @@ export default function ProductDetailPage() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [imgIndex,   setImgIndex]   = useState(0)
 
+  const [similarStyles, setSimilarStyles] = useState([])
+
   useEffect(() => {
     if (id === "new") {
       navigate("/products", { replace: true });
@@ -32,6 +34,10 @@ export default function ProductDetailPage() {
       .then(({ data }) => setProduct(data.product))
       .catch(() => toast.error("Error", "Product not found."))
       .finally(() => setLoading(false))
+    
+    productsAPI.getSimilarStyles(id)
+      .then(({ data }) => setSimilarStyles(data.data || []))
+      .catch(err => console.error("Could not load similar styles", err))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
@@ -271,6 +277,35 @@ export default function ProductDetailPage() {
                     </div>
                 )}
             </div>
+
+            {/* Grouped Styles (Automatic Linking) */}
+            {similarStyles.length > 0 && (
+                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em] mb-1">Style Grouping</h3>
+                            <p className="text-xs text-neutral-500 font-medium">Items linked by Category + Price ({formatCurrency(product.discountPrice || product.price)})</p>
+                        </div>
+                        <Sparkles className="h-4 w-4 text-yellow-500/50" />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        {similarStyles.map(s => (
+                            <Link 
+                                key={s._id} 
+                                to={`/products/${s._id}`}
+                                className="group relative aspect-square bg-black/40 border border-neutral-800 rounded-2xl overflow-hidden hover:border-yellow-500/30 transition-all"
+                            >
+                                <img src={s.images?.[0]} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
+                                <div className="absolute inset-x-0 bottom-0 p-2 bg-black/80 translate-y-full group-hover:translate-y-0 transition-transform">
+                                    <p className="text-[10px] font-bold text-white truncate">{s.title}</p>
+                                    <p className="text-[9px] text-neutral-500 font-mono">{s.SKU}</p>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Technical Footer */}
             <div className="flex items-center justify-between px-4">

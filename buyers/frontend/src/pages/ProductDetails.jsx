@@ -71,6 +71,15 @@ const ProductDetails = () => {
     },
   });
 
+  const { data: similarStyles } = useQuery({
+    queryKey: ["similar-styles", id],
+    enabled: !!id,
+    queryFn: async () => {
+      const { data } = await api.get(`/products/${id}/similar-styles`);
+      return data.data || data;
+    },
+  });
+
   if (isLoading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-base-100">
@@ -199,11 +208,11 @@ const ProductDetails = () => {
             </p>
 
             {/* OPTIONS (SIZES & COLORS) - JUMIA STYLE */}
-            {(product.sizes?.length > 0 || product.colors?.length > 0) && (
+            {(product.sizes?.length > 0 || product.colors?.length > 0 || similarStyles?.length > 0) && (
               <div className="space-y-8 pt-10 border-t border-base-200/50">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-black uppercase tracking-[0.2em] text-base-content/40">
-                    Variation Available
+                    Style Variations
                   </span>
                   {product.hasVariants && (
                     <span className="text-xs font-bold text-primary cursor-pointer hover:underline">
@@ -211,6 +220,36 @@ const ProductDetails = () => {
                     </span>
                   )}
                 </div>
+
+                {similarStyles?.length > 0 && (
+                  <div className="space-y-4">
+                     <div className="flex items-center justify-between">
+                       <span className="text-sm font-black uppercase tracking-wider text-base-content/80">
+                          Other Styles At This Price
+                        </span>
+                        <span className="text-xs font-bold text-primary">
+                          {similarStyles.length + 1} styles available
+                        </span>
+                     </div>
+                      <div className="flex flex-wrap gap-3">
+                        {/* Current Style */}
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-primary p-0.5">
+                           <img src={product.images?.[0]} className="w-full h-full object-cover rounded-lg" alt="" />
+                        </div>
+                        {/* Other Styles */}
+                        {similarStyles.map((s) => (
+                          <Link 
+                            key={s._id} 
+                            to={`/product/${s._id}`}
+                            className="w-16 h-16 rounded-xl overflow-hidden border-2 border-transparent hover:border-primary/50 transition-all p-0.5 opacity-60 hover:opacity-100"
+                            title={s.title}
+                          >
+                            <img src={s.images?.[0]} className="w-full h-full object-cover rounded-lg" alt={s.title} />
+                          </Link>
+                        ))}
+                      </div>
+                  </div>
+                )}
 
                 {product.sizes?.length > 0 && (
                   <div className="space-y-4">

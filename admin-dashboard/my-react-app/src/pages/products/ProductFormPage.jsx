@@ -35,6 +35,29 @@ export default function ProductFormPage() {
   const [existingImages, setExistingImages] = useState([]) // URLs from backend
   const [newImages, setNewImages] = useState([]) // File objects
   const [previewImages, setPreviewImages] = useState([]) // Object URLs for preview
+  const [groupCount, setGroupCount] = useState(0)
+
+  // ── Grouping Preview Logic ──
+  useEffect(() => {
+    if (formData.price && formData.category) {
+      const currentPrice = formData.discountPrice || formData.price;
+      
+      // Fetch matching products to show count
+      productsAPI.getAll({ 
+        category: formData.category, 
+        price: currentPrice,
+        limit: 1 // Only need the total from metadata
+      }).then(({ data }) => {
+         const count = data.pagination?.total || 0;
+         setGroupCount(count);
+      }).catch((err) => {
+         console.warn("Could not fetch similar styles preview", err);
+         setGroupCount(0);
+      });
+    } else {
+      setGroupCount(0);
+    }
+  }, [formData.price, formData.discountPrice, formData.category])
 
   useEffect(() => {
     // Fetch Categories
@@ -334,6 +357,18 @@ export default function ProductFormPage() {
                 placeholder="Optional" 
               />
             </div>
+            
+            {(formData.price && formData.category) && (
+              <div className="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl flex items-start gap-3 mt-4">
+                <Sparkles className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[11px] font-bold text-yellow-500 uppercase tracking-wider">Style Grouping Active</p>
+                  <p className="text-[10px] text-neutral-500 leading-relaxed mt-1">
+                    This product will be linked with <b>{groupCount} other style(s)</b> in the <b>{categories.find(c => c._id === formData.category)?.name}</b> category at <b>${formData.discountPrice || formData.price}</b>.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Inventory */}

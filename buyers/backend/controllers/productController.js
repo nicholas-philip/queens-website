@@ -159,6 +159,32 @@ const getRelatedProducts = async (req, res) => {
   res.status(200).json({ success: true, count: related.length, data: related });
 };
 
+const getSimilarStyles = async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id).select("category price discountPrice");
+    if (!product) return res.status(404).json({ success: false, message: "Product not found." });
+
+    const currentPrice = product.discountPrice ?? product.price;
+
+    // Find products in same category with same price (either regular or discount)
+    const similar = await Product.find({
+      _id: { $ne: product._id },
+      status: "Active",
+      category: product.category,
+      $or: [
+        { price: currentPrice },
+        { discountPrice: currentPrice }
+      ]
+    })
+    .limit(10)
+    .select("title images price discountPrice SKU");
+
+    res.status(200).json({ success: true, count: similar.length, data: similar });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 const getCategories = async (req, res) => {
   const cats = await Category.find({ isActive: { $ne: false } })
     .sort({ sortOrder: 1, name: 1 })
@@ -206,5 +232,5 @@ module.exports = {
   getProducts, searchSuggestions, getFeaturedProducts,
   getNewArrivals, getBestSellers, getProductById,
   getRelatedProducts, getCategories, getByCategory,
-  getSizeGuides,
+  getSizeGuides, getSimilarStyles,
 };
