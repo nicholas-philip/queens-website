@@ -190,12 +190,12 @@ router.delete("/admin/reviews/:id",           verifyAdmin, rev.deleteReview);
 // =====================================================
 router.get   ("/admin/accounts",                    verifyAdmin, requireSuperAdmin, adm.getAllAdmins);
 router.post  ("/admin/accounts",                    verifyAdmin, requireSuperAdmin, validate(schemas.register), adm.createAdmin);
-router.get   ("/admin/accounts/:id",                verifyAdmin, adm.getAdminById);
+router.get   ("/admin/accounts/:id",                verifyAdmin, requireSuperAdmin, adm.getAdminById);
 router.patch ("/admin/accounts/:id",                verifyAdmin, upload.single("avatar"), adm.updateAdmin);
 router.patch ("/admin/accounts/:id/password",       verifyAdmin, adm.changePassword);
 router.patch ("/admin/accounts/:id/deactivate",     verifyAdmin, requireSuperAdmin, adm.deactivateAdmin);
 router.delete("/admin/accounts/:id",                verifyAdmin, requireSuperAdmin, adm.deleteAdmin);
-router.get   ("/admin/accounts/:id/logs",           verifyAdmin, adm.getAdminActivityLog);
+router.get   ("/admin/accounts/:id/logs",           verifyAdmin, requireSuperAdmin, adm.getAdminActivityLog);
 
 // =====================================================
 // NOTIFICATIONS
@@ -210,8 +210,8 @@ router.delete("/admin/notifications/:id",          verifyAdmin, notif.deleteNoti
 // =====================================================
 // SETTINGS
 // =====================================================
-router.get   ("/admin/settings",              verifyAdmin, sett.getSettings);
-router.patch ("/admin/settings",              verifyAdmin, upload.single("logo"), sett.updateSettings);
+router.get   ("/admin/settings",              verifyAdmin, requireSuperAdmin, sett.getSettings);
+router.patch ("/admin/settings",              verifyAdmin, requireSuperAdmin, upload.single("logo"), sett.updateSettings);
 router.post  ("/admin/settings/maintenance",  verifyAdmin, requireSuperAdmin, sett.toggleMaintenanceMode);
 
 // =====================================================

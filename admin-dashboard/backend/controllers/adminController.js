@@ -16,6 +16,10 @@ const getAllAdmins = async (req, res) => {
 };
 
 const getAdminById = async (req, res) => {
+  const isSelf       = req.admin._id.toString() === req.params.id;
+  const isSuperAdmin = req.admin.role === "SuperAdmin";
+  if (!isSelf && !isSuperAdmin) return res.status(403).json({ success: false, message: "You can only view your own profile." });
+
   const admin = await Admin.findById(req.params.id).select("-__v");
   if (!admin) return res.status(404).json({ success: false, message: "Admin not found." });
   res.status(200).json({ success: true, admin });
@@ -111,6 +115,10 @@ const deleteAdmin = async (req, res) => {
 };
 
 const getAdminActivityLog = async (req, res) => {
+  const isSelf       = req.admin._id.toString() === req.params.id;
+  const isSuperAdmin = req.admin.role === "SuperAdmin";
+  if (!isSelf && !isSuperAdmin) return res.status(403).json({ success: false, message: "You can only view your own activity logs." });
+
   const page = parseInt(req.query.page) || 1, limit = parseInt(req.query.limit) || 20, skip = (page - 1) * limit;
   const [logs, total] = await Promise.all([
     ActivityLog.find({ adminId: req.params.id }).sort({ createdAt: -1 }).skip(skip).limit(limit),
