@@ -97,7 +97,9 @@ const FAQ = () => {
             <h3 className="text-xl sm:text-2xl font-extrabold text-base-content mb-2">Still have questions?</h3>
             <p className="text-base-content/60 font-medium text-base sm:text-lg mb-6 sm:mb-8">Our concierge team is here to assist you.</p>
             <a
-              href="https://wa.me/233245709324" 
+              href="https://wa.me/233536479169" 
+
+              
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block px-6 sm:px-8 py-4 sm:py-5 bg-primary text-primary-content font-extrabold rounded-xl hover:brightness-110 transition-colors shadow-lg active:scale-[0.98] text-sm sm:text-base"
