@@ -36,6 +36,7 @@ export default function ProductFormPage() {
   const [newImages, setNewImages] = useState([]) // File objects
   const [previewImages, setPreviewImages] = useState([]) // Object URLs for preview
   const [groupCount, setGroupCount] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
 
   // ── Grouping Preview Logic ──
   useEffect(() => {
@@ -109,18 +110,48 @@ export default function ProductFormPage() {
   }
 
   // ── Image Handling ──
-  const handleImageSelect = (e) => {
-    const files = Array.from(e.target.files)
-    if (!files.length) return
+  const processFiles = (files) => {
+    if (!files || files.length === 0) return
 
-    setNewImages((prev) => [...prev, ...files])
+    const imageFiles = files.filter(file => file.type.startsWith('image/'))
+    if (imageFiles.length === 0) {
+      return toast.warning("Invalid Files", "Please upload image files only.")
+    }
+
+    setNewImages((prev) => [...prev, ...imageFiles])
     
     // Create preview URLs
-    const newPreviews = files.map(file => URL.createObjectURL(file))
+    const newPreviews = imageFiles.map(file => URL.createObjectURL(file))
     setPreviewImages((prev) => [...prev, ...newPreviews])
+  }
+
+  const handleImageSelect = (e) => {
+    const files = Array.from(e.target.files)
+    processFiles(files)
     
     // Reset file input
     if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const handleDragOver = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    
+    const files = Array.from(e.dataTransfer.files)
+    processFiles(files)
   }
 
   const removeNewImage = (index) => {
@@ -316,12 +347,25 @@ export default function ProductFormPage() {
             {/* Upload Area */}
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-neutral-800 rounded-2xl p-10 flex flex-col items-center justify-center text-center hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all cursor-pointer bg-black/20"
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className={cn(
+                "border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all cursor-pointer bg-black/20",
+                isDragging 
+                  ? "border-yellow-500 bg-yellow-500/10 scale-[0.99] shadow-inner" 
+                  : "border-neutral-800 hover:border-yellow-500/50 hover:bg-yellow-500/5"
+              )}
             >
-              <div className="w-14 h-14 bg-neutral-900 rounded-full flex items-center justify-center mb-4 text-neutral-400 shadow-inner">
-                <Upload className="h-6 w-6" />
+              <div className={cn(
+                "w-14 h-14 rounded-full flex items-center justify-center mb-4 transition-all shadow-inner",
+                isDragging ? "bg-yellow-500 text-black scale-110" : "bg-neutral-900 text-neutral-400"
+              )}>
+                <Upload className={cn("h-6 w-6", isDragging && "animate-bounce")} />
               </div>
-              <p className="text-sm font-bold text-white mb-1">Click to browse images</p>
+              <p className={cn("text-sm font-bold mb-1 transition-colors", isDragging ? "text-yellow-500" : "text-white")}>
+                {isDragging ? "Drop images here" : "Click or drag images to upload"}
+              </p>
               <p className="text-xs font-medium text-neutral-500 tracking-wide uppercase mt-1">PNG, JPG, JPEG up to 5MB</p>
               <input 
                 ref={fileInputRef} 
@@ -359,14 +403,11 @@ export default function ProductFormPage() {
             </div>
             
             {(formData.price && formData.category) && (
-              <div className="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl flex items-start gap-3 mt-4">
-                <Sparkles className="h-4 w-4 text-yellow-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-[11px] font-bold text-yellow-500 uppercase tracking-wider">Style Grouping Active</p>
-                  <p className="text-[10px] text-neutral-500 leading-relaxed mt-1">
-                    This product will be linked with <b>{groupCount} other style(s)</b> in the <b>{categories.find(c => c._id === formData.category)?.name}</b> category at <b>${formData.discountPrice || formData.price}</b>.
-                  </p>
-                </div>
+              <div className="p-3 bg-yellow-500/5 border border-yellow-500/10 rounded-xl flex items-center gap-2.5 mt-4">
+                <Sparkles className="h-3.5 w-3.5 text-yellow-500 shrink-0" />
+                <p className="text-[10px] text-neutral-500 leading-tight">
+                  Linked with <b>{groupCount} styles</b> in <b>{categories.find(c => c._id === formData.category)?.name}</b> at <b>${formData.discountPrice || formData.price}</b>
+                </p>
               </div>
             )}
           </div>

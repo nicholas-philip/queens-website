@@ -172,28 +172,28 @@ const ProductDetails = () => {
               <div className="flex flex-wrap items-center gap-6 mt-5">
 
                 <div className="flex items-baseline gap-2">
-                   <p className="text-3xl font-extrabold text-primary">
-                    GHS {(product.discountPrice ?? product.price ?? 0).toFixed(2)}
+                   <p className="text-2xl font-black text-primary">
+                    GHS {(product.discountPrice ?? product.price ?? 0).toLocaleString()}
                   </p>
                   {product.discountPrice && (
-                    <p className="text-lg text-base-content/30 line-through">
-                      GHS {(product.price ?? 0).toFixed(2)}
+                    <p className="text-sm text-base-content/30 line-through">
+                      GHS {(product.price ?? 0).toLocaleString()}
                     </p>
                   )}
                 </div>
 
-                <div className="flex items-center gap-1.5 border-l border-base-300 pl-6">
+                <div className="flex items-center gap-1.5 border-l border-base-300 pl-4">
                   <div className="flex text-yellow-500">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <Star
                         key={i}
-                        size={16}
+                        size={14}
                         fill={i <= Math.round(product.averageRating || 0) ? "currentColor" : "none"}
                         className={i <= Math.round(product.averageRating || 0) ? "" : "text-base-content/20"}
                       />
                     ))}
                   </div>
-                  <span className="text-sm font-bold text-base-content/70">
+                  <span className="text-[10px] font-bold text-base-content/50 uppercase tracking-widest">
                     ({product.reviewCount || 0} reviews)
                   </span>
                 </div>
@@ -209,9 +209,9 @@ const ProductDetails = () => {
 
             {/* OPTIONS (SIZES & COLORS) - JUMIA STYLE */}
             {(product.sizes?.length > 0 || product.colors?.length > 0 || similarStyles?.length > 0) && (
-              <div className="space-y-8 pt-10 border-t border-base-200/50">
+              <div className="space-y-6 pt-6 border-t border-base-200/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-base-content/40">
+                  <span className="text-[10px] font-black uppercase tracking-[0.25em] text-base-content/30">
                     Style Variations
                   </span>
                   {product.hasVariants && (
@@ -221,56 +221,22 @@ const ProductDetails = () => {
                   )}
                 </div>
 
-                {similarStyles?.length > 0 && (
-                  <div className="space-y-4">
-                     <div className="flex items-center justify-between">
-                       <span className="text-sm font-black uppercase tracking-wider text-base-content/80">
-                          Other Styles At This Price
-                        </span>
-                        <span className="text-xs font-bold text-primary">
-                          {similarStyles.length + 1} styles available
-                        </span>
-                     </div>
-                      <div className="flex flex-wrap gap-3">
-                        {/* Current Style */}
-                        <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-primary p-0.5">
-                           <img src={product.images?.[0]} className="w-full h-full object-cover rounded-lg" alt="" />
-                        </div>
-                        {/* Other Styles */}
-                        {similarStyles.map((s) => (
-                          <Link 
-                            key={s._id} 
-                            to={`/product/${s._id}`}
-                            className="w-16 h-16 rounded-xl overflow-hidden border-2 border-transparent hover:border-primary/50 transition-all p-0.5 opacity-60 hover:opacity-100"
-                            title={s.title}
-                          >
-                            <img src={s.images?.[0]} className="w-full h-full object-cover rounded-lg" alt={s.title} />
-                          </Link>
-                        ))}
-                      </div>
-                  </div>
-                )}
 
                 {product.sizes?.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-black uppercase tracking-wider text-base-content/80">
-                        Select Size
-                      </span>
-                      {selectedSize && (
-                        <span className="text-xs font-bold text-primary">Selected: {selectedSize}</span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-2.5">
+                  <div className="flex items-center gap-6">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/40 shrink-0">
+                      Select Size
+                    </span>
+                    <div className="flex flex-wrap gap-2">
                       {product.sizes.map((size) => (
                         <button
                           key={size}
                           onClick={() => setSelectedSize(size)}
-                          className={`h-11 px-6 rounded-xl text-xs font-bold transition-all duration-300 border-2 flex items-center justify-center min-w-[3.5rem]
+                          className={`h-9 px-4 rounded-lg text-[10px] font-black transition-all duration-300 border flex items-center justify-center min-w-[2.5rem]
                           ${
                             selectedSize === size
-                              ? "bg-primary border-primary text-primary-content shadow-lg shadow-primary/20 scale-105"
-                              : "border-base-200 text-base-content/60 hover:border-primary/40 hover:text-primary"
+                              ? "bg-primary border-primary text-primary-content shadow-md shadow-primary/10"
+                              : "border-base-200 text-base-content/50 hover:border-primary/40 hover:text-primary"
                           }`}
                         >
                           {size}
@@ -281,25 +247,20 @@ const ProductDetails = () => {
                 )}
 
                 {product.colors?.length > 0 && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-black uppercase tracking-wider text-base-content/80">
-                        Select Color
-                      </span>
-                      {selectedColor && (
-                        <span className="text-xs font-bold text-primary">Selected: {selectedColor}</span>
-                      )}
-                    </div>
-                    <div className="flex flex-wrap gap-2.5">
+                  <div className="flex items-center gap-6">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/40 shrink-0">
+                      Select Color
+                    </span>
+                    <div className="flex flex-wrap gap-2">
                       {product.colors.map((color) => (
                         <button
                           key={color}
                           onClick={() => setSelectedColor(color)}
-                          className={`h-11 px-5 rounded-xl text-xs font-bold transition-all duration-300 border-2 flex items-center justify-center min-w-[5rem]
+                          className={`h-9 px-4 rounded-lg text-[10px] font-black transition-all duration-300 border flex items-center justify-center min-w-[4rem]
                           ${
                             selectedColor === color
-                              ? "bg-primary border-primary text-primary-content shadow-lg shadow-primary/20 scale-105"
-                              : "border-base-200 text-base-content/60 hover:border-primary/40 hover:text-primary"
+                              ? "bg-primary border-primary text-primary-content shadow-md shadow-primary/10"
+                              : "border-base-200 text-base-content/50 hover:border-primary/40 hover:text-primary"
                           }`}
                         >
                           {color}
@@ -403,9 +364,29 @@ const ProductDetails = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
+
+        {/* SIMILAR STYLES GRID - SHOP STYLE */}
+        {similarStyles?.length > 0 && (
+          <section className="mt-20 border-t border-base-200 pt-16">
+            <div className="flex items-center justify-between mb-10">
+               <div>
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight mb-2 uppercase tracking-[0.05em]">More Styles At This Price</h2>
+                  <div className="h-1.5 w-16 bg-primary rounded-full"></div>
+               </div>
+               <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/5 px-4 py-2 rounded-full border border-primary/10 hidden sm:inline-block">
+                 {similarStyles.length} Linked Items Found
+               </span>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
+              {similarStyles.map((s) => (
+                <ProductCard key={s._id} product={s} />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* REVIEWS SECTION */}
         <ReviewSection 
@@ -415,26 +396,6 @@ const ProductDetails = () => {
           reviewCount={product.reviewCount || 0}
         />
 
-        {/* RELATED PRODUCTS - JUMIA STYLE CAROUSEL GRID */}
-        {relatedProducts?.length > 0 && (
-          <section className="mt-20 lg:mt-28 border-t border-base-200 pt-16">
-            <div className="flex items-center justify-between mb-8">
-               <div>
-                  <h2 className="text-3xl font-black tracking-tight mb-2 uppercase tracking-[0.05em]">Explore more</h2>
-                  <div className="h-1.5 w-16 bg-primary rounded-full"></div>
-               </div>
-               <Link to="/shop" className="text-xs font-black uppercase tracking-widest text-primary hover:underline">View All Collection</Link>
-            </div>
-
-            <div className="flex gap-4 md:gap-6 overflow-x-auto hide-scrollbar snap-x snap-mandatory pb-8 pt-2">
-              {relatedProducts.map((p) => (
-                <div key={p._id} className="min-w-[160px] sm:min-w-[200px] md:min-w-[220px] lg:min-w-[240px] snap-start shrink-0 mb-4">
-                  <ProductCard product={p} />
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
       </div>
     </div>

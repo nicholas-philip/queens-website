@@ -281,25 +281,28 @@ export default function ProductDetailPage() {
             {/* Grouped Styles (Automatic Linking) */}
             {similarStyles.length > 0 && (
                 <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-8">
                         <div>
-                            <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em] mb-1">Style Grouping</h3>
-                            <p className="text-xs text-neutral-500 font-medium">Items linked by Category + Price ({formatCurrency(product.discountPrice || product.price)})</p>
+                            <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-1">Style Grouping</h3>
+                            <p className="text-xs text-neutral-500 font-bold uppercase tracking-wider opacity-60">Linked by Category + {formatCurrency(product.discountPrice || product.price)}</p>
                         </div>
-                        <Sparkles className="h-4 w-4 text-yellow-500/50" />
+                        <div className="h-10 w-10 bg-yellow-500/10 rounded-full flex items-center justify-center">
+                            <Sparkles className="h-5 w-5 text-yellow-500" />
+                        </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                         {similarStyles.map(s => (
                             <Link 
                                 key={s._id} 
                                 to={`/products/${s._id}`}
-                                className="group relative aspect-square bg-black/40 border border-neutral-800 rounded-2xl overflow-hidden hover:border-yellow-500/30 transition-all"
+                                className="group relative aspect-[4/5] bg-black/40 border border-neutral-800 rounded-2xl overflow-hidden hover:border-yellow-500/50 transition-all shadow-xl"
+                                title={s.title}
                             >
-                                <img src={s.images?.[0]} alt="" className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" />
-                                <div className="absolute inset-x-0 bottom-0 p-2 bg-black/80 translate-y-full group-hover:translate-y-0 transition-transform">
-                                    <p className="text-[10px] font-bold text-white truncate">{s.title}</p>
-                                    <p className="text-[9px] text-neutral-500 font-mono">{s.SKU}</p>
+                                <img src={s.images?.[0]} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all" />
+                                <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black to-transparent">
+                                    <p className="text-[10px] font-black text-white truncate mb-0.5">{s.title}</p>
+                                    <p className="text-[9px] text-yellow-500 font-mono font-bold uppercase tracking-tighter">{s.SKU}</p>
                                 </div>
                             </Link>
                         ))}
