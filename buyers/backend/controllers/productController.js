@@ -70,7 +70,7 @@ const getProducts = async (req, res) => {
     }
 
     const pg   = Math.max(parseInt(page), 1);
-    const lim  = Math.min(parseInt(limit), 48);
+    const lim  = Math.min(parseInt(limit), 1000); // allow returning all products if requested
     const skip = (pg - 1) * lim;
 
     const sortMap = {

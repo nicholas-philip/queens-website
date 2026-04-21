@@ -1,20 +1,9 @@
 // =====================================================
-// components/CheckoutModal.jsx  —  FIXED + REDESIGNED
+// components/CheckoutModal.jsx
 //
-// Fixes vs old version:
-//   1. Was posting wrong payload shape to /api/orders (missing items.productId,
-//      sending raw title/SKU instead of what the backend expects).
-//   2. Paystack flow: now correctly calls POST /api/payment/initialize
-//      then redirects to authorization_url — old code checked data.paymentUrl
-//      which the backend never sets.
-//   3. images[0] accessed without optional chaining → crashes on products
-//      with no images.
-//   4. cartTotal() called incorrectly (old broken store).
-//   5. Validation: "Continue" was disabled only on step 1 empty cart & step 3
-//      no shipping — step 2 had zero validation (could submit blank form).
-//   6. Added coupon code field wired to POST /api/orders/coupon.
-//   7. UI: dark luxury aesthetic tightened — gold accents, smooth step
-//      transitions, mobile-first layout, loading skeleton on image.
+// Payment Methods:
+//   - Manual MoMo (ACTIVE) — sends paymentMethod:'Manual MoMo' to backend
+//   - Paystack (DISABLED)  — shown but non-clickable until enabled
 // =====================================================
 
 import React, { useState, useCallback } from 'react';
@@ -22,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ShoppingCart, User, Truck, CreditCard,
   ChevronRight, ChevronLeft, Trash2, Plus, Minus,
-  CheckCircle, Tag, AlertCircle, Lock
+  CheckCircle, Tag, AlertCircle, Lock, Smartphone, Clock
 } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { useToast } from '../context/ToastContext';
@@ -41,13 +30,15 @@ const REGIONS = [
 ];
 
 const SHIPPING_OPTIONS = [
-  { id: 'standard', name: 'Standard — Accra',         price: 25,  time: '1–2 days' },
-  { id: 'express',  name: 'Express — Accra',           price: 50,  time: 'Same day' },
-  { id: 'station',  name: 'Bus Station — Outside Accra', price: 35, time: '2–3 days' },
+  { id: 'pickup',   name: 'Store Pickup',      price: 0, time: 'Pick up your order for free' },
+  { id: 'delivery', name: 'Standard Delivery', price: 0, time: 'Delivery fee will be communicated after checkout' },
 ];
 
+const MOMO_NAME   = 'Samuel Kwesi Nyarko';
+const MOMO_NUMBER = '055 710 4606';
+
 // ── Step indicator ───────────────────────────────────
-const STEPS = ['Bag', 'Details', 'Shipping', 'Review'];
+const STEPS = ['Bag', 'Details', 'Shipping', 'Payment'];
 
 const StepBar = ({ current }) => (
   <div className="flex items-center gap-2">
@@ -118,9 +109,13 @@ const CheckoutModal = () => {
     cartTotal, itemCount, clearCart,
   } = useCartStore();
 
-  const [step, setStep]       = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors]   = useState({});
+  const [step, setStep]             = useState(1);
+  const [loading, setLoading]       = useState(false);
+  const [errors, setErrors]         = useState({});
+  const [paymentMethod, setPaymentMethod] = useState('Manual MoMo');
+  // momoStage: 'select' | 'instructions' | 'success'
+  const [momoStage, setMomoStage]   = useState('select');
+  const [orderResult, setOrderResult] = useState(null);
 
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '',
@@ -130,7 +125,7 @@ const CheckoutModal = () => {
 
   const [shippingMethod, setShippingMethod] = useState(null);
   const [couponCode, setCouponCode]         = useState('');
-  const [couponResult, setCouponResult]     = useState(null); // { discountAmount, message }
+  const [couponResult, setCouponResult]     = useState(null);
   const [couponLoading, setCouponLoading]   = useState(false);
 
   const subtotal = cartTotal();
@@ -148,12 +143,12 @@ const CheckoutModal = () => {
   // ── Step 2 validation ────────────────────────────────
   const validateDetails = () => {
     const errs = {};
-    if (!formData.firstName.trim())           errs.firstName = 'Required';
-    if (!formData.lastName.trim())            errs.lastName  = 'Required';
-    if (!isValidEmail(formData.email))        errs.email     = 'Valid email required';
-    if (!isValidPhone(formData.whatsapp))     errs.whatsapp  = 'Valid Ghanaian number required';
-    if (!formData.address.trim())             errs.address   = 'Required';
-    if (!formData.city.trim())                errs.city      = 'Required';
+    if (!formData.firstName.trim())       errs.firstName = 'Required';
+    if (!formData.lastName.trim())        errs.lastName  = 'Required';
+    if (!isValidEmail(formData.email))    errs.email     = 'Valid email required';
+    if (!isValidPhone(formData.whatsapp)) errs.whatsapp  = 'Valid Ghanaian number required';
+    if (!formData.address.trim())         errs.address   = 'Required';
+    if (!formData.city.trim())            errs.city      = 'Required';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -180,15 +175,15 @@ const CheckoutModal = () => {
     }
   };
 
-  const handlePlaceOrder = async () => {
+  // ── Place order (Manual MoMo) ────────────────────────
+  const handlePlaceManualOrder = async () => {
     if (!shippingMethod) return;
     setLoading(true);
     try {
       const sessionId = localStorage.getItem('queens_session_id');
-      
-      // 1. Create order — payload matches orderController.placeOrder exactly
       const { data: orderData } = await api.post('/orders', {
-        metadata: { sessionId }, // <--- Added for instant history sync
+        paymentMethod: 'Manual MoMo',
+        metadata: { sessionId },
         customerDetails: {
           name:    `${formData.firstName.trim()} ${formData.lastName.trim()}`,
           email:   formData.email.trim(),
@@ -201,9 +196,9 @@ const CheckoutModal = () => {
           },
         },
         items: cartItems.map(item => ({
-          productId: item.product._id,
-          quantity:  item.quantity,
-          selectedSize: item.product.selectedSize,
+          productId:    item.product._id,
+          quantity:     item.quantity,
+          selectedSize:  item.product.selectedSize,
           selectedColor: item.product.selectedColor,
         })),
         shipping:   shippingMethod.price,
@@ -213,27 +208,14 @@ const CheckoutModal = () => {
 
       if (!orderData.success) throw new Error(orderData.message);
 
-      // 2. Initialize Paystack payment
-      const { data: payData } = await api.post('/payment/initialize', {
-        orderId: orderData.order._id,
-        channel: 'card',
-        metadata: { sessionId }, // <--- Double sync for webhook
-      });
-
-      if (payData.success && payData.authorization_url) {
-        clearCart();
-        // Redirect to Paystack
-        window.location.href = payData.authorization_url;
-      } else {
-        throw new Error('Payment initialization failed');
-      }
+      setOrderResult(orderData.order);
+      clearCart();
+      setMomoStage('success');
     } catch (err) {
       console.error('Checkout error:', err.response?.data || err.message);
-      
       const isTimeout = err.message === 'Network Error' || err.response?.status === 502 || err.response?.status === 504;
-      
       if (isTimeout) {
-        toast.info('Waking up server...', 'Please wait 10 seconds and click Place Order again.');
+        toast.info('Waking up server...', 'Please wait 10 seconds and try again.');
       } else {
         toast.error('Checkout Error', err.response?.data?.message || 'Something went wrong. Please try again.');
       }
@@ -242,12 +224,221 @@ const CheckoutModal = () => {
     }
   };
 
+  const handleClose = () => {
+    setCheckoutOpen(false);
+    setStep(1);
+    setMomoStage('select');
+    setOrderResult(null);
+  };
+
   if (!isCheckoutOpen) return null;
 
   const slideVariants = {
     enter:  { opacity: 0, x: 24 },
     center: { opacity: 1, x: 0  },
     exit:   { opacity: 0, x: -24 },
+  };
+
+  // ── MoMo instructions / success overlay ─────────────
+  const renderMoMoOverlay = () => {
+    if (momoStage === 'success') {
+      return (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="flex flex-col items-center justify-center py-8 text-center gap-4"
+        >
+          <div className="w-20 h-20 rounded-full bg-green-500/10 border border-green-500/30 flex items-center justify-center">
+            <CheckCircle size={40} className="text-green-400" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-white mb-1">Order Placed! 🎉</h3>
+            <p className="text-white/50 text-sm">We are waiting for your MoMo payment confirmation.</p>
+          </div>
+          {orderResult && (
+            <div className="w-full p-4 bg-white/5 rounded-2xl border border-white/10 text-left space-y-1.5">
+              <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-2">Order Details</p>
+              <div className="flex justify-between text-sm">
+                <span className="text-white/60">Order #</span>
+                <span className="text-white font-bold">{orderResult.orderNumber}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-white/60">Amount</span>
+                <span className="text-gold font-bold">GHS {orderResult.total?.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-white/60">Status</span>
+                <span className="text-amber-400 font-semibold">Pending Confirmation</span>
+              </div>
+            </div>
+          )}
+          <div className="w-full p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 flex gap-2 items-start text-left">
+            <Clock size={14} className="text-blue-400 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-300/80 leading-relaxed">
+              Once we confirm your MoMo payment, your order will move to <strong className="text-blue-200">Processing</strong>. You'll receive an update soon.
+            </p>
+          </div>
+          <button
+            onClick={handleClose}
+            className="w-full py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20"
+          >
+            Done
+          </button>
+        </motion.div>
+      );
+    }
+
+    if (momoStage === 'instructions') {
+      return (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4"
+        >
+          <div>
+            <h3 className="text-lg font-bold text-white mb-1 flex items-center gap-2">
+              <Smartphone size={18} className="text-gold" /> Send MoMo Payment
+            </h3>
+            <p className="text-white/40 text-xs">Transfer the exact amount to the number below, then confirm.</p>
+          </div>
+
+          {/* MoMo card */}
+          <div className="p-5 rounded-2xl border border-gold/30 bg-gold/5 space-y-3">
+            <p className="text-xs text-white/40 uppercase tracking-widest font-bold">Send to</p>
+            <div className="space-y-1">
+              <p className="text-gold font-black text-3xl tracking-widest">{MOMO_NUMBER}</p>
+              <p className="text-white/70 text-sm font-semibold">{MOMO_NAME}</p>
+              <p className="text-white/30 text-xs">MTN Mobile Money</p>
+            </div>
+            <div className="border-t border-white/10 pt-3 flex justify-between items-center">
+              <span className="text-white/50 text-sm">Amount to send</span>
+              <span className="text-gold font-black text-xl">GHS {total.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <div className="p-3 bg-white/3 rounded-xl border border-white/8 text-xs text-white/50 leading-relaxed space-y-1">
+            <p>1. Open your <strong className="text-white/70">MTN MoMo</strong> app or dial <strong className="text-white/70">*170#</strong></p>
+            <p>2. Select <strong className="text-white/70">Transfer Money → MoMo</strong></p>
+            <p>3. Enter number <strong className="text-white/70">{MOMO_NUMBER}</strong> and amount <strong className="text-white/70">GHS {total.toFixed(2)}</strong></p>
+            <p>4. Confirm with your PIN, then click the button below</p>
+          </div>
+
+          <button
+            onClick={handlePlaceManualOrder}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-green-500 text-white font-bold text-sm hover:bg-green-400 transition-all shadow-lg shadow-green-500/20 disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Placing Order...
+              </>
+            ) : (
+              <>
+                <CheckCircle size={16} /> I have finished paying
+              </>
+            )}
+          </button>
+
+          <button
+            onClick={() => setMomoStage('select')}
+            disabled={loading}
+            className="w-full py-2 text-white/30 hover:text-white/60 text-xs transition-colors"
+          >
+            ← Go back
+          </button>
+        </motion.div>
+      );
+    }
+
+    // momoStage === 'select' — payment method selection
+    return (
+      <motion.div key="s4" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.2 }}>
+        <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <CreditCard size={18} className="text-gold" /> Order Summary
+        </h3>
+
+        {/* Delivery info recap */}
+        <div className="p-4 bg-white/3 rounded-2xl border border-white/6 mb-3 space-y-1.5">
+          <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-2">Delivering to</p>
+          <p className="text-white text-sm font-semibold">{formData.firstName} {formData.lastName}</p>
+          <p className="text-white/50 text-xs">{formData.address}, {formData.city}, {formData.region}</p>
+          <p className="text-white/50 text-xs">{formData.whatsapp}</p>
+        </div>
+
+        {/* Price breakdown */}
+        <div className="p-4 bg-white/3 rounded-2xl border border-white/6 space-y-3 mb-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-white/50">Subtotal ({itemCount()} items)</span>
+            <span className="text-white font-medium">GHS {subtotal.toFixed(2)}</span>
+          </div>
+          {discount > 0 && (
+            <div className="flex justify-between text-sm">
+              <span className="text-green-400">Discount ({couponCode})</span>
+              <span className="text-green-400 font-medium">−GHS {discount.toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between text-sm">
+            <span className="text-white/50">Shipping ({shippingMethod?.name})</span>
+            <span className="text-white font-medium">
+              {shipping === 0 ? (shippingMethod?.id === 'pickup' ? 'Free' : 'TBD') : `GHS ${shipping.toFixed(2)}`}
+            </span>
+          </div>
+          <div className="border-t border-white/8 pt-3 flex justify-between">
+            <span className="text-white font-bold">Total</span>
+            <span className="text-gold font-bold text-xl">GHS {total.toFixed(2)}</span>
+          </div>
+        </div>
+
+        {/* Payment method selection */}
+        <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-3">Select Payment Method</p>
+        <div className="space-y-3">
+
+          {/* Manual MoMo — ACTIVE */}
+          <button
+            onClick={() => setPaymentMethod('Manual MoMo')}
+            className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 ${
+              paymentMethod === 'Manual MoMo'
+                ? 'border-gold bg-gold/8 shadow-lg shadow-gold/5'
+                : 'border-white/8 bg-white/3 hover:border-white/15'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                paymentMethod === 'Manual MoMo' ? 'border-gold' : 'border-white/20'
+              }`}>
+                {paymentMethod === 'Manual MoMo' && <div className="w-2 h-2 rounded-full bg-gold" />}
+              </div>
+              <div className="flex-1">
+                <p className="text-white font-semibold text-sm flex items-center gap-2">
+                  <Smartphone size={14} className="text-gold" /> Manual MoMo Transfer
+                </p>
+                <p className="text-white/40 text-xs mt-0.5">Send to {MOMO_NUMBER} · {MOMO_NAME}</p>
+              </div>
+              <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 rounded-full font-bold">Active</span>
+            </div>
+          </button>
+
+          {/* Paystack — DISABLED */}
+          <div
+            title="Paystack payments are temporarily unavailable"
+            className="w-full text-left p-4 rounded-2xl border border-white/5 bg-white/2 opacity-40 cursor-not-allowed select-none"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded-full border-2 border-white/10 flex-shrink-0" />
+              <div className="flex-1">
+                <p className="text-white/50 font-semibold text-sm flex items-center gap-2">
+                  <CreditCard size={14} /> Paystack (Card / MoMo)
+                </p>
+                <p className="text-white/25 text-xs mt-0.5">Instant payment via card or mobile money</p>
+              </div>
+              <span className="text-xs bg-white/5 text-white/30 border border-white/10 px-2 py-0.5 rounded-full font-bold">Soon</span>
+            </div>
+          </div>
+
+        </div>
+      </motion.div>
+    );
   };
 
   return (
@@ -268,22 +459,20 @@ const CheckoutModal = () => {
               </div>
               <div className="h-8 w-px bg-white/10 hidden sm:block" />
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-gold font-bold">
-                  Checkout
-                </p>
+                <p className="text-xs uppercase tracking-[0.2em] text-gold font-bold">Checkout</p>
                 <p className="text-white/40 text-xs mt-0.5">
                   {itemCount()} {itemCount() === 1 ? 'item' : 'items'} · GHS {subtotal.toFixed(2)}
                 </p>
               </div>
             </div>
             <button
-              onClick={() => setCheckoutOpen(false)}
+              onClick={handleClose}
               className="w-9 h-9 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
             >
               <X size={18} className="text-white/60" />
             </button>
           </div>
-          <StepBar current={step} />
+          {momoStage !== 'success' && <StepBar current={step} />}
         </div>
 
         {/* ── Content ───────────────────────────────── */}
@@ -305,14 +494,9 @@ const CheckoutModal = () => {
                   <div className="space-y-3">
                     {cartItems.map((item) => (
                       <div key={item.cartItemId || item.product._id} className="flex gap-3 p-3 bg-white/3 rounded-2xl border border-white/6 hover:border-white/10 transition-colors">
-                        <div className="w-18 h-18 rounded-xl overflow-hidden bg-white/5 flex-shrink-0 w-[72px] h-[72px]">
+                        <div className="w-[72px] h-[72px] rounded-xl overflow-hidden bg-white/5 flex-shrink-0">
                           {item.product.images?.[0] ? (
-                            <img
-                              src={item.product.images[0]}
-                              alt={item.product.title}
-                              className="w-full h-full object-cover"
-                              loading="lazy"
-                            />
+                            <img src={item.product.images[0]} alt={item.product.title} className="w-full h-full object-cover" loading="lazy" />
                           ) : (
                             <div className="w-full h-full bg-white/5" />
                           )}
@@ -327,34 +511,19 @@ const CheckoutModal = () => {
                               GHS {(item.product.price * item.quantity).toFixed(2)}
                             </p>
                           )}
-                          {item.product.selectedSize && (
-                            <p className="text-white/50 text-xs mt-0.5">Size: {item.product.selectedSize}</p>
-                          )}
-                          {item.product.selectedColor && (
-                            <p className="text-white/50 text-xs mt-0.5">Color: {item.product.selectedColor}</p>
-                          )}
+                          {item.product.selectedSize  && <p className="text-white/50 text-xs mt-0.5">Size: {item.product.selectedSize}</p>}
+                          {item.product.selectedColor && <p className="text-white/50 text-xs mt-0.5">Color: {item.product.selectedColor}</p>}
                           <div className="flex items-center gap-3 mt-2">
                             <div className="flex items-center border border-white/10 rounded-lg overflow-hidden">
-                              <button
-                                onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity - 1)}
-                                className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors"
-                              >
+                              <button onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity - 1)} className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors">
                                 <Minus size={12} />
                               </button>
-                              <span className="px-3 text-sm font-bold text-white min-w-[28px] text-center">
-                                {item.quantity}
-                              </span>
-                              <button
-                                onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity + 1)}
-                                className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors"
-                              >
+                              <span className="px-3 text-sm font-bold text-white min-w-[28px] text-center">{item.quantity}</span>
+                              <button onClick={() => updateQuantity(item.cartItemId || item.product._id, item.quantity + 1)} className="px-2 py-1 hover:bg-white/5 text-white/60 hover:text-white transition-colors">
                                 <Plus size={12} />
                               </button>
                             </div>
-                            <button
-                              onClick={() => removeFromCart(item.cartItemId || item.product._id)}
-                              className="text-white/20 hover:text-red-400 transition-colors"
-                            >
+                            <button onClick={() => removeFromCart(item.cartItemId || item.product._id)} className="text-white/20 hover:text-red-400 transition-colors">
                               <Trash2 size={14} />
                             </button>
                           </div>
@@ -463,16 +632,16 @@ const CheckoutModal = () => {
                           <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
                             shippingMethod?.id === opt.id ? 'border-gold' : 'border-white/20'
                           }`}>
-                            {shippingMethod?.id === opt.id && (
-                              <div className="w-2 h-2 rounded-full bg-gold" />
-                            )}
+                            {shippingMethod?.id === opt.id && <div className="w-2 h-2 rounded-full bg-gold" />}
                           </div>
                           <div>
                             <p className="text-white font-semibold text-sm">{opt.name}</p>
                             <p className="text-white/40 text-xs mt-0.5">{opt.time}</p>
                           </div>
                         </div>
-                        <p className="text-gold font-bold text-sm">GHS {opt.price}</p>
+                        <p className="text-gold font-bold text-sm">
+                          {opt.price === 0 ? (opt.id === 'pickup' ? 'Free' : 'TBD') : `GHS ${opt.price}`}
+                        </p>
                       </div>
                     </button>
                   ))}
@@ -493,50 +662,10 @@ const CheckoutModal = () => {
               </motion.div>
             )}
 
-            {/* STEP 4 — REVIEW */}
+            {/* STEP 4 — PAYMENT */}
             {step === 4 && (
-              <motion.div key="s4" variants={slideVariants} initial="enter" animate="center" exit="exit" transition={{ duration: 0.2 }}>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <CreditCard size={18} className="text-gold" /> Order Summary
-                </h3>
-
-                {/* Delivery info recap */}
-                <div className="p-4 bg-white/3 rounded-2xl border border-white/6 mb-3 space-y-1.5">
-                  <p className="text-xs text-white/40 uppercase tracking-widest font-bold mb-2">Delivering to</p>
-                  <p className="text-white text-sm font-semibold">{formData.firstName} {formData.lastName}</p>
-                  <p className="text-white/50 text-xs">{formData.address}, {formData.city}, {formData.region}</p>
-                  <p className="text-white/50 text-xs">{formData.whatsapp}</p>
-                </div>
-
-                {/* Price breakdown */}
-                <div className="p-4 bg-white/3 rounded-2xl border border-white/6 space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/50">Subtotal ({itemCount()} items)</span>
-                    <span className="text-white font-medium">GHS {subtotal.toFixed(2)}</span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-sm">
-                      <span className="text-green-400">Discount ({couponCode})</span>
-                      <span className="text-green-400 font-medium">−GHS {discount.toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className="text-white/50">Shipping ({shippingMethod?.name})</span>
-                    <span className="text-white font-medium">GHS {shipping.toFixed(2)}</span>
-                  </div>
-                  <div className="border-t border-white/8 pt-3 flex justify-between">
-                    <span className="text-white font-bold">Total</span>
-                    <span className="text-gold font-bold text-xl">GHS {total.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-3 bg-gold/8 rounded-xl border border-gold/15 flex gap-3 items-start">
-                  <CheckCircle size={16} className="text-gold flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-gold/80 leading-relaxed">
-                    You'll be redirected to <strong className="text-gold">Paystack</strong> to pay securely via{' '}
-                    <strong className="text-gold">Mobile Money</strong> or <strong className="text-gold">Card</strong>.
-                  </p>
-                </div>
+              <motion.div key="s4-wrap" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }}>
+                {renderMoMoOverlay()}
               </motion.div>
             )}
 
@@ -544,52 +673,46 @@ const CheckoutModal = () => {
         </div>
 
         {/* ── Footer ────────────────────────────────── */}
-        <div className="px-6 pb-6 pt-4 border-t border-white/6 flex-shrink-0">
-          <div className="flex gap-3">
-            {step > 1 && (
-              <button
-                onClick={() => setStep(s => s - 1)}
-                disabled={loading}
-                className="flex items-center gap-1.5 px-5 py-3.5 rounded-2xl border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
-              >
-                <ChevronLeft size={16} /> Back
-              </button>
-            )}
+        {(step < 4 || (step === 4 && momoStage === 'select')) && (
+          <div className="px-6 pb-6 pt-4 border-t border-white/6 flex-shrink-0">
+            <div className="flex gap-3">
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(s => s - 1)}
+                  disabled={loading}
+                  className="flex items-center gap-1.5 px-5 py-3.5 rounded-2xl border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all text-sm font-medium"
+                >
+                  <ChevronLeft size={16} /> Back
+                </button>
+              )}
 
-            {step < 4 ? (
-              <button
-                onClick={handleNext}
-                disabled={
-                  (step === 1 && cartItems.length === 0) ||
-                  (step === 3 && !shippingMethod)
-                }
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                Continue <ChevronRight size={16} />
-              </button>
-            ) : (
-              <button
-                onClick={handlePlaceOrder}
-                disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20 disabled:opacity-60"
-              >
-                {loading ? (
-                  <>
-                    <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>Place Order · GHS {total.toFixed(2)} <ChevronRight size={16} /></>
-                )}
-              </button>
-            )}
+              {step < 4 ? (
+                <button
+                  onClick={handleNext}
+                  disabled={
+                    (step === 1 && cartItems.length === 0) ||
+                    (step === 3 && !shippingMethod)
+                  }
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  Continue <ChevronRight size={16} />
+                </button>
+              ) : (
+                // Step 4 select stage — show "Proceed to Pay"
+                <button
+                  onClick={() => setMomoStage('instructions')}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20"
+                >
+                  Proceed to Pay · GHS {total.toFixed(2)} <ChevronRight size={16} />
+                </button>
+              )}
+            </div>
+
+            <p className="text-center text-white/20 text-xs mt-3 flex items-center justify-center gap-1.5">
+              <Lock size={12} /> Secure checkout · SSL encrypted
+            </p>
           </div>
-
-          {/* Trust signal */}
-          <p className="text-center text-white/20 text-xs mt-3 flex items-center justify-center gap-1.5">
-            <Lock size={12} /> Secured by Paystack · SSL encrypted
-          </p>
-        </div>
+        )}
       </motion.div>
     </div>
   );

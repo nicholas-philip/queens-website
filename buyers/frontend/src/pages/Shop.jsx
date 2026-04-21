@@ -23,7 +23,7 @@ const Shop = () => {
   const [viewMode, setViewMode] = useState("grid");
 
   const category = searchParams.get("category") || "";
-  const sort     = searchParams.get("sort") || "newest";
+  const sort     = searchParams.get("sort") || "all";
   const search   = searchParams.get("search") || "";
 
   // ── Fetch Categories ──
@@ -46,21 +46,23 @@ const Shop = () => {
   } = useInfiniteQuery({
     queryKey: ["products", category, sort, search],
     queryFn: async ({ pageParam = 1 }) => {
-      // Translate the combined sort value into what the backend expects
       const sortMap = {
         "newest":     { sortBy: "createdAt", sortOrder: "desc" },
         "price-asc":  { sortBy: "price",     sortOrder: "asc"  },
         "price-desc": { sortBy: "price",     sortOrder: "desc" },
         "popular":    { sortBy: "popular",   sortOrder: "desc" },
       };
-      const { sortBy, sortOrder } = sortMap[sort] || sortMap["newest"];
+
+      // "all" = no sort params → backend returns every product
+      const sortParams = sort !== "all" ? (sortMap[sort] || {}) : {};
+      const actualLimit = sort === "all" ? 1000 : 12;
+
       const params = {
         page: pageParam,
-        limit: 12,
+        limit: actualLimit, 
         category,
-        sortBy,
-        sortOrder,
         search,
+        ...sortParams,
       };
       const { data } = await api.get("/products", { params });
       return data;
@@ -115,6 +117,7 @@ const Shop = () => {
                   onChange={(e) => handleSortChange(e.target.value)}
                   className="appearance-none bg-base-200 border-2 border-transparent focus:border-primary/20 rounded-2xl px-6 py-4 pr-12 text-xs font-black uppercase tracking-widest outline-none transition-all hover:bg-base-300 cursor-pointer"
                 >
+                  <option value="all">All Pieces</option>
                   <option value="newest">Newest First</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>

@@ -20,7 +20,7 @@ const { sendOrderConfirmation, sendStatusUpdate } = require("../utils/emailServi
 
 // ── POST /api/orders — Guest checkout ─────────────
 const placeOrder = async (req, res) => {
-  const { customerDetails, items, couponCode, shipping = 0, tax = 0 } = req.body;
+  const { customerDetails, items, couponCode, shipping = 0, tax = 0, paymentMethod = 'Paystack' } = req.body;
 
   if (!customerDetails || !items?.length) {
     return res.status(400).json({ success: false, message: "Customer details and items are required." });
@@ -96,10 +96,7 @@ const placeOrder = async (req, res) => {
     });
   }
 
-  // Minimum order amount
-  if (settings.minimumOrderAmount > 0 && subtotal < settings.minimumOrderAmount) {
-    return res.status(400).json({ success: false, message: `Minimum order amount is GHS ${settings.minimumOrderAmount.toLocaleString()}.` });
-  }
+  // Minimum order amount check removed allowing all totals
 
   // Apply coupon
   let discount = 0, appliedCode = null, couponDoc = null;
@@ -120,12 +117,15 @@ const placeOrder = async (req, res) => {
   const total     = subtotal - discount + taxAmount + shippingFee;
 
   // Create order
+  const isMoMo = paymentMethod === 'Manual MoMo';
   const order = await Order.create({
     customerDetails, items: orderItems,
     subtotal, discount, tax: taxAmount, shipping: shippingFee, total,
     couponCode:    appliedCode,
+    paymentMethod: paymentMethod,
+    paymentStatus: isMoMo ? 'Unpaid' : 'Pending',
     currentStatus: "Pending",
-    statusHistory: [{ status: "Pending", note: "Order placed via storefront", changedAt: new Date() }],
+    statusHistory: [{ status: "Pending", note: isMoMo ? "Order placed via storefront — awaiting Manual MoMo payment" : "Order placed via storefront", changedAt: new Date() }],
     metadata: {
       sessionId: sessionId || null,
       userAgent: req.headers["user-agent"] || null,
@@ -168,9 +168,13 @@ const placeOrder = async (req, res) => {
   // Send confirmation email
   await sendOrderConfirmation(order);
 
+  const isMoMoOrder = order.paymentMethod === 'Manual MoMo';
   res.status(201).json({
     success: true,
-    message: "Order placed successfully! You'll receive a confirmation email shortly.",
+    paymentMethod: order.paymentMethod,
+    message: isMoMoOrder
+      ? "Order placed! We are waiting for your MoMo payment confirmation."
+      : "Order placed successfully! You'll receive a confirmation email shortly.",
     order: {
       orderNumber:   order.orderNumber,
       total,
