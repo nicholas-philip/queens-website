@@ -30,12 +30,12 @@ const REGIONS = [
 ];
 
 const SHIPPING_OPTIONS = [
-  { id: 'pickup',   name: 'Store Pickup',      price: 0, time: 'Pick up your order for free' },
+  { id: 'pickup',   name: 'Store Pickup',      price: 0, time: 'Pick up your order for free', disabled: true },
   { id: 'delivery', name: 'Standard Delivery', price: 0, time: 'Delivery fee will be communicated after checkout' },
 ];
 
 const MOMO_NAME   = 'Samuel Kwesi Nyarko';
-const MOMO_NUMBER = '055 710 4606';
+const MOMO_NUMBER = '053 647 9169';
 
 // ── Step indicator ───────────────────────────────────
 const STEPS = ['Bag', 'Details', 'Shipping', 'Payment'];
@@ -586,26 +586,34 @@ const CheckoutModal = () => {
                     </Field>
                   </div>
                   <div className="col-span-2">
-                    <Field label="Street address" error={errors.address}>
-                      <textarea
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        rows={2}
-                        placeholder="House / street / landmark"
-                        className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-white text-sm focus:outline-none transition-all resize-none placeholder:text-white/20
-                          ${errors.address ? 'border-red-400/60 focus:border-red-400' : 'border-white/10 focus:border-gold'}`}
+                    <Field label="Delivery Location *" error={errors.address}>
+                      <Input 
+                        name="address" 
+                        value={formData.address} 
+                        onChange={handleChange} 
+                        placeholder="House No., Area or GPS Address (e.g. GH-123-456)" 
+                        error={errors.address} 
                       />
                     </Field>
                   </div>
-                  <Field label="City / Town" error={errors.city}>
-                    <Input name="city" value={formData.city} onChange={handleChange} placeholder="Accra" error={errors.city} />
-                  </Field>
-                  <Field label="Region">
-                    <Select name="region" value={formData.region} onChange={handleChange}>
-                      {REGIONS.map(r => <option key={r} value={r}>{r}</option>)}
-                    </Select>
-                  </Field>
+                  <div className="col-span-2">
+                    <Field label="Landmark (optional)">
+                      <Input 
+                        name="city" 
+                        value={formData.city} 
+                        onChange={handleChange} 
+                        placeholder="e.g. Near the big church, Opposite Total" 
+                      />
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
+                    <div className="flex items-start gap-3 p-3 bg-amber-500/8 border border-amber-500/20 rounded-xl">
+                      <Truck size={16} className="text-amber-400 mt-0.5 shrink-0" />
+                      <p className="text-xs text-amber-200/70 leading-relaxed">
+                        We deliver via <span className="font-bold text-amber-300">Bolt / Yango</span>. After you place your order, we'll WhatsApp you with the exact delivery fee. You pay the rider directly on delivery.
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -620,11 +628,14 @@ const CheckoutModal = () => {
                   {SHIPPING_OPTIONS.map(opt => (
                     <button
                       key={opt.id}
-                      onClick={() => setShippingMethod(opt)}
+                      onClick={() => !opt.disabled && setShippingMethod(opt)}
+                      disabled={opt.disabled}
                       className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 ${
-                        shippingMethod?.id === opt.id
-                          ? 'border-gold bg-gold/8 shadow-lg shadow-gold/5'
-                          : 'border-white/8 bg-white/3 hover:border-white/15'
+                        opt.disabled
+                          ? 'border-white/5 bg-white/2 opacity-40 cursor-not-allowed'
+                          : shippingMethod?.id === opt.id
+                            ? 'border-gold bg-gold/8 shadow-lg shadow-gold/5'
+                            : 'border-white/8 bg-white/3 hover:border-white/15'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -635,12 +646,15 @@ const CheckoutModal = () => {
                             {shippingMethod?.id === opt.id && <div className="w-2 h-2 rounded-full bg-gold" />}
                           </div>
                           <div>
-                            <p className="text-white font-semibold text-sm">{opt.name}</p>
+                            <p className="text-white font-semibold text-sm flex items-center gap-2">
+                              {opt.name}
+                              {opt.disabled && <span className="text-[9px] font-black uppercase tracking-widest bg-white/10 text-white/40 px-2 py-0.5 rounded-full">Soon</span>}
+                            </p>
                             <p className="text-white/40 text-xs mt-0.5">{opt.time}</p>
                           </div>
                         </div>
                         <p className="text-gold font-bold text-sm">
-                          {opt.price === 0 ? (opt.id === 'pickup' ? 'Free' : 'TBD') : `GHS ${opt.price}`}
+                          {opt.disabled ? '—' : opt.price === 0 ? (opt.id === 'pickup' ? 'Free' : 'TBD') : `GHS ${opt.price}`}
                         </p>
                       </div>
                     </button>

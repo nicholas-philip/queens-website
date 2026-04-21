@@ -25,7 +25,6 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
-  const [selectedColor, setSelectedColor] = useState("");
 
   const { addToCart, setCheckoutOpen } = useCartStore();
 
@@ -245,30 +244,6 @@ const ProductDetails = () => {
                     </div>
                   </div>
                 )}
-
-                {product.colors?.length > 0 && (
-                  <div className="flex items-center gap-6">
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/40 shrink-0">
-                      Select Color
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {product.colors.map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => setSelectedColor(color)}
-                          className={`h-9 px-4 rounded-lg text-[10px] font-black transition-all duration-300 border flex items-center justify-center min-w-[4rem]
-                          ${
-                            selectedColor === color
-                              ? "bg-primary border-primary text-primary-content shadow-md shadow-primary/10"
-                              : "border-base-200 text-base-content/50 hover:border-primary/40 hover:text-primary"
-                          }`}
-                        >
-                          {color}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
 
@@ -324,8 +299,7 @@ const ProductDetails = () => {
                 <button
                   onClick={() => {
                     if (product.sizes?.length > 0 && !selectedSize) return alert("Please select a size before adding to cart");
-                    if (product.colors?.length > 0 && !selectedColor) return alert("Please select a color before adding to cart");
-                    addToCart({ ...product, selectedSize, selectedColor }, quantity);
+                    addToCart({ ...product, selectedSize }, quantity);
                   }}
                   className="btn btn-primary h-14 flex-1 gap-3 rounded-[1.25rem] font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 border-none group"
                 >
@@ -336,8 +310,7 @@ const ProductDetails = () => {
                 <button
                   onClick={() => {
                     if (product.sizes?.length > 0 && !selectedSize) return alert("Please select a size before checkout");
-                    if (product.colors?.length > 0 && !selectedColor) return alert("Please select a color before checkout");
-                    addToCart({ ...product, selectedSize, selectedColor }, quantity);
+                    addToCart({ ...product, selectedSize }, quantity);
                     setCheckoutOpen(true);
                   }}
                   className="btn btn-neutral h-14 flex-1 rounded-[1.25rem] font-black text-sm uppercase tracking-widest bg-[#000] border-none hover:bg-zinc-800"

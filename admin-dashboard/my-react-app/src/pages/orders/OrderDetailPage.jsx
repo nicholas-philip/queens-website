@@ -1,6 +1,6 @@
 import { useEffect, useState }           from "react"
 import { useParams, Link }               from "react-router-dom"
-import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2, Loader2, RefreshCw } from "lucide-react"
+import { ArrowLeft, Package, Truck, User, Mail, Phone, MapPin, Calendar, Clock, CreditCard, Receipt, ChevronRight, Activity, Info, CheckCircle2, Loader2, RefreshCw, MessageCircle } from "lucide-react"
 import { ordersAPI }                     from "../../libs/api"
 import { formatCurrency, formatDateTime, getStatusBadge, cn } from "../../libs/utils"
 import { useToast }                      from "../../context/ToastContext"
@@ -24,6 +24,8 @@ export default function OrderDetailPage() {
   const [newPayStat,  setNewPayStat]  = useState("")
   const [tracking,    setTracking]    = useState("")
   const [saving,      setSaving]      = useState(false)
+  const [deliveryFee, setDeliveryFee] = useState("")
+  const [feeLoading,  setFeeLoading]  = useState(false)
 
   useEffect(() => {
     ordersAPI.getById(id)
@@ -31,6 +33,7 @@ export default function OrderDetailPage() {
         setOrder(data.order); 
         setNewStatus(data.order.currentStatus);
         setNewPayStat(data.order.paymentStatus || "Unpaid");
+        setDeliveryFee(data.order.shipping > 0 ? String(data.order.shipping) : "");
       })
       .catch(() => toast.error("Error", "Order not found."))
       .finally(() => setLoading(false))
@@ -287,9 +290,24 @@ export default function OrderDetailPage() {
                             <Mail className="h-4 w-4 text-neutral-600 group-hover:text-yellow-500 transition-colors" />
                             <span className="text-sm font-medium">{order.customerDetails?.email || "No email provided"}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-neutral-400 group cursor-pointer hover:text-white transition-colors">
+                        <div className="flex items-center gap-3 text-neutral-400 group transition-colors">
                             <Phone className="h-4 w-4 text-neutral-600 group-hover:text-yellow-500 transition-colors" />
                             <span className="text-sm font-medium">{order.customerDetails?.phone}</span>
+                            {order.customerDetails?.phone && (() => {
+                                let phone = order.customerDetails.phone.replace(/[^0-9]/g, '');
+                                if (phone.startsWith('0')) phone = '233' + phone.slice(1);
+                                const msg = `Hello ${order.customerDetails.name},\nThis is Queens Fashion regarding your order ${order.orderNumber}.`;
+                                return (
+                                    <a 
+                                        href={`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`}
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="ml-auto px-3 py-1.5 bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 border border-[#25D366]/30 rounded-lg text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 transition-all shadow-sm"
+                                    >
+                                        <MessageCircle className="h-3.5 w-3.5" /> WhatsApp
+                                    </a>
+                                );
+                            })()}
                         </div>
                     </div>
                 </div>
@@ -302,25 +320,87 @@ export default function OrderDetailPage() {
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Delivery Route</h3>
                 </div>
                 <div className="flex items-start gap-4">
-                    <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800">
-                        <Clock className="h-5 w-5 text-neutral-500" />
+                    <div className="p-3 bg-neutral-900 rounded-2xl border border-neutral-800 shrink-0">
+                        <MapPin className="h-5 w-5 text-neutral-500" />
                     </div>
-                    <div>
-                        <p className="text-sm font-bold text-white leading-relaxed">
-                            {order.customerDetails?.address?.street}
-                        </p>
-                        <p className="text-sm font-medium text-neutral-500 mt-1">
-                            {order.customerDetails?.address?.city}, {order.customerDetails?.address?.state}
-                        </p>
-                        <div className="mt-4 px-3 py-1 bg-black/40 border border-neutral-800 rounded-lg inline-flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
-                            <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Verified Address</span>
+                    <div className="space-y-2">
+                        <div>
+                          <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-600 mb-0.5">Delivery Location</p>
+                          <p className="text-sm font-bold text-white leading-relaxed">{order.customerDetails?.address?.street || '—'}</p>
+                        </div>
+                        {order.customerDetails?.address?.city && (
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-600 mb-0.5">Landmark</p>
+                            <p className="text-sm font-medium text-neutral-400">{order.customerDetails.address.city}</p>
+                          </div>
+                        )}
+                        <div className="pt-1 px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-lg inline-flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                            <span className="text-xs font-bold text-amber-400/80 uppercase tracking-widest">Bolt / Yango Delivery</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Payment Context */}
+            {/* ── Delivery Fee & WhatsApp Notify ── */}
+            <div className="bg-neutral-900/40 border border-amber-500/20 rounded-3xl p-8 shadow-sm">
+                <div className="flex items-center gap-3 pb-4 border-b border-neutral-800/50 mb-6">
+                    <Truck className="h-5 w-5 text-amber-400/70" />
+                    <h3 className="text-sm font-bold text-white uppercase tracking-widest">Set Delivery Fee</h3>
+                </div>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="relative flex-1">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-neutral-500">GHS</span>
+                            <input
+                                type="number"
+                                min="0"
+                                value={deliveryFee}
+                                onChange={e => setDeliveryFee(e.target.value)}
+                                placeholder="0.00"
+                                className="w-full bg-black/40 border border-neutral-800 focus:border-amber-500/50 rounded-2xl pl-14 pr-5 py-3.5 text-lg font-bold text-white focus:outline-none transition-all"
+                            />
+                        </div>
+                        <button
+                            onClick={async () => {
+                                setFeeLoading(true)
+                                try {
+                                    const { data } = await ordersAPI.updateShipping(id, { shippingFee: deliveryFee })
+                                    setOrder(data.order)
+                                    toast.success("Fee Set", `Delivery fee set to GHS ${deliveryFee}`)
+                                } catch { toast.error("Error", "Failed to set delivery fee") }
+                                finally { setFeeLoading(false) }
+                            }}
+                            disabled={feeLoading || !deliveryFee}
+                            className="px-5 py-3.5 bg-amber-500 rounded-2xl text-xs font-black text-black hover:bg-amber-400 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            {feeLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+                        </button>
+                    </div>
+
+                    {/* Smart WhatsApp notify button */}
+                    {order.customerDetails?.phone && (() => {
+                        let phone = order.customerDetails.phone.replace(/[^0-9]/g, '');
+                        if (phone.startsWith('0')) phone = '233' + phone.slice(1);
+                        const fee = deliveryFee || order.shipping;
+                        const msg = fee > 0
+                            ? `Hi ${order.customerDetails.name}! 👋 Your Queens Fashion order *${order.orderNumber}* is confirmed.\n\nYour delivery fee is *GHS ${fee}*. Please pay this directly to the rider when your items arrive.\n\nThank you for shopping with us! 🛍️`
+                            : `Hi ${order.customerDetails.name}! 👋 Your Queens Fashion order *${order.orderNumber}* is confirmed and being processed. We'll send you the delivery fee shortly.`;
+                        return (
+                            <a
+                                href={`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="w-full flex items-center justify-center gap-2 py-3 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] hover:bg-[#25D366]/20 rounded-2xl text-sm font-black uppercase tracking-widest transition-all"
+                            >
+                                <MessageCircle className="h-4 w-4" />
+                                {fee > 0 ? `Notify — GHS ${fee}` : 'Notify Customer'}
+                            </a>
+                        );
+                    })()}
+                    <p className="text-xs text-neutral-600 text-center">Opens WhatsApp with a ready-to-send message including the fee amount.</p>
+                </div>
+            </div>
             <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center justify-between pb-4 border-b border-neutral-800/50 mb-6">
                     <div className="flex items-center gap-3">

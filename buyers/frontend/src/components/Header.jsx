@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Search, ChevronDown, ChevronRight, User, Heart, Sun, Moon, Star, Crown } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, ChevronDown, ChevronRight, User, Heart, Sun, Moon, Star, Crown, Package } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCartStore } from '../store/useCartStore';
 import { useWishlistStore } from '../store/useWishlistStore';
@@ -32,6 +32,26 @@ const Header = () => {
       const { data } = await api.get('/products/categories');
       return data.categories || [];
     }
+  });
+
+  // Track Active Orders dynamically (poll every 15s)
+  const { data: activeOrdersCount } = useQuery({
+    queryKey: ['header-orders-count'],
+    queryFn: async () => {
+      const sessionId = localStorage.getItem('queens_session_id');
+      if (!sessionId) return 0;
+      try {
+        const { data } = await api.get('/orders/my-history');
+        const active = (data.orders || []).filter(o => 
+          o.currentStatus !== 'Delivered' && 
+          o.currentStatus !== 'Cancelled'
+        );
+        return active.length;
+      } catch {
+        return 0;
+      }
+    },
+    refetchInterval: 15000 
   });
 
   // Search Suggestions Query
@@ -73,7 +93,7 @@ const Header = () => {
         <div className="bg-[#050505] text-white py-2 px-4 md:px-6 text-xs md:text-xs font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
           {/* Left: Promo */}
           <div className="flex w-full md:w-auto justify-center md:justify-start items-center gap-3 uppercase italic">
-            <span className="text-primary tracking-widest animate-pulse truncate">✦ Free Delivery on orders above GHS 500 ✦</span>
+            <span className="text-primary tracking-widest truncate">✦ Queens Fashion — Premium Jewelry & Accessories ✦</span>
           </div>
           {/* Right: Quick Nav Links */}
           <div className="hidden md:flex items-center gap-5 uppercase tracking-widest flex-shrink-0">
@@ -283,6 +303,17 @@ const Header = () => {
                   >
                      {theme === 'queens-dark' ? <Sun size={18} className="md:w-5 md:h-5" /> : <Moon size={18} className="md:w-5 md:h-5" />}
                   </button>
+                  <Link 
+                    to="/orders" 
+                    className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-xl md:rounded-2xl text-base-content hover:bg-primary/10 hover:text-primary transition-all active:scale-90 shadow-sm border border-transparent hover:border-primary/20"
+                  >
+                     <Package size={18} className="md:w-5 md:h-5" />
+                     {activeOrdersCount > 0 && (
+                       <span className="absolute -top-1 -right-1 w-5 h-5 bg-success text-white text-xs font-black flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(34,197,94,0.6)] pointer-events-none ring-4 ring-base-100 animate-pulse">
+                         {activeOrdersCount}
+                       </span>
+                     )}
+                  </Link>
                   <Link 
                     to="/wishlist" 
                     className="hidden sm:flex relative w-12 h-12 items-center justify-center rounded-2xl text-base-content hover:bg-primary/10 hover:text-primary transition-all active:scale-90 shadow-sm border border-transparent hover:border-primary/20"

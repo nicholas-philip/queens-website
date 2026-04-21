@@ -164,10 +164,18 @@ const updateOrderPayment = catchAsync(async (req, res) => {
 
   order.paymentStatus = paymentStatus;
   
+  // Auto-advance fulfillment status if payment is confirmed
+  let statusChanged = false;
+  let oldStatus = order.currentStatus;
+  if (paymentStatus === "Paid" && order.currentStatus === "Pending") {
+    order.currentStatus = "Processing";
+    statusChanged = true;
+  }
+  
   if (Array.isArray(order.statusHistory)) {
     order.statusHistory.push({
       status:    order.currentStatus,
-      note:      note || `Payment status manually updated to: ${paymentStatus}`,
+      note:      note || `Payment status manually updated to: ${paymentStatus}${statusChanged ? '. Order advanced to Processing.' : ''}`,
       changedBy: req.admin?.name || "Admin",
       changedAt: new Date(),
     });
@@ -215,6 +223,35 @@ const addTrackingNumber = catchAsync(async (req, res) => {
     message: "Tracking number added and order marked as Shipped.",
     order,
   });
+});
+
+// ── PATCH /admin/orders/:id/shipping ──────────────
+const updateShippingFee = catchAsync(async (req, res) => {
+  const { shippingFee } = req.body;
+  const newShipping = Number(shippingFee) || 0;
+
+  const order = await Order.findById(req.params.id);
+  if (!order) {
+    return res.status(404).json({ success: false, message: "Order not found." });
+  }
+
+  const oldTotal = order.total;
+  order.shipping = newShipping;
+  order.total = order.subtotal + order.tax + newShipping - order.discount;
+
+  if (Array.isArray(order.statusHistory)) {
+    order.statusHistory.push({
+      status: order.currentStatus,
+      note: `Delivery fee set to GHS ${newShipping}. Total changed to GHS ${order.total}.`,
+      changedBy: req.admin?.name || "Admin",
+      changedAt: new Date()
+    });
+  }
+
+  await order.save();
+  await logActivity(req, "UPDATED_SHIPPING_FEE", `Order: ${order._id}`, `Fee: GHS ${newShipping}`);
+
+  res.status(200).json({ success: true, message: "Delivery fee updated.", order });
 });
 
 // ── PATCH /admin/orders/:id/notes ─────────────────
@@ -318,4 +355,5 @@ module.exports = {
   deleteOrder,
   updateOrderPayment,
   verifyOrderPayment,
+  updateShippingFee,
 };// TS file system cache invalidation

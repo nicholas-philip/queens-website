@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { Link, useSearchParams }             from "react-router-dom"
-import { Search, Download, Filter, Eye, ShoppingBag, CreditCard, Loader2 } from "lucide-react"
+import { Search, Download, Filter, Eye, ShoppingBag, CreditCard, Loader2, MessageCircle } from "lucide-react"
 import { ordersAPI, exportAPI }               from "../../libs/api"
 import { formatCurrency, getStatusBadge, downloadCSV, formatDate, cn } from "../../libs/utils"
 import { useToast }                           from "../../context/ToastContext"
@@ -177,12 +177,30 @@ export default function OrdersPage() {
 
                   {/* Actions */}
                   <TableCell>
-                    <Link 
-                      to={`/orders/${o._id}`}
-                      className="inline-flex items-center gap-2 p-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-500 hover:text-white hover:border-neutral-700 transition-all group"
-                    >
-                      <Eye className="h-4 w-4 group-hover:scale-110 transition-transform" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link 
+                        to={`/orders/${o._id}`}
+                        className="inline-flex items-center gap-2 p-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-neutral-500 hover:text-white hover:border-neutral-700 transition-all group"
+                      >
+                        <Eye className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                      </Link>
+                      {o.customerDetails?.phone && (() => {
+                        let phone = o.customerDetails.phone.replace(/[^0-9]/g, '');
+                        if (phone.startsWith('0')) phone = '233' + phone.slice(1);
+                        const msg = `Hello ${o.customerDetails.name}, this is Queens Fashion regarding your order ${o.orderNumber}.`;
+                        return (
+                          <a
+                            href={`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 p-2.5 bg-[#25D366]/10 border border-[#25D366]/30 rounded-xl text-[#25D366] hover:bg-[#25D366]/20 transition-all"
+                            title="WhatsApp customer"
+                          >
+                            <MessageCircle className="h-4 w-4" />
+                          </a>
+                        );
+                      })()}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

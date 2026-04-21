@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Package, Clock, Truck, CheckCircle, ChevronRight, ShoppingBag, ArrowLeft, ExternalLink, Search, AlertCircle, Loader2 } from 'lucide-react';
+import { Package, Clock, Truck, CheckCircle, ChevronRight, ShoppingBag, ArrowLeft, ExternalLink, Search, AlertCircle, Loader2, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
+
+// Queens Fashion admin WhatsApp number
+const QUEENS_WHATSAPP = '233536479169';
 
 const OrderCard = ({ order }) => {
   const isDelivered = order.currentStatus === 'Delivered';
@@ -42,9 +45,16 @@ const OrderCard = ({ order }) => {
           </div>
           <p className="text-xs text-base-content/60 font-medium">Placed on {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
         </div>
-        <div className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-transform group-hover:scale-105 ${getStatusStyles(order.currentStatus)}`}>
-           {getStatusIcon(order.currentStatus)}
-           {order.currentStatus}
+        <div className="flex items-center gap-2">
+          {order.paymentStatus === 'Paid' && (
+            <div className="px-3 py-1.5 rounded-lg border border-success/30 bg-success/10 text-success text-[10px] font-black uppercase tracking-wider flex items-center gap-1 shadow-sm">
+               <CheckCircle size={12} /> PAID
+            </div>
+          )}
+          <div className={`px-4 py-2 rounded-xl border text-xs font-black uppercase tracking-wider flex items-center gap-2 transition-transform group-hover:scale-105 shadow-sm ${getStatusStyles(order.currentStatus)}`}>
+             {getStatusIcon(order.currentStatus)}
+             {order.currentStatus}
+          </div>
         </div>
       </div>
 
@@ -66,11 +76,34 @@ const OrderCard = ({ order }) => {
       </div>
 
       <div className="mt-8 pt-6 border-t border-base-200 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-        <div>
-           <p className="text-xs font-bold text-base-content/40 uppercase tracking-widest mb-0.5">Total Amount</p>
-           <p className="text-lg font-black text-base-content tracking-tight">GHS {order.total.toFixed(2)}</p>
+        <div className="space-y-1">
+          {order.shipping > 0 && (
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-bold text-base-content/40 uppercase tracking-widest">Delivery Fee</p>
+              <p className="text-xs font-black text-warning">GHS {order.shipping.toFixed(2)} <span className="text-base-content/30 font-medium">(pay rider)</span></p>
+            </div>
+          )}
+          <div>
+            <p className="text-xs font-bold text-base-content/40 uppercase tracking-widest mb-0.5">Order Total</p>
+            <div className="flex items-center gap-2">
+              <p className="text-lg font-black text-base-content tracking-tight">GHS {order.total.toFixed(2)}</p>
+              {order.paymentStatus === 'Paid' && (
+                <span className="px-2 py-0.5 rounded-md border border-success/30 bg-success/10 text-success text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                  <CheckCircle size={10} /> Paid
+                </span>
+              )}
+            </div>
+          </div>
         </div>
         <div className="flex gap-2">
+            <a
+              href={`https://wa.me/${QUEENS_WHATSAPP}?text=${encodeURIComponent(`Hi Queens Fashion! I'm checking on my order *${order.orderNumber}*. Could you please give me an update? 🙏`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-xs font-black text-[#25D366] hover:bg-[#25D366]/20 transition-all"
+            >
+               <MessageCircle size={14} /> Ask on WhatsApp
+            </a>
             <Link 
               to={`/track?id=${order.orderNumber}`}
               className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-base-200 border border-base-300 text-xs font-black text-base-content/60 hover:bg-base-300 hover:text-base-content transition-all"

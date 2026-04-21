@@ -83,6 +83,7 @@ export const ordersAPI = {
   updatePayment: (id, d) => api.patch(`/admin/orders/${id}/payment`, d),
   verifyPayment: (id)    => api.post(`/admin/orders/${id}/verify-payment`),
   addTracking:   (id, d) => api.patch(`/admin/orders/${id}/tracking`, d),
+  updateShipping:(id, d) => api.patch(`/admin/orders/${id}/shipping`, d),
   updateNotes:   (id, d) => api.patch(`/admin/orders/${id}/notes`, d),
   delete:        (id)    => api.delete(`/admin/orders/${id}`),
 }

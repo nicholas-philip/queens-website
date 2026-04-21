@@ -27,7 +27,7 @@ const {
 
 const { getDailyRevenue, getOrdersByStatus, getTopProducts, getSalesByCategory, getAnalyticsOverview } = require("../controllers/analyticsController");
 const { getProducts, getProductById, createProduct, updateProduct, updateProductStatus, adjustStock, deleteProduct, getLowStockProducts, addVariant, updateVariant, deleteVariant, getSimilarStyles } = require("../controllers/productController");
-const { createOrder, getAllOrders, getOrderById, updateOrderStatus, addTrackingNumber, updateAdminNotes, deleteOrder, updateOrderPayment, verifyOrderPayment } = require("../controllers/orderController");
+const { createOrder, getAllOrders, getOrderById, updateOrderStatus, addTrackingNumber, updateAdminNotes, deleteOrder, updateOrderPayment, verifyOrderPayment, updateShippingFee } = require("../controllers/orderController");
 const { getAllCustomers, getCustomerStats, getCustomerById, updateCustomerTags, updateCustomerNotes, toggleBlockCustomer, deleteCustomer } = require("../controllers/customerController");
 const { createTransaction, getAllTransactions, getTransactionSummary, getTransactionsByOrder, getTransactionById, refundTransaction } = require("../controllers/transactionController");
 const { getAllInvoices, getInvoiceSummary, getOverdueInvoices, getInvoiceById, updateInvoiceStatus } = require("../controllers/invoiceController");
@@ -117,6 +117,7 @@ router.patch ("/admin/orders/:id/status",   verifyAdmin, validate(schemas.update
 router.patch ("/admin/orders/:id/payment",  verifyAdmin, updateOrderPayment);
 router.post  ("/admin/orders/:id/verify-payment", verifyAdmin, verifyOrderPayment);
 router.patch ("/admin/orders/:id/tracking", verifyAdmin, addTrackingNumber);
+router.patch ("/admin/orders/:id/shipping", verifyAdmin, updateShippingFee);
 router.patch ("/admin/orders/:id/notes",    verifyAdmin, updateAdminNotes);
 router.delete("/admin/orders/:id",          verifyAdmin, deleteOrder);
 
