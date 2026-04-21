@@ -17,7 +17,7 @@ export default function CategoriesPage() {
   
   // Form State
   const [editing, setEditing] = useState(null) // null = create, object = edit
-  const [formData, setFormData] = useState({ name: "", description: "", subcategories: "" })
+  const [formData, setFormData] = useState({ name: "", description: "", subcategories: [] })
   const [submitting, setSubmitting] = useState(false)
   const fileInputRef = useRef(null)
   const [preview, setPreview] = useState(null)
@@ -44,14 +44,14 @@ export default function CategoriesPage() {
 
   const openCreate = () => {
     setEditing(null)
-    setFormData({ name: "", description: "", subcategories: "" })
+    setFormData({ name: "", description: "", subcategories: [] })
     setPreview(null)
     setIsFormModalOpen(true)
   }
 
   const openEdit = (cat) => {
     setEditing(cat)
-    setFormData({ name: cat.name, description: cat.description || "", subcategories: cat.subcategories?.join(", ") || "" })
+    setFormData({ name: cat.name, description: cat.description || "", subcategories: cat.subcategories || [] })
     setPreview(cat.image || null)
     setIsFormModalOpen(true)
   }
@@ -72,7 +72,12 @@ export default function CategoriesPage() {
       const payload = new FormData()
       payload.append("name", formData.name)
       if (formData.description) payload.append("description", formData.description)
-      if (formData.subcategories !== undefined) payload.append("subcategories", formData.subcategories)
+      // Send as comma-separated string to backend
+      if (formData.subcategories && formData.subcategories.length > 0) {
+          payload.append("subcategories", formData.subcategories.filter(s => s.trim() !== "").join(","))
+      } else {
+          payload.append("subcategories", "") // clear them
+      }
       
       if (fileInputRef.current?.files?.[0]) {
         payload.append("image", fileInputRef.current.files[0])
@@ -249,14 +254,52 @@ export default function CategoriesPage() {
           </div>
 
           <div>
-            <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Subcategories (Dropdowns)</label>
-            <input 
-              value={formData.subcategories || ""} 
-              onChange={e => setFormData({...formData, subcategories: e.target.value})} 
-              className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
-              placeholder="e.g. Mens, Ladies, Unisex" 
-            />
-            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-2 ml-1">Comma-separated style filters for the storefront</p>
+            <div className="flex items-center justify-between mb-2 mt-2">
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1">Subcategories / Dropdown Links</label>
+                <button 
+                  type="button" 
+                  onClick={() => setFormData(prev => ({...prev, subcategories: [...(prev.subcategories||[]), ""]}))}
+                  className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest hover:text-yellow-400 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20"
+                >
+                  + Add Link
+                </button>
+            </div>
+            
+            <div className="space-y-2">
+               {(!formData.subcategories || formData.subcategories.length === 0) && (
+                 <div className="text-xs text-neutral-600 bg-black/20 p-3 rounded-xl border border-dashed border-neutral-800 text-center">
+                    No subcategories added. Click "Add Link" to create one.
+                 </div>
+               )}
+               {formData.subcategories?.map((sub, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <div className="bg-neutral-900 text-neutral-500 w-8 h-10 flex items-center justify-center rounded-xl text-xs font-bold border border-neutral-800 shrink-0">
+                      {index + 1}
+                    </div>
+                    <input 
+                      value={sub} 
+                      onChange={e => {
+                         const newSubs = [...formData.subcategories];
+                         newSubs[index] = e.target.value;
+                         setFormData({...formData, subcategories: newSubs});
+                      }}
+                      className="flex-1 bg-black/40 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
+                      placeholder="e.g. Mens Necklace" 
+                    />
+                    <button 
+                       type="button"
+                       onClick={() => {
+                          const newSubs = formData.subcategories.filter((_, i) => i !== index);
+                          setFormData({...formData, subcategories: newSubs});
+                       }}
+                       className="w-10 h-10 flex items-center justify-center rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all shrink-0"
+                    >
+                       <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+               ))}
+            </div>
+            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-3 ml-1 mb-6">These will appear as dropdown links under this category on the storefront.</p>
           </div>
 
           <div className="flex items-center justify-end gap-3 mt-8 pt-4 border-t border-neutral-800">
