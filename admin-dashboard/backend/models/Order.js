@@ -6,7 +6,7 @@
 
 const mongoose = require("mongoose");
 
-const ORDER_STATUSES = ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Refunded"];
+const ORDER_STATUSES = ["Pending", "Processing", "Delivered"];
 
 const OrderItemSchema = new mongoose.Schema({
   productId:  { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },

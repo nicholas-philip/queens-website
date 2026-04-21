@@ -7,7 +7,7 @@ import { useToast }                      from "../../context/ToastContext"
 import Spinner                           from "../../components/Spinner"
 import Modal                             from "../../components/Modal"
 
-const STATUSES = ["Pending","Processing","Shipped","Delivered","Cancelled"]
+const STATUSES = ["Pending", "Processing", "Delivered"]
 
 export default function OrderDetailPage() {
   const { id } = useParams()
@@ -538,9 +538,8 @@ export default function OrderDetailPage() {
                         onChange={(e) => setNewPayStat(e.target.value)} 
                         className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
                     >
-                        <option value="Unpaid">Unpaid (Awaiting Funds)</option>
-                        <option value="Paid">Paid (Funds Confirmed)</option>
-                        <option value="Refunded">Refunded (Returned)</option>
+                        <option value="Unpaid">Unpaid (Awaiting Payment)</option>
+                        <option value="Paid">Paid (Confirmed ✓)</option>
                     </select>
                 </div>
                 <p className="text-xs text-neutral-600 font-bold uppercase tracking-widest text-center mt-2.5">Use this to manually override the payment status if a customer pays via bank transfer or cash.</p>

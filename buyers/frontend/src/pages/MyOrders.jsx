@@ -13,21 +13,19 @@ const OrderCard = ({ order }) => {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'Pending': return <Clock size={16} />;
+      case 'Pending':    return <Clock size={16} />;
       case 'Processing': return <Package size={16} />;
-      case 'Shipped': return <Truck size={16} />;
-      case 'Delivered': return <CheckCircle size={16} />;
-      default: return <Package size={16} />;
+      case 'Delivered':  return <CheckCircle size={16} />;
+      default:           return <Package size={16} />;
     }
   };
 
   const getStatusStyles = (status) => {
     switch (status) {
-      case 'Pending': return 'bg-warning/20 text-warning border-warning/30';
+      case 'Pending':    return 'bg-warning/20 text-warning border-warning/30';
       case 'Processing': return 'bg-info/20 text-info border-info/30';
-      case 'Shipped': return 'bg-secondary/20 text-secondary border-secondary/30';
-      case 'Delivered': return 'bg-success/20 text-success border-success/30';
-      default: return 'bg-white/5 text-white/50 border-white/10';
+      case 'Delivered':  return 'bg-success/20 text-success border-success/30';
+      default:           return 'bg-error/20 text-error border-error/30';
     }
   };
 
