@@ -177,10 +177,19 @@ export default function ProductFormPage() {
     try {
       const payload = new FormData()
       
-      // Append text fields
+      // Append text fields with number cleanup for price/stock
       Object.keys(formData).forEach(key => {
-        if (formData[key] !== "" && formData[key] !== null && formData[key] !== undefined) {
-          payload.append(key, formData[key])
+        let val = formData[key]
+        if (val !== "" && val !== null && val !== undefined) {
+          // If the field is a price or stock, strip out any text (like 'gh', etc) and keep numbers/decimals
+          if (["price", "discountPrice", "stockQuantity"].includes(key)) {
+            const cleanedNum = parseFloat(String(val).replace(/[^0-9.]/g, ""))
+            if (!isNaN(cleanedNum)) {
+              payload.append(key, cleanedNum)
+            }
+          } else {
+            payload.append(key, val)
+          }
         }
       })
 
