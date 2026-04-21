@@ -28,7 +28,8 @@ export default function ProductFormPage() {
     tags: "", // Command separated string
     sizes: "",
     colors: "",
-    category: ""
+    category: "",
+    subcategory: ""
   })
 
   // Images state
@@ -82,7 +83,8 @@ export default function ProductFormPage() {
             tags: p.tags ? p.tags.join(", ") : "",
             sizes: p.sizes ? p.sizes.join(", ") : "",
             colors: p.colors ? p.colors.join(", ") : "",
-            category: p.category?._id || p.category || ""
+            category: p.category?._id || p.category || "",
+            subcategory: p.subcategory || ""
           })
           setExistingImages(p.images || [])
         })
@@ -314,6 +316,21 @@ export default function ProductFormPage() {
                 ))}
               </select>
             </div>
+
+            {formData.category && categories.find(c => c._id === formData.category)?.subcategories?.length > 0 && (
+              <div className="animate-fade-in">
+                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2 mt-2 flex items-center gap-1">Subcategory (Optional)</label>
+                <select 
+                  name="subcategory" value={formData.subcategory} onChange={handleChange}
+                  className="w-full bg-black/40 border border-yellow-500/50 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500 transition-colors appearance-none shadow-[0_0_15px_rgba(234,179,8,0.1)]"
+                >
+                  <option value="">No subcategory</option>
+                  {categories.find(c => c._id === formData.category)?.subcategories.map(sub => (
+                    <option key={sub} value={sub}>{sub}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
           {/* Media / Images */}

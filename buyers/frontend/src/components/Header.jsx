@@ -173,7 +173,7 @@ const Header = () => {
                                   {cat.subcategories.map(sub => (
                                     <Link
                                       key={sub}
-                                      to={`/shop?category=${cat.slug}&tags=${encodeURIComponent(sub)}`}
+                                      to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
                                       onClick={() => setShowCatDropdown(false)}
                                       className="py-1.5 text-xs font-black uppercase tracking-widest text-base-content/60 hover:text-primary transition-colors flex items-center gap-2"
                                     >
@@ -447,7 +447,7 @@ const Header = () => {
                                       {cat.subcategories.map(sub => (
                                         <Link
                                           key={sub}
-                                          to={`/shop?category=${cat.slug}&tags=${encodeURIComponent(sub)}`}
+                                          to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
                                           onClick={() => setIsMenuOpen(false)}
                                           className="text-xs font-black uppercase tracking-widest text-base-content/50 hover:text-primary flex items-center gap-2"
                                         >

@@ -34,6 +34,7 @@ const ProductSchema = new mongoose.Schema(
     stockQuantity: { type: Number, default: 0, min: 0 }, // used when hasVariants=false
 
     category:  { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
+    subcategory: { type: String, default: "" },
     tags:      { type: [String], default: [] },
     sizes:     { type: [String], default: [] },
     colors:    { type: [String], default: [] },

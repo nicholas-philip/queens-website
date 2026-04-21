@@ -22,9 +22,10 @@ const Shop = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
 
-  const category = searchParams.get("category") || "";
-  const sort     = searchParams.get("sort") || "all";
-  const search   = searchParams.get("search") || "";
+  const category    = searchParams.get("category") || "";
+  const subcategory = searchParams.get("subcategory") || "";
+  const sort        = searchParams.get("sort") || "all";
+  const search      = searchParams.get("search") || "";
 
   // ── Fetch Categories ──
   const { data: categories } = useQuery({
@@ -35,7 +36,6 @@ const Shop = () => {
     },
   });
 
-  // ── Infinite Scroll Products ──
   const {
     data,
     fetchNextPage,
@@ -44,7 +44,7 @@ const Shop = () => {
     status,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ["products", category, sort, search],
+    queryKey: ["products", category, subcategory, sort, search],
     queryFn: async ({ pageParam = 1 }) => {
       const sortMap = {
         "newest":     { sortBy: "createdAt", sortOrder: "desc" },
@@ -61,6 +61,7 @@ const Shop = () => {
         page: pageParam,
         limit: actualLimit, 
         category,
+        subcategory,
         search,
         ...sortParams,
       };
@@ -87,8 +88,18 @@ const Shop = () => {
     const params = new URLSearchParams(searchParams);
     if (newCat) params.set("category", newCat);
     else params.delete("category");
+    params.delete("subcategory"); // Reset subcategory when category changes
     setSearchParams(params);
   };
+
+  const handleSubcategoryChange = (newSub) => {
+    const params = new URLSearchParams(searchParams);
+    if (newSub) params.set("subcategory", newSub);
+    else params.delete("subcategory");
+    setSearchParams(params);
+  };
+
+  const activeCategoryObj = categories?.find(c => c.slug === category);
 
   return (
     <div className="min-h-screen bg-base-100 pt-32 pb-20">
@@ -151,22 +162,52 @@ const Shop = () => {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="md:col-span-3">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-base-content/40 mb-4">Categories</h4>
-                  <div className="flex flex-wrap gap-2">
-                    <button 
-                      onClick={() => handleCategoryChange("")}
-                      className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${category === "" ? 'bg-primary text-primary-content shadow-lg shadow-primary/20' : 'bg-base-100 hover:bg-primary/10'}`}
-                    >
-                      All Pieces
-                    </button>
-                    {categories?.map((cat) => (
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-wrap gap-2">
                       <button 
-                        key={cat.slug}
-                        onClick={() => handleCategoryChange(cat.slug)}
-                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${category === cat.slug ? 'bg-primary text-primary-content shadow-lg shadow-primary/20' : 'bg-base-100 hover:bg-primary/10'}`}
+                        onClick={() => handleCategoryChange("")}
+                        className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${category === "" ? 'bg-primary text-primary-content shadow-lg shadow-primary/20' : 'bg-base-100 hover:bg-primary/10'}`}
                       >
-                        {cat.name}
+                        All Pieces
                       </button>
-                    ))}
+                      {categories?.map((cat) => (
+                        <button 
+                          key={cat.slug}
+                          onClick={() => handleCategoryChange(cat.slug)}
+                          className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${category === cat.slug ? 'bg-primary text-primary-content shadow-lg shadow-primary/20' : 'bg-base-100 hover:bg-primary/10'}`}
+                        >
+                          {cat.name}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Subcategories (only show if active category has them) */}
+                    <AnimatePresence>
+                       {activeCategoryObj?.subcategories?.length > 0 && (
+                          <motion.div 
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="flex flex-wrap gap-2 pt-2 border-t border-base-content/5 mt-2"
+                          >
+                            <button 
+                              onClick={() => handleSubcategoryChange("")}
+                              className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${subcategory === "" ? 'bg-neutral text-neutral-content' : 'bg-base-100 hover:bg-neutral/10'}`}
+                            >
+                              All {activeCategoryObj.name}
+                            </button>
+                            {activeCategoryObj.subcategories.map(sub => (
+                              <button 
+                                key={sub}
+                                onClick={() => handleSubcategoryChange(sub)}
+                                className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${subcategory === sub ? 'bg-neutral text-neutral-content' : 'bg-base-100 hover:bg-neutral/10'}`}
+                              >
+                                {sub}
+                              </button>
+                            ))}
+                          </motion.div>
+                       )}
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>

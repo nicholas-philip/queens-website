@@ -25,7 +25,7 @@ const PUBLIC_FIELDS =
 const getProducts = async (req, res) => {
   try {
     const {
-      search, category, minPrice, maxPrice,
+      search, category, subcategory, minPrice, maxPrice,
       sortBy = "createdAt", sortOrder = "desc",
       page = 1, limit = 12, tags,
     } = req.query;
@@ -47,6 +47,10 @@ const getProducts = async (req, res) => {
       } else {
         return res.status(200).json({ success: true, data: [], pagination: { total: 0 } });
       }
+    }
+
+    if (subcategory && subcategory.trim()) {
+      filter.subcategory = subcategory.trim();
     }
 
     if (minPrice || maxPrice) {

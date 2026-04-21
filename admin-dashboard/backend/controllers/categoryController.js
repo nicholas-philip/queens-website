@@ -37,7 +37,8 @@ const getAllCategories = async (req, res) => {
         image: 1,
         isActive: 1,
         slug: 1,
-        productCount: { $size: "$assignedProducts" }
+        productCount: { $size: "$assignedProducts" },
+        subcategories: 1
       }
     },
     { $sort: { name: 1 } }
