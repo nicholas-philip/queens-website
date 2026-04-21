@@ -388,7 +388,7 @@ export default function ProductFormPage() {
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Base Price ($) *</label>
               <input 
-                type="number" step="0.01" name="price" value={formData.price} onChange={handleChange} 
+                type="text"  name="price" value={formData.price} onChange={handleChange} 
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="0.00" 
               />
@@ -396,7 +396,7 @@ export default function ProductFormPage() {
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Discount Price ($)</label>
               <input 
-                type="number" step="0.01" name="discountPrice" value={formData.discountPrice} onChange={handleChange} 
+                type="text"  name="discountPrice" value={formData.discountPrice} onChange={handleChange} 
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="Optional" 
               />
@@ -418,7 +418,7 @@ export default function ProductFormPage() {
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Stock Quantity</label>
               <input 
-                type="number" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} 
+                type="text" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} 
                 className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="e.g. 50" 
               />
