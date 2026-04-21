@@ -89,6 +89,7 @@ const placeOrder = async (req, res) => {
       variantId:  variant?._id || null,
       title:      product.title,
       SKU:        variant ? variant.SKU : product.SKU,
+      image:      product.images?.[0] || product.image || null,
       attributes: Object.keys(attributes).length > 0 ? attributes : null,
       price:      unitPrice,
       quantity,

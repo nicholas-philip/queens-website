@@ -10,6 +10,7 @@ const OrderItemSchema = new mongoose.Schema({
   variantId:  { type: mongoose.Schema.Types.ObjectId, default: null },
   title:      { type: String, required: true },
   SKU:        { type: String, required: true },
+  image:      { type: String, default: null },
   attributes: { type: Object, default: null }, 
   price:      { type: Number, required: true, min: 0 },
   quantity:   { type: Number, required: true, min: 1 },
