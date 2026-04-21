@@ -157,15 +157,33 @@ const Header = () => {
                            </div>
                         ) : (
                           categories.map((cat) => (
-                            <Link 
-                              key={cat._id} 
-                              to={`/shop?category=${cat.slug}`}
-                              onClick={() => setShowCatDropdown(false)}
-                              className="group flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
-                            >
-                              <span className="font-black text-sm uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
-                              <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5]" />
-                            </Link>
+                            <div key={cat._id} className="group">
+                              <Link 
+                                to={`/shop?category=${cat.slug}`}
+                                onClick={() => setShowCatDropdown(false)}
+                                className="flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
+                              >
+                                <span className="font-black text-sm uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
+                                <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5]" />
+                              </Link>
+                              
+                              {/* Subcategories */}
+                              {cat.subcategories && cat.subcategories.length > 0 && (
+                                <div className="flex flex-col pb-2 pl-12 pr-4 bg-primary/5 hidden group-hover:flex transition-all">
+                                  {cat.subcategories.map(sub => (
+                                    <Link
+                                      key={sub}
+                                      to={`/shop?category=${cat.slug}&tags=${encodeURIComponent(sub)}`}
+                                      onClick={() => setShowCatDropdown(false)}
+                                      className="py-1.5 text-xs font-black uppercase tracking-widest text-base-content/60 hover:text-primary transition-colors flex items-center gap-2"
+                                    >
+                                      <span className="w-1 h-1 rounded-full bg-base-content/20" />
+                                      {sub}
+                                    </Link>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
                           ))
                         )}
                      </motion.div>
@@ -415,15 +433,30 @@ const Header = () => {
                               <p className="text-sm text-base-content/40 p-4 italic text-center">Loading...</p>
                             ) : (
                               categories.map(cat => (
-                                <Link 
-                                  key={cat._id} 
-                                  to={`/shop?category=${cat.slug}`} 
-                                  onClick={() => setIsMenuOpen(false)}
-                                  className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-primary/5 hover:text-primary font-bold text-base-content/70 transition-all text-sm"
-                                >
-                                  {cat.name}
-                                  <ChevronRight size={14} className="text-primary/40"/>
-                                </Link>
+                                <div key={cat._id} className="flex flex-col">
+                                  <Link 
+                                    to={`/shop?category=${cat.slug}`} 
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-primary/5 hover:text-primary font-bold text-base-content/70 transition-all text-sm"
+                                  >
+                                    {cat.name}
+                                    <ChevronRight size={14} className="text-primary/40"/>
+                                  </Link>
+                                  {cat.subcategories && cat.subcategories.length > 0 && (
+                                    <div className="flex flex-col pl-6 pr-2 pb-2 gap-2 mt-1">
+                                      {cat.subcategories.map(sub => (
+                                        <Link
+                                          key={sub}
+                                          to={`/shop?category=${cat.slug}&tags=${encodeURIComponent(sub)}`}
+                                          onClick={() => setIsMenuOpen(false)}
+                                          className="text-xs font-black uppercase tracking-widest text-base-content/50 hover:text-primary flex items-center gap-2"
+                                        >
+                                          • {sub}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
                               ))
                             )}
                           </div>

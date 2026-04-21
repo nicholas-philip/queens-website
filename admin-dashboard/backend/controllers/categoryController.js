@@ -53,7 +53,7 @@ const getCategoryById = async (req, res) => {
 };
 
 const createCategory = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, subcategories } = req.body;
   if (!name) return res.status(400).json({ success: false, message: "Category name is required." });
   const exists = await Category.findOne({ name: name.trim() });
   if (exists) return res.status(400).json({ success: false, message: `Category "${name}" already exists.` });
@@ -61,7 +61,12 @@ const createCategory = async (req, res) => {
   let image = null;
   if (req.file) image = await uploadToCloudinary(req.file.buffer, "categories");
 
-  const cat = await Category.create({ name, description, image });
+  let parsedSubcategories = [];
+  if (subcategories) {
+    parsedSubcategories = typeof subcategories === "string" ? subcategories.split(",").map(s => s.trim()).filter(Boolean) : subcategories;
+  }
+
+  const cat = await Category.create({ name, description, subcategories: parsedSubcategories, image });
   await logActivity(req, "CREATED_CATEGORY", `Category: ${cat.name}`);
   res.status(201).json({ success: true, message: `Category "${cat.name}" created.`, category: cat });
 };
@@ -69,6 +74,13 @@ const createCategory = async (req, res) => {
 const updateCategory = async (req, res) => {
   const updates = {};
   ["name","description","isActive"].forEach((f) => { if (req.body[f] !== undefined) updates[f] = req.body[f]; });
+  
+  if (req.body.subcategories !== undefined) {
+    updates.subcategories = typeof req.body.subcategories === "string" 
+      ? req.body.subcategories.split(",").map(s => s.trim()).filter(Boolean) 
+      : req.body.subcategories;
+  }
+
   if (req.file) updates.image = await uploadToCloudinary(req.file.buffer, "categories");
 
   const cat = await Category.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true });

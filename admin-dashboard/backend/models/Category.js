@@ -11,6 +11,7 @@ const CategorySchema = new mongoose.Schema({
   description: { type: String },
   image: { type: String }, // Cloudinary URL
   isActive: { type: Boolean, default: true },
+  subcategories: { type: [String], default: [] },
   productCount: { type: Number, default: 0 },
   sortOrder: { type: Number, default: 0 },
 }, { timestamps: true });

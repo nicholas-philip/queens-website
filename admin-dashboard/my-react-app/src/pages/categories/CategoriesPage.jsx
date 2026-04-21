@@ -17,7 +17,7 @@ export default function CategoriesPage() {
   
   // Form State
   const [editing, setEditing] = useState(null) // null = create, object = edit
-  const [formData, setFormData] = useState({ name: "", description: "" })
+  const [formData, setFormData] = useState({ name: "", description: "", subcategories: "" })
   const [submitting, setSubmitting] = useState(false)
   const fileInputRef = useRef(null)
   const [preview, setPreview] = useState(null)
@@ -44,14 +44,14 @@ export default function CategoriesPage() {
 
   const openCreate = () => {
     setEditing(null)
-    setFormData({ name: "", description: "" })
+    setFormData({ name: "", description: "", subcategories: "" })
     setPreview(null)
     setIsFormModalOpen(true)
   }
 
   const openEdit = (cat) => {
     setEditing(cat)
-    setFormData({ name: cat.name, description: cat.description || "" })
+    setFormData({ name: cat.name, description: cat.description || "", subcategories: cat.subcategories?.join(", ") || "" })
     setPreview(cat.image || null)
     setIsFormModalOpen(true)
   }
@@ -72,6 +72,7 @@ export default function CategoriesPage() {
       const payload = new FormData()
       payload.append("name", formData.name)
       if (formData.description) payload.append("description", formData.description)
+      if (formData.subcategories !== undefined) payload.append("subcategories", formData.subcategories)
       
       if (fileInputRef.current?.files?.[0]) {
         payload.append("image", fileInputRef.current.files[0])
@@ -245,6 +246,17 @@ export default function CategoriesPage() {
               className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 resize-none" 
               placeholder="Optional short description..." 
             />
+          </div>
+
+          <div>
+            <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Subcategories (Dropdowns)</label>
+            <input 
+              value={formData.subcategories || ""} 
+              onChange={e => setFormData({...formData, subcategories: e.target.value})} 
+              className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
+              placeholder="e.g. Mens, Ladies, Unisex" 
+            />
+            <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-2 ml-1">Comma-separated style filters for the storefront</p>
           </div>
 
           <div className="flex items-center justify-end gap-3 mt-8 pt-4 border-t border-neutral-800">

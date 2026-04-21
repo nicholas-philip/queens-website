@@ -188,7 +188,7 @@ const getSimilarStyles = async (req, res) => {
 const getCategories = async (req, res) => {
   const cats = await Category.find({ isActive: { $ne: false } })
     .sort({ sortOrder: 1, name: 1 })
-    .select("name slug image productCount description");
+    .select("name slug image productCount description subcategories");
 
   res.status(200).json({ success: true, count: cats.length, categories: cats });
 };

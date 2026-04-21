@@ -46,7 +46,7 @@ const FAQ = () => {
     },
     {
       question: "What is your delivery timeframe in Accra?",
-      answer: "For locations within Accra, we offer same-day or next-day delivery depending on the time of order placement. Orders placed before 12:00 PM GMT are typically delivered by 6:00 PM the same day."
+      answer: "For locations within Accra, we only deliver on Mondays and Fridays ."
     },
     {
       question: "Do you ship internationally?",
@@ -59,10 +59,6 @@ const FAQ = () => {
     {
       question: "How can I track my order?",
       answer: "Once your order is dispatched, you'll receive a notification via WhatsApp or Email with a tracking link. You can also use our dedicated 'Track Order' page on the website by entering your Order ID."
-    },
-    {
-      question: "Do you offer bespoke styling consultations?",
-      answer: "Indeed. We offer private digital and in-person styling sessions to help you curate the perfect wardrobe. Please contact our concierge team via the Contact page to book a session."
     }
   ];
 
