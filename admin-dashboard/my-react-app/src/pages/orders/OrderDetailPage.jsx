@@ -163,7 +163,7 @@ export default function OrderDetailPage() {
             )}
 
             {/* Order Items */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
                 <div className="p-6 border-b border-neutral-800/50 flex items-center justify-between">
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Order Consignment</h3>
                     <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">{order.items?.length} Items</span>
@@ -202,7 +202,7 @@ export default function OrderDetailPage() {
                 </div>
                 
                 {/* Financial Summary */}
-                <div className="bg-black/40 p-8 space-y-4">
+                <div className="bg-black p-8 space-y-4">
                     <div className="flex justify-between text-sm text-neutral-500">
                         <span className="font-bold uppercase tracking-widest text-xs">Merchant Subtotal</span>
                         <span className="font-medium">{formatCurrency(order.subtotal)}</span>
@@ -230,7 +230,7 @@ export default function OrderDetailPage() {
             </div>
 
             {/* Status Timeline */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center justify-between mb-8 pb-4 border-b border-neutral-800/50">
                     <div className="flex items-center gap-3">
                         <Activity className="h-5 w-5 text-yellow-500/70" />
@@ -250,7 +250,7 @@ export default function OrderDetailPage() {
                             <div className="flex-1 pb-4">
                                 <div className="flex items-center gap-3">
                                     <p className={cn("text-xs font-bold uppercase tracking-widest", i === 0 ? "text-white" : "text-neutral-500")}>{s.status}</p>
-                                    <span className="h-px flex-1 bg-neutral-900/40" />
+                                    <span className="h-px flex-1 bg-neutral-900" />
                                     <p className="text-xs font-bold text-neutral-600 uppercase">{formatDateTime(s.changedAt)}</p>
                                 </div>
                                 {s.note && (
@@ -269,7 +269,7 @@ export default function OrderDetailPage() {
         <div className="lg:col-span-4 space-y-8">
             
             {/* Customer Details */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center gap-3 pb-4 border-b border-neutral-800/50 mb-6">
                     <User className="h-5 w-5 text-yellow-500/70" />
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Recipient</h3>
@@ -314,7 +314,7 @@ export default function OrderDetailPage() {
             </div>
 
             {/* Delivery Address */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center gap-3 pb-4 border-b border-neutral-800/50 mb-6">
                     <MapPin className="h-5 w-5 text-yellow-500/70" />
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Delivery Route</h3>
@@ -343,7 +343,7 @@ export default function OrderDetailPage() {
             </div>
 
             {/* ── Delivery Fee & WhatsApp Notify ── */}
-            <div className="bg-neutral-900/40 border border-amber-500/20 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-amber-500/20 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center gap-3 pb-4 border-b border-neutral-800/50 mb-6">
                     <Truck className="h-5 w-5 text-amber-400/70" />
                     <h3 className="text-sm font-bold text-white uppercase tracking-widest">Set Delivery Fee</h3>
@@ -358,7 +358,7 @@ export default function OrderDetailPage() {
                                 value={deliveryFee}
                                 onChange={e => setDeliveryFee(e.target.value)}
                                 placeholder="0.00"
-                                className="w-full bg-black/40 border border-neutral-800 focus:border-amber-500/50 rounded-2xl pl-14 pr-5 py-3.5 text-lg font-bold text-white focus:outline-none transition-all"
+                                className="w-full bg-black border border-neutral-800 focus:border-amber-500/50 rounded-2xl pl-14 pr-5 py-3.5 text-lg font-bold text-white focus:outline-none transition-all"
                             />
                         </div>
                         <button
@@ -401,7 +401,7 @@ export default function OrderDetailPage() {
                     <p className="text-xs text-neutral-600 text-center">Opens WhatsApp with a ready-to-send message including the fee amount.</p>
                 </div>
             </div>
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <div className="flex items-center justify-between pb-4 border-b border-neutral-800/50 mb-6">
                     <div className="flex items-center gap-3">
                         <CreditCard className="h-5 w-5 text-yellow-500/70" />
@@ -442,7 +442,7 @@ export default function OrderDetailPage() {
                     {order.paystackReference && (
                         <div className="pt-4 border-t border-neutral-800/50">
                             <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1.5">Gateway Reference</p>
-                            <p className="text-xs font-mono text-neutral-400 bg-black/40 p-2 rounded-lg border border-neutral-800/50 break-all">{order.paystackReference}</p>
+                            <p className="text-xs font-mono text-neutral-400 bg-black p-2 rounded-lg border border-neutral-800/50 break-all">{order.paystackReference}</p>
                         </div>
                     )}
                 </div>
@@ -466,7 +466,7 @@ export default function OrderDetailPage() {
                     <select 
                         value={newStatus} 
                         onChange={(e) => setNewStatus(e.target.value)} 
-                        className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
+                        className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
                     >
                         {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                     </select>
@@ -477,7 +477,7 @@ export default function OrderDetailPage() {
                         rows={3} 
                         value={statusNote} 
                         onChange={(e) => setStatusNote(e.target.value)}
-                        className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all resize-none placeholder:text-neutral-700 font-medium" 
+                        className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all resize-none placeholder:text-neutral-700 font-medium" 
                         placeholder="e.g. Dispatched via Accra Express Logistics" 
                     />
                 </div>
@@ -507,7 +507,7 @@ export default function OrderDetailPage() {
                     <input 
                         value={tracking} 
                         onChange={(e) => setTracking(e.target.value)} 
-                        className="w-full bg-black/40 border border-neutral-800 rounded-2xl pl-12 pr-5 py-4 text-lg font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all placeholder:text-neutral-700 font-mono" 
+                        className="w-full bg-black border border-neutral-800 rounded-2xl pl-12 pr-5 py-4 text-lg font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all placeholder:text-neutral-700 font-mono" 
                         placeholder="e.g. DHL-593-9201" 
                     />
                 </div>
@@ -536,7 +536,7 @@ export default function OrderDetailPage() {
                     <select 
                         value={newPayStat} 
                         onChange={(e) => setNewPayStat(e.target.value)} 
-                        className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
+                        className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all cursor-pointer appearance-none"
                     >
                         <option value="Unpaid">Unpaid (Awaiting Payment)</option>
                         <option value="Paid">Paid (Confirmed ✓)</option>

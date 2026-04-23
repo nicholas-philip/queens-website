@@ -125,7 +125,7 @@ const Rewards = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 className="bg-base-100 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 md:p-10 shadow-2xl border border-base-200 relative overflow-hidden"
               >
-                <div className="absolute top-0 right-0 w-48 h-48 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 opacity-40 pointer-events-none" />
+                
 
                 <div className="relative z-10 space-y-5 sm:space-y-6">
                   {/* Tier + Points */}
@@ -252,3 +252,4 @@ const Rewards = () => {
 };
 
 export default Rewards;
+

@@ -83,7 +83,7 @@ const FAQ = () => {
             </p>
           </div>
 
-          <div className="bg-base-200/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-14 border border-base-200 backdrop-blur-3xl shadow-sm">
+          <div className="bg-base-200/30 rounded-[2.5rem] sm:rounded-[3.5rem] p-8 sm:p-14 border border-base-200  shadow-sm">
             {faqs.map((faq, index) => (
               <FAQItem key={index} {...faq} />
             ))}
@@ -110,3 +110,4 @@ const FAQ = () => {
 };
 
 export default FAQ;
+

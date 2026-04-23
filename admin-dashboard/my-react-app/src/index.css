@@ -27,28 +27,28 @@
 
 :root {
   --color-primary: #D4AF37;
-  --color-primary-content: #000000;
+  --color-primary-content: #0A0A0A;
 }
 
 [data-theme="light"] {
   --color-base-100: #ffffff;
   --color-base-200: #fafafa;
   --color-base-300: #f4f4f5;
-  --color-base-content: #000000;
+  --color-base-content: #0A0A0A;
   --color-base-content-muted: #52525b;
   --color-primary: #D4AF37;
-  --color-primary-content: #000000;
+  --color-primary-content: #0A0A0A;
   color-scheme: light;
 }
 
 [data-theme="dark"] {
-  --color-base-100: #050505;
+  --color-base-100: #0A0A0A;
   --color-base-200: #0A0A0A;
   --color-base-300: #121212;
   --color-base-content: #ffffff;
   --color-base-content-muted: #a1a1aa;
-  --color-primary: #C9A84C;
-  --color-primary-content: #000000;
+  --color-primary: #D4AF37;
+  --color-primary-content: #0A0A0A;
   color-scheme: dark;
 }
 

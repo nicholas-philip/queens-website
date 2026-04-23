@@ -19,6 +19,7 @@ import AnalyticsPage      from "./pages/analytics/AnalyticsPage"
 import ProductsPage       from "./pages/products/ProductsPage"
 import ProductFormPage    from "./pages/products/ProductFormPage"
 import ProductDetailPage  from "./pages/products/ProductDetailPage"
+import BulkUploadPage    from "./pages/products/BulkUploadPage"
 import CategoriesPage     from "./pages/categories/CategoriesPage"
 import CouponsPage        from "./pages/coupons/CouponsPage"
 import OrdersPage         from "./pages/orders/OrdersPage"
@@ -134,6 +135,7 @@ function AppRoutes() {
         {/* Inventory */}
         <Route path="products"          element={<PermissionRoute permission="Products"><ProductsPage /></PermissionRoute>} />
         <Route path="products/new"      element={<PermissionRoute permission="Products"><ProductFormPage /></PermissionRoute>} />
+        <Route path="products/bulk"     element={<PermissionRoute permission="Products"><BulkUploadPage /></PermissionRoute>} />
         <Route path="products/:id"      element={<PermissionRoute permission="Products"><ProductDetailPage /></PermissionRoute>} />
         <Route path="products/:id/edit" element={<PermissionRoute permission="Products"><ProductFormPage /></PermissionRoute>} />
         <Route path="categories"        element={<PermissionRoute permission="Categories"><CategoriesPage /></PermissionRoute>} />

@@ -25,7 +25,17 @@ NotificationSchema.index({ createdAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 
 // Static helper to create a notification quickly
 NotificationSchema.statics.push = async function (type, title, message, path = null) {
   try {
-    return await this.create({ type, title, message, path });
+    const notification = await this.create({ type, title, message, path });
+    
+    // Trigger Push Notification (FCM)
+    try {
+      const { sendPushNotification } = require("../utils/firebase");
+      await sendPushNotification(title || type, message, { path: path || "" });
+    } catch (fcmErr) {
+      console.warn("⚠️ FCM notification failed to send:", fcmErr.message);
+    }
+
+    return notification;
   } catch (err) {
     console.error("❌ Notification creation failed:", err.message);
   }

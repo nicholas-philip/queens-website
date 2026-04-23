@@ -55,7 +55,7 @@ export function ToastProvider({ children }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className="pointer-events-auto flex items-start gap-3 bg-neutral-900 border border-neutral-700 rounded-xl shadow-[0_4px_24px_rgba(0,0,0,0.6)] px-4 py-3 relative overflow-hidden"
+            className="pointer-events-auto flex items-start gap-3 bg-neutral-900 border border-neutral-700 rounded-xl shadow-[0_4px_24px_rgba(10,10,10,0.6)] px-4 py-3 relative overflow-hidden"
             style={{ animation: "slideInRight 0.25s ease" }}
           >
             {icons[toast.type]}

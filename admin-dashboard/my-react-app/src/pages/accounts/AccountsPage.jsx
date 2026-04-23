@@ -209,7 +209,7 @@ export default function AccountsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
         </div>
       ) : accounts.length === 0 ? (
-        <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center text-neutral-500 mb-4 shadow-inner">
             <UserCog className="h-8 w-8" />
           </div>
@@ -222,7 +222,7 @@ export default function AccountsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {accounts.map((acc) => (
             <div key={acc._id}
-              className={`bg-neutral-900/40 border p-6 rounded-3xl flex flex-col gap-5 transition-all group hover:border-yellow-500/30
+              className={`bg-neutral-900 border p-6 rounded-3xl flex flex-col gap-5 transition-all group hover:border-yellow-500/30
                 ${!acc.isActive ? "opacity-60 border-neutral-800" : "border-neutral-800"}
                 ${isSelf(acc._id) ? "ring-1 ring-yellow-500/50" : ""}
               `}
@@ -248,7 +248,7 @@ export default function AccountsPage() {
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-widest bg-black/40 p-3 rounded-xl border border-neutral-800">
+              <div className="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-widest bg-black p-3 rounded-xl border border-neutral-800">
                 <Clock className="h-4 w-4 text-neutral-600" />
                 {acc.lastLogin ? formatRelativeTime(acc.lastLogin) : "Never Logged In"}
               </div>
@@ -291,18 +291,18 @@ export default function AccountsPage() {
         <form onSubmit={onSubmit} className="space-y-6 pb-2">
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Full Name *</label>
-            <input name="name" value={formData.name} onChange={handleFormChange} required placeholder="John Doe" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+            <input name="name" value={formData.name} onChange={handleFormChange} required placeholder="John Doe" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
           </div>
 
           {!editing && (
             <>
               <div>
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Email Address *</label>
-                <input type="email" name="email" value={formData.email} onChange={handleFormChange} required placeholder="admin@store.com" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+                <input type="email" name="email" value={formData.email} onChange={handleFormChange} required placeholder="admin@store.com" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
               </div>
               <div>
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Password *</label>
-                <input type="password" name="password" value={formData.password} onChange={handleFormChange} required minLength={6} placeholder="Initial password for this admin" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+                <input type="password" name="password" value={formData.password} onChange={handleFormChange} required minLength={6} placeholder="Initial password for this admin" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
               </div>
             </>
           )}
@@ -310,14 +310,14 @@ export default function AccountsPage() {
           {editing && (
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Phone</label>
-              <input name="phone" value={formData.phone} onChange={handleFormChange} placeholder="+123 456 7890" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" />
+              <input name="phone" value={formData.phone} onChange={handleFormChange} placeholder="+123 456 7890" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" />
             </div>
           )}
 
           {isSuperAdmin && (
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Role</label>
-              <select name="role" value={formData.role} onChange={handleFormChange} className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none">
+              <select name="role" value={formData.role} onChange={handleFormChange} className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none">
                 <option value="Manager">Manager</option>
                 <option value="SuperAdmin">SuperAdmin</option>
               </select>
@@ -358,12 +358,12 @@ export default function AccountsPage() {
         <form onSubmit={submitPassword} className="space-y-6 pb-2">
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Current Password</label>
-            <input type="password" name="currentPassword" value={passData.currentPassword} onChange={handlePassChange} required placeholder="Your current password" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+            <input type="password" name="currentPassword" value={passData.currentPassword} onChange={handlePassChange} required placeholder="Your current password" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
           </div>
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">New Password</label>
             <div className="relative">
-              <input type={showPass ? "text" : "password"} name="newPassword" value={passData.newPassword} onChange={handlePassChange} required minLength={6} placeholder="Min. 6 characters" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 pr-12" />
+              <input type={showPass ? "text" : "password"} name="newPassword" value={passData.newPassword} onChange={handlePassChange} required minLength={6} placeholder="Min. 6 characters" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 pr-12" />
               <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-yellow-500 transition-colors">
                 {showPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -371,7 +371,7 @@ export default function AccountsPage() {
           </div>
           <div>
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Confirm New Password</label>
-            <input type="password" name="confirm" value={passData.confirm} onChange={handlePassChange} required placeholder="Repeat new password" className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
+            <input type="password" name="confirm" value={passData.confirm} onChange={handlePassChange} required placeholder="Repeat new password" className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" />
           </div>
 
           <div className="flex items-center justify-end gap-3 mt-8 pt-4 border-t border-neutral-800">
@@ -389,13 +389,13 @@ export default function AccountsPage() {
           {logsLoading ? (
             <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-yellow-500" /></div>
           ) : logs.length === 0 ? (
-            <p className="text-center text-sm font-bold text-neutral-500 uppercase tracking-widest py-12 bg-neutral-900/40 rounded-2xl border border-neutral-800">No activity recorded yet.</p>
+            <p className="text-center text-sm font-bold text-neutral-500 uppercase tracking-widest py-12 bg-neutral-900 rounded-2xl border border-neutral-800">No activity recorded yet.</p>
           ) : (
             <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
               {logs.map((log) => (
-                <div key={log._id} className="flex flex-col gap-2 p-4 bg-neutral-900/40 border border-neutral-800 rounded-2xl">
+                <div key={log._id} className="flex flex-col gap-2 p-4 bg-neutral-900 border border-neutral-800 rounded-2xl">
                   <div className="flex items-start justify-between">
-                    <span className="font-bold font-mono text-xs bg-black/40 px-2.5 py-1 rounded-lg border border-neutral-700 text-yellow-500">
+                    <span className="font-bold font-mono text-xs bg-black px-2.5 py-1 rounded-lg border border-neutral-700 text-yellow-500">
                       {log.action}
                     </span>
                     <span className="text-xs font-bold text-neutral-600 uppercase tracking-widest">

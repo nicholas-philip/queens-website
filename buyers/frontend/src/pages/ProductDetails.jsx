@@ -131,7 +131,7 @@ const ProductDetails = () => {
                 <ShoppingBag size={64} className="text-base-content/10" />
               )}
 
-              <button className="absolute top-5 right-5 bg-white backdrop-blur-md p-3.5 rounded-full shadow-lg hover:text-red-500 hover:scale-110 transition-all z-20">
+              <button className="absolute top-5 right-5 bg-white  p-3.5 rounded-full shadow-lg hover:text-red-500 hover:scale-110 transition-all z-20">
                 <Heart size={20} className="drop-shadow-sm" />
               </button>
             </motion.div>
@@ -313,7 +313,7 @@ const ProductDetails = () => {
                     addToCart({ ...product, selectedSize }, quantity);
                     setCheckoutOpen(true);
                   }}
-                  className="btn btn-neutral h-14 flex-1 rounded-[1.25rem] font-black text-sm uppercase tracking-widest bg-[#000] border-none hover:bg-zinc-800"
+                  className="btn btn-neutral h-14 flex-1 rounded-[1.25rem] font-black text-sm uppercase tracking-widest bg-[#0A0A0A] border-none hover:bg-zinc-800"
                 >
                   Checkout Now
                 </button>
@@ -376,3 +376,4 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+

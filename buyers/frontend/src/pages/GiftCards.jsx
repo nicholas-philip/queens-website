@@ -102,7 +102,7 @@ const GiftCards = () => {
               <div className="absolute inset-0 bg-gradient-to-tr from-neutral via-neutral/90 to-neutral/70" />
               <div className="relative z-10 p-6 sm:p-8 md:p-10 flex flex-col h-full justify-between">
                 <div className="flex justify-between items-start">
-                  <div className="w-12 sm:w-14 h-12 sm:h-14 bg-white/10 backdrop-blur-md flex items-center justify-center rounded-2xl border border-white/20">
+                  <div className="w-12 sm:w-14 h-12 sm:h-14 bg-white/10  flex items-center justify-center rounded-2xl border border-white/20">
                     <span className="text-primary font-black text-2xl sm:text-3xl font-serif italic">Q</span>
                   </div>
                   <span className="text-white/60 font-bold uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-xs bg-black/20 px-3 sm:px-4 py-1.5 rounded-full backdrop-blur-sm border border-white/10">
@@ -224,3 +224,4 @@ const GiftCards = () => {
 };
 
 export default GiftCards;
+

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, Clock, Globe } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, Clock, Globe, ChevronDown } from 'lucide-react';
 
 const ContactItem = ({ icon: Icon, title, value, detail }) => (
   <div className="flex items-start gap-4 p-6 bg-base-100 rounded-[2rem] border border-base-200 shadow-sm hover:border-primary/30 transition-all group">
@@ -18,6 +18,19 @@ const ContactItem = ({ icon: Icon, title, value, detail }) => (
 const Contact = () => {
   const [formState, setFormState] = useState('idle'); // idle, loading, success
   const [loading, setLoading] = useState(false);
+  const [topic, setTopic] = useState('General Inquiry');
+  const [isTopicOpen, setIsTopicOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsTopicOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -74,21 +87,16 @@ const Contact = () => {
               <ContactItem 
                 icon={Mail} 
                 title="General Inquiries" 
-                value="nyarkopriscilla240@gmail.com" 
+                value="[EMAIL_ADDRESS]" 
                 detail="Responses within 24 hours"
               />
               <ContactItem 
                 icon={MapPin} 
-                title="Grand Atelier" 
+                
                 value="Accra, Ghana" 
-                detail="Flagship Showroom"
+                
               />
-              <ContactItem 
-                icon={Clock} 
-                title="Boutique Hours" 
-                value="Mon - Sat" 
-                detail="10:00 AM - 08:30 PM"
-              />
+             
             </motion.div>
           </div>
 
@@ -98,10 +106,10 @@ const Contact = () => {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-base-200/50 backdrop-blur-xl p-8 sm:p-14 rounded-[3rem] border border-base-300 shadow-2xl relative overflow-hidden"
+              className="bg-base-100  p-8 sm:p-14 rounded-[3rem] border border-base-300 shadow-2xl relative overflow-hidden"
             >
               {/* Subtle background glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] pointer-events-none" />
+              
 
               <AnimatePresence mode="wait">
                 {formState === 'success' ? (
@@ -147,14 +155,47 @@ const Contact = () => {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-2 relative" ref={dropdownRef}>
                       <label className="text-[10px] font-black uppercase tracking-[0.3em] text-base-content/40 ml-2">Inquiry Topic</label>
-                      <select className="appearance-none w-full bg-base-100 border-2 border-transparent focus:border-primary/20 rounded-2xl px-6 py-4 outline-none font-black text-sm transition-all focus:bg-base-100 uppercase tracking-widest cursor-pointer">
-                        <option>General Inquiry</option>
-                        <option>Product Authentication</option>
-                        <option>Wholesale/B2B</option>
-                        <option>Bespoke Style Consultation</option>
-                      </select>
+                      <button
+                        type="button"
+                        onClick={() => setIsTopicOpen(!isTopicOpen)}
+                        className={`w-full flex items-center justify-between gap-3 bg-base-100 border-2 transition-all px-6 py-4 rounded-2xl outline-none font-black text-sm uppercase tracking-widest cursor-pointer ${isTopicOpen ? 'border-primary/20 bg-base-200' : 'border-transparent hover:border-primary/10'}`}
+                      >
+                        <span>{topic}</span>
+                        <ChevronDown size={16} className={`text-base-content/40 transition-transform duration-300 ${isTopicOpen ? 'rotate-180' : ''}`} />
+                      </button>
+
+                      <AnimatePresence>
+                        {isTopicOpen && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            transition={{ duration: 0.15, ease: 'easeOut' }}
+                            className="absolute top-full left-0 mt-2 w-full bg-base-100  border border-primary/10 rounded-2xl shadow-2xl overflow-hidden py-2 z-50"
+                          >
+                            {[
+                              "General Inquiry",
+                              "Product Authentication",
+                              "Wholesale/B2B",
+                              "Bespoke Style Consultation"
+                            ].map(option => (
+                              <button
+                                key={option}
+                                type="button"
+                                onClick={() => {
+                                  setTopic(option);
+                                  setIsTopicOpen(false);
+                                }}
+                                className={`w-full text-left px-6 py-4 text-sm font-black uppercase tracking-widest transition-colors ${topic === option ? 'text-primary bg-primary/5' : 'text-base-content hover:text-primary hover:bg-base-200'}`}
+                              >
+                                {option}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
 
                     <div className="space-y-2">
@@ -170,7 +211,7 @@ const Contact = () => {
                     <button 
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-[#050505] text-primary font-black px-10 py-6 rounded-2xl shadow-2xl shadow-primary/20 hover:brightness-125 transition-all flex items-center justify-center gap-4 active:scale-[0.98] disabled:opacity-50 group"
+                      className="w-full bg-[#0A0A0A] text-primary font-black px-10 py-6 rounded-2xl shadow-2xl shadow-primary/20 hover:brightness-125 transition-all flex items-center justify-center gap-4 active:scale-[0.98] disabled:opacity-50 group"
                     >
                       {loading ? (
                         <div className="h-6 w-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -193,3 +234,5 @@ const Contact = () => {
 };
 
 export default Contact;
+
+

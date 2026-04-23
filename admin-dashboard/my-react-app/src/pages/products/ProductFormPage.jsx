@@ -283,14 +283,14 @@ export default function ProductFormPage() {
         <div className="lg:col-span-2 space-y-8">
           
           {/* General Information */}
-          <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 space-y-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6">
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-2"><Box className="h-4 w-4 text-yellow-500" /> General Information</h3>
             
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Product Title *</label>
               <input 
                 name="title" value={formData.title} onChange={handleChange}
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
                 placeholder="e.g. Premium Silk Scarf" 
               />
             </div>
@@ -299,7 +299,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Description</label>
               <textarea 
                 name="description" value={formData.description} onChange={handleChange} rows={6}
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors resize-none leading-relaxed" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors resize-none leading-relaxed" 
                 placeholder="Write a compelling product description..." 
               />
             </div>
@@ -308,7 +308,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2 mt-2 flex items-center gap-1">Category *</label>
               <select 
                 name="category" value={formData.category} onChange={handleChange}
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors appearance-none"
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500/50 transition-colors appearance-none"
               >
                 <option value="" disabled>Select a category...</option>
                 {categories.map(c => (
@@ -322,7 +322,7 @@ export default function ProductFormPage() {
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2 mt-2 flex items-center gap-1">Subcategory (Optional)</label>
                 <select 
                   name="subcategory" value={formData.subcategory} onChange={handleChange}
-                  className="w-full bg-black/40 border border-yellow-500/50 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500 transition-colors appearance-none shadow-[0_0_15px_rgba(234,179,8,0.1)]"
+                  className="w-full bg-black border border-yellow-500/50 rounded-2xl px-5 py-3.5 text-white focus:outline-none focus:border-yellow-500 transition-colors appearance-none shadow-[0_0_15px_rgba(234,179,8,0.1)]"
                 >
                   <option value="">No subcategory</option>
                   {categories.find(c => c._id === formData.category)?.subcategories.map(sub => (
@@ -334,7 +334,7 @@ export default function ProductFormPage() {
           </div>
 
           {/* Media / Images */}
-          <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8">
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-6"><ImageIcon className="h-4 w-4 text-yellow-500" /> Product Media</h3>
             
             {/* Image Gallery */}
@@ -409,13 +409,13 @@ export default function ProductFormPage() {
         <div className="space-y-8">
           
           {/* Pricing */}
-          <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 space-y-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6">
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-2"><DollarSign className="h-4 w-4 text-yellow-500" /> Pricing</h3>
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Base Price ($) *</label>
               <input 
                 type="text"  name="price" value={formData.price} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="0.00" 
               />
             </div>
@@ -423,7 +423,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Discount Price ($)</label>
               <input 
                 type="text"  name="discountPrice" value={formData.discountPrice} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="Optional" 
               />
             </div>
@@ -439,13 +439,13 @@ export default function ProductFormPage() {
           </div>
 
           {/* Inventory */}
-          <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 space-y-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6">
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-2"><Box className="h-4 w-4 text-yellow-500" /> Inventory</h3>
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Stock Quantity</label>
               <input 
                 type="text" name="stockQuantity" value={formData.stockQuantity} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors font-mono" 
                 placeholder="e.g. 50" 
               />
             </div>
@@ -453,7 +453,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Status</label>
               <select 
                 name="status" value={formData.status} onChange={handleChange}
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors appearance-none"
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors appearance-none"
               >
                 <option value="Active">Active</option>
                 <option value="Draft">Draft</option>
@@ -463,13 +463,13 @@ export default function ProductFormPage() {
           </div>
 
           {/* Organization */}
-          <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 space-y-6">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6">
             <h3 className="text-sm font-bold text-white flex items-center gap-2 mb-2"><Tag className="h-4 w-4 text-yellow-500" /> Organization</h3>
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Tags / Keywords</label>
               <input 
                 type="text" name="tags" value={formData.tags} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
                 placeholder="summer, fashion, accessories" 
               />
               <p className="text-xs text-neutral-600 mt-2 ml-1">Separate tags with commas.</p>
@@ -478,7 +478,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Available Sizes</label>
               <input 
                 type="text" name="sizes" value={formData.sizes} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
                 placeholder="S, M, L, XL" 
               />
             </div>
@@ -486,7 +486,7 @@ export default function ProductFormPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Available Colors</label>
               <input 
                 type="text" name="colors" value={formData.colors} onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3 text-white focus:outline-none focus:border-yellow-500/50 transition-colors" 
                 placeholder="Red, Blue, Black" 
               />
             </div>

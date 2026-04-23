@@ -7,7 +7,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import Sidebar from "../Sidebar"
 import api from "../../libs/api"
 import { useDebounce } from "../../libs/useDebounce"
+import { useToast } from "../../context/ToastContext"
+import NotificationManager from "../NotificationManager"
 import logo from "../../assets/logo.png"
+import { cn } from "../../libs/utils"
 
 export default function DashboardLayout() {
   const admin  = useAuthStore((s) => s.admin)
@@ -16,6 +19,8 @@ export default function DashboardLayout() {
   const { theme, setTheme } = useTheme()
 
   const navigate = useNavigate()
+  const toast = useToast()
+  const prevCountRef = useRef(0)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
 
@@ -31,11 +36,18 @@ export default function DashboardLayout() {
     if (!token) return
     try {
       const { data } = await api.get("/admin/notifications/unread-count")
-      setUnreadCount(data.unreadCount || 0)
+      const newCount = data.unreadCount || 0
+      
+      if (newCount > prevCountRef.current) {
+        toast.info("🛎️ New Notification Received")
+      }
+      
+      setUnreadCount(newCount)
+      prevCountRef.current = newCount
     } catch (err) {
       console.warn("Notification poll failed", err.message)
     }
-  }, [token])
+  }, [token, toast])
 
   useEffect(() => {
     fetchUnread()
@@ -93,6 +105,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-[100dvh] bg-base-100 text-base-content font-sans flex overflow-hidden">
+      <NotificationManager />
       
       {/* ── Mobile Sidebar Header ── */}
       <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-base-100 border-b border-base-300 z-50 flex items-center justify-between px-6">
@@ -101,21 +114,35 @@ export default function DashboardLayout() {
             <span className="font-bold text-base-content tracking-tight">Queens Fashion Store Admin</span>
         </div>
 
-        {/* Hide hamburger when sidebar is open */}
-        {!sidebarOpen && (
-          <div className="flex items-center gap-2">
-            {/* Mobile Theme Toggle */}
-            <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 rounded-lg bg-base-200 border border-base-300 text-base-content/70 hover:text-primary transition-all"
-            >
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-            <button onClick={() => setSidebarOpen(true)} className="p-2 text-base-content/70 hover:text-base-content transition-colors bg-base-200 rounded-lg border border-base-300">
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        )}
+        <div className="flex items-center gap-4">
+          {/* Theme Toggle moved to Sidebar for mobile */}
+
+          {/* Luxury Floating Hamburger - FIXED POSITION TO STAY ON TOP */}
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="group relative w-12 h-12 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-base-200 to-base-100 border border-base-300/50 shadow-2xl shadow-primary/10 active:scale-90 transition-all overflow-hidden z-[150] lg:relative lg:z-auto"
+          >
+            <div className={`absolute inset-0 bg-primary/5 transition-opacity duration-500 ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} />
+            
+            <div className="flex flex-col gap-[5px] relative z-10">
+                <span className={cn(
+                    "w-6 h-[2.5px] bg-gradient-to-r from-primary to-yellow-600 rounded-full transition-all duration-500 origin-center",
+                    sidebarOpen ? "rotate-[225deg] translate-y-[7.5px] scale-x-110" : ""
+                )} />
+                <span className={cn(
+                    "w-4 h-[2.5px] bg-primary rounded-full transition-all duration-300",
+                    sidebarOpen ? "opacity-0 -translate-x-4" : ""
+                )} />
+                <span className={cn(
+                    "w-6 h-[2.5px] bg-gradient-to-r from-yellow-600 to-primary rounded-full transition-all duration-500 origin-center",
+                    sidebarOpen ? "-rotate-[225deg] -translate-y-[7.5px] scale-x-110" : ""
+                )} />
+            </div>
+            
+            {/* Glow effect */}
+            <div className="absolute -inset-2 bg-primary/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+          </button>
+        </div>
       </div>
 
       {/* ── Sidebar Overlay ── */}

@@ -177,7 +177,23 @@ const clearReadNotifications = async (req, res) => {
   res.status(200).json({ success: true, message: `${result.deletedCount} read notification(s) cleared.` });
 };
 
-const notificationController = { getNotifications, getUnreadCount, markOneRead, markAllRead, deleteNotification, clearReadNotifications };
+const registerToken = async (req, res) => {
+  const { token, platform } = req.body;
+  if (!token) return res.status(400).json({ success: false, message: "Token is required." });
+
+  // Import DeviceToken model
+  const DeviceToken = require("../models/DeviceToken");
+  
+  await DeviceToken.findOneAndUpdate(
+    { token },
+    { token, platform: platform || "web", lastUsed: new Date() },
+    { upsert: true, new: true }
+  );
+
+  res.status(200).json({ success: true, message: "Device registered for push notifications." });
+};
+
+const notificationController = { getNotifications, getUnreadCount, markOneRead, markAllRead, deleteNotification, clearReadNotifications, registerToken };
 
 
 // =====================================================
@@ -282,7 +298,43 @@ const bulkUpdateInvoiceStatus = async (req, res) => {
   res.status(200).json({ success: true, message: `${result.modifiedCount} invoice(s) marked "${status}".`, modified: result.modifiedCount });
 };
 
-const bulkController = { bulkUpdateOrderStatus, bulkUpdateProductStatus, bulkDeleteProducts, bulkRestockProducts, bulkUpdateInvoiceStatus };
+const bulkCreateProducts = async (req, res) => {
+  const { products } = req.body;
+  if (!Array.isArray(products) || products.length === 0) {
+    return res.status(400).json({ success: false, message: "No products provided." });
+  }
+
+  // Basic validation and formatting for each product
+  const formatted = products.map(p => ({
+    ...p,
+    price: Number(p.price) || 0,
+    stockQuantity: Number(p.stockQuantity) || 0,
+    status: p.status || "Draft",
+    slug: p.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.random().toString(36).slice(-4)
+  }));
+
+  const created = await Product2.insertMany(formatted);
+  
+  // Update category counts
+  const catCounts = {};
+  created.forEach(p => { 
+    if (p.category) {
+      const id = p.category.toString();
+      catCounts[id] = (catCounts[id] || 0) + 1;
+    }
+  });
+
+  await Promise.all(
+    Object.entries(catCounts).map(([id, n]) => 
+      Category2.findByIdAndUpdate(id, { $inc: { productCount: n } })
+    )
+  );
+
+  await logActivity3(req, "BULK_CREATED_PRODUCTS", `Created ${created.length} products`);
+  res.status(201).json({ success: true, message: `Successfully created ${created.length} products.`, count: created.length });
+};
+
+const bulkController = { bulkUpdateOrderStatus, bulkUpdateProductStatus, bulkDeleteProducts, bulkRestockProducts, bulkUpdateInvoiceStatus, bulkCreateProducts };
 
 
 // =====================================================

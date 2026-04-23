@@ -143,7 +143,7 @@ const TrackOrder = () => {
                </div>
             </div>
 
-            <div className="bg-base-200/50 rounded-2xl p-4 sm:p-6">
+            <div className="bg-base-100 rounded-2xl p-4 sm:p-6">
                <h3 className="font-extrabold text-base-content mb-4 text-sm uppercase tracking-widest">Order Consignment</h3>
                <div className="space-y-3 sm:space-y-4">
                  {order.items?.map((item, idx) => (
@@ -174,3 +174,4 @@ const TrackOrder = () => {
 };
 
 export default TrackOrder;
+

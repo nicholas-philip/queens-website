@@ -70,7 +70,7 @@ export default function ReviewNotification() {
         >
           <div className="bg-neutral text-white rounded-[2rem] p-6 shadow-2xl border border-white/10 overflow-hidden relative group">
             {/* Background Accent */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-primary/20 transition-all duration-500" />
+            
             
             <div className="flex items-start gap-4">
               <div className="w-14 h-14 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
@@ -131,3 +131,4 @@ export default function ReviewNotification() {
     </AnimatePresence>
   );
 }
+

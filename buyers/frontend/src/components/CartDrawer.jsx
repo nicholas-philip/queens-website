@@ -51,7 +51,7 @@ export default function CartDrawer() {
           </div>
 
           {/* Free Shipping Progress Bar */}
-          <div className="px-6 py-4 bg-base-200/50 border-b border-base-200 flex-shrink-0">
+          <div className="px-6 py-4 bg-base-100 border-b border-base-200 flex-shrink-0">
             {amountToFreeShipping > 0 ? (
               <p className="text-xs font-semibold text-base-content/70 mb-2">
                 You're <span className="text-primary font-bold">GHS {amountToFreeShipping.toFixed(2)}</span> away from <strong>FREE SHIPPING!</strong>
@@ -167,3 +167,4 @@ export default function CartDrawer() {
     </AnimatePresence>
   );
 }
+

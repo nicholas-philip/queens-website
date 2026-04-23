@@ -39,7 +39,7 @@ const PaymentSuccess = () => {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-black-rich flex flex-col items-center justify-center p-6 bg-[#050505]">
+      <div className="min-h-screen bg-black-rich flex flex-col items-center justify-center p-6 bg-[#0A0A0A]">
          <div className="relative">
             <div className="w-24 h-24 border-4 border-gold/20 border-t-gold rounded-full animate-spin" />
             <div className="absolute inset-0 flex items-center justify-center">
@@ -54,7 +54,7 @@ const PaymentSuccess = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-6 text-center">
          <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-[2rem] flex items-center justify-center text-red-500 mb-8">
             <CheckCircle size={40} className="rotate-180" />
          </div>
@@ -70,7 +70,7 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] pt-32 pb-20 px-6 overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] pt-32 pb-20 px-6 overflow-hidden">
       <div className="max-w-2xl mx-auto">
         
         <motion.div 
@@ -89,7 +89,7 @@ const PaymentSuccess = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 shadow-2xl backdrop-blur-xl"
+          className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 shadow-2xl "
         >
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 pb-8 border-b border-white/10">
              <div>
@@ -138,3 +138,4 @@ const PaymentSuccess = () => {
 };
 
 export default PaymentSuccess;
+

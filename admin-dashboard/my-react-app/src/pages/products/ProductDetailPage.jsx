@@ -173,7 +173,7 @@ export default function ProductDetailPage() {
                 </div>
             )}
 
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 space-y-6">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 space-y-6">
                  <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Pricing Strategy</span>
                     <Tag className="h-4 w-4 text-yellow-500/50" />
@@ -200,14 +200,14 @@ export default function ProductDetailPage() {
             
             {/* Essential Metrics */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl w-fit mb-4">
                         <ShoppingCart className="h-4 w-4 text-blue-500" />
                     </div>
                     <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Total Sold</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.totalSold || 0}</p>
                 </div>
-                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className={cn(
                         "p-2 border rounded-xl w-fit mb-4",
                         product.stockQuantity <= 5 ? "bg-red-500/10 border-red-500/20" : "bg-green-500/10 border-green-500/20"
@@ -219,14 +219,14 @@ export default function ProductDetailPage() {
                         {product.stockQuantity}
                     </p>
                 </div>
-                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className="p-2 bg-yellow-500/10 border border-yellow-500/20 rounded-xl w-fit mb-4">
                         <Star className="h-4 w-4 text-yellow-500" />
                     </div>
                     <p className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-1">Avg Rating</p>
                     <p className="text-2xl font-bold text-white tracking-tight">{product.averageRating || '—'}</p>
                 </div>
-                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-6 shadow-sm">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 shadow-sm">
                     <div className="p-2 bg-pink-500/10 border border-pink-500/20 rounded-xl w-fit mb-4">
                         <Heart className="h-4 w-4 text-pink-500" />
                     </div>
@@ -236,7 +236,7 @@ export default function ProductDetailPage() {
             </div>
 
             {/* Description */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                 <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-[0.2em] mb-4">Product Narrative</h3>
                 <p className="text-neutral-300 leading-relaxed font-normal text-lg">
                     {product.description}
@@ -245,7 +245,7 @@ export default function ProductDetailPage() {
                 {product.tags?.length > 0 && (
                     <div className="flex flex-wrap gap-2 mt-8">
                         {product.tags.map(tag => (
-                            <span key={tag} className="px-3 py-1.5 bg-black/40 border border-neutral-800 rounded-xl text-xs font-bold text-neutral-500 uppercase tracking-wider hover:border-yellow-500/30 hover:text-yellow-500 transition-all cursor-default">
+                            <span key={tag} className="px-3 py-1.5 bg-black border border-neutral-800 rounded-xl text-xs font-bold text-neutral-500 uppercase tracking-wider hover:border-yellow-500/30 hover:text-yellow-500 transition-all cursor-default">
                                 {tag}
                             </span>
                         ))}
@@ -280,7 +280,7 @@ export default function ProductDetailPage() {
 
             {/* Grouped Styles (Automatic Linking) */}
             {similarStyles.length > 0 && (
-                <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm">
+                <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm">
                     <div className="flex items-center justify-between mb-8">
                         <div>
                             <h3 className="text-sm font-black text-white uppercase tracking-[0.2em] mb-1">Style Grouping</h3>
@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
                             <Link 
                                 key={s._id} 
                                 to={`/products/${s._id}`}
-                                className="group relative aspect-[4/5] bg-black/40 border border-neutral-800 rounded-2xl overflow-hidden hover:border-yellow-500/50 transition-all shadow-xl"
+                                className="group relative aspect-[4/5] bg-black border border-neutral-800 rounded-2xl overflow-hidden hover:border-yellow-500/50 transition-all shadow-xl"
                                 title={s.title}
                             >
                                 <img src={s.images?.[0]} alt="" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all" />
@@ -361,7 +361,7 @@ export default function ProductDetailPage() {
                 type="number" 
                 value={adjValue} 
                 onChange={(e) => setAdjValue(e.target.value)}
-                className="flex-1 bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-xl font-bold text-center text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all font-mono" 
+                className="flex-1 bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-xl font-bold text-center text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all font-mono" 
                 placeholder="0" 
               />
               <button 
@@ -380,7 +380,7 @@ export default function ProductDetailPage() {
             <input 
                 value={adjReason} 
                 onChange={(e) => setAdjReason(e.target.value)} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all placeholder:text-neutral-700" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-5 py-3.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/30 transition-all placeholder:text-neutral-700" 
                 placeholder="e.g. Restocked from Accra Hub" 
             />
           </div>

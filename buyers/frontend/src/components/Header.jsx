@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
 import logo from '../assets/logo.png';
 import { useDebounce } from '../hooks/useDebounce';
+import { cn } from '../libs/utils';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -17,6 +18,8 @@ const Header = () => {
   const debouncedSearch = useDebounce(searchQuery, 400);
   const [showCatDropdown, setShowCatDropdown] = useState(false);
   const [isMobileCatOpen, setIsMobileCatOpen] = useState(true);
+  const [hoveredCatId, setHoveredCatId] = useState(null);
+  const [expandedCatId, setExpandedCatId] = useState(null);
   
   // DaisyUI Theme State
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'queens-light');
@@ -88,9 +91,9 @@ const Header = () => {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50">
+      <header className="fixed top-0 left-0 right-0 z-[160]">
         {/* Top Utility Bar */}
-        <div className="bg-[#050505] text-white py-2 px-4 md:px-6 text-xs md:text-xs font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
+        <div className="bg-[#0A0A0A] text-white py-2 px-4 md:px-6 text-xs md:text-xs font-black flex justify-between items-center tracking-[0.05em] border-b-2 border-primary/40 shadow-lg">
           {/* Left: Promo */}
           <div className="flex w-full md:w-auto justify-center md:justify-start items-center gap-3 uppercase italic">
             <span className="text-primary tracking-widest truncate">✦ Queens Fashion — Premium Jewelry & Accessories ✦</span>
@@ -110,8 +113,8 @@ const Header = () => {
         </div>
 
         {/* Main Header */}
-        <div className={`transition-all duration-500 border-b ${isScrolled ? 'bg-base-100 shadow-[0_10px_40px_rgba(0,0,0,0.1)] border-primary/20 py-2' : 'bg-base-100/95 backdrop-blur-3xl border-base-200 py-3 md:py-6'}`}>
-          <div className="max-w-[1440px] mx-auto px-4uuuiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii md:px-8 flex items-center justify-between gap-2 md:gap-12">
+        <div className={`transition-all duration-500 border-b ${isScrolled ? 'bg-base-100 shadow-[0_15px_60px_rgba(10,10,10,0.4)] border-primary/20 py-2' : 'bg-base-100  border-base-200 py-3 md:py-6'}`}>
+          <div className="max-w-[1440px] mx-auto px-4 md:px-8 flex items-center justify-between gap-2 md:gap-12">
             
             {/* Logo */}
             <Link to="/" className="flex items-center group flex-shrink-0">
@@ -122,7 +125,7 @@ const Header = () => {
             </Link>
 
             {/* Desktop Nav Links */}
-            <nav className="hidden lg:flex items-center gap-8 text-sm font-black uppercase tracking-[0.12em] text-base-content">
+            <nav className="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-black uppercase tracking-[0.12em] text-base-content">
                <Link to="/" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Home
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
@@ -149,7 +152,7 @@ const Header = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-                        className="absolute top-[calc(100%+8px)] -left-6 w-[280px] bg-base-100 border-2 border-primary/30 shadow-[0_30px_60px_rgba(0,0,0,0.15)] rounded-[2rem] py-4 z-[999] overflow-hidden"
+                        className="absolute top-[calc(100%+8px)] -left-6 w-[280px] bg-base-100 border-2 border-primary/30 shadow-[0_30px_60px_rgba(10,10,10,0.15)] rounded-[2rem] py-4 z-[999] overflow-hidden"
                      >
                         {!categories || categories.length === 0 ? (
                            <div className="px-10 py-4 text-xs font-black text-base-content/20 tracking-widest uppercase animate-pulse">
@@ -157,32 +160,47 @@ const Header = () => {
                            </div>
                         ) : (
                           categories.map((cat) => (
-                            <div key={cat._id} className="group">
+                            <div 
+                              key={cat._id} 
+                              className="relative"
+                              onMouseEnter={() => setHoveredCatId(cat._id)}
+                              onMouseLeave={() => setHoveredCatId(null)}
+                            >
                               <Link 
                                 to={`/shop?category=${cat.slug}`}
                                 onClick={() => setShowCatDropdown(false)}
-                                className="flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all"
+                                className="flex items-center justify-between px-8 py-3.5 text-base-content hover:text-primary hover:bg-primary/5 transition-all group"
                               >
                                 <span className="font-black text-sm uppercase tracking-widest transition-transform group-hover:translate-x-1">{cat.name}</span>
                                 <div className="w-1.5 h-1.5 rounded-full bg-primary/20 group-hover:bg-primary transition-all group-hover:scale-[2.5]" />
                               </Link>
                               
-                              {/* Subcategories */}
-                              {cat.subcategories && cat.subcategories.length > 0 && (
-                                <div className="flex flex-col pb-2 pl-12 pr-4 bg-primary/5 hidden group-hover:flex transition-all">
-                                  {cat.subcategories.map(sub => (
-                                    <Link
-                                      key={sub}
-                                      to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
-                                      onClick={() => setShowCatDropdown(false)}
-                                      className="py-1.5 text-xs font-black uppercase tracking-widest text-base-content/60 hover:text-primary transition-colors flex items-center gap-2"
-                                    >
-                                      <span className="w-1 h-1 rounded-full bg-base-content/20" />
-                                      {sub}
-                                    </Link>
-                                  ))}
-                                </div>
-                              )}
+                              {/* Desktop Subcategories */}
+                              <AnimatePresence>
+                                {hoveredCatId === cat._id && cat.subcategories && cat.subcategories.length > 0 && (
+                                  <motion.div 
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.2 }}
+                                    className="overflow-hidden bg-primary/5"
+                                  >
+                                    <div className="flex flex-col pb-3 pl-12 pr-4 pt-1">
+                                      {cat.subcategories.map(sub => (
+                                        <Link
+                                          key={sub}
+                                          to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
+                                          onClick={() => setShowCatDropdown(false)}
+                                          className="py-1.5 text-xs font-black uppercase tracking-widest text-base-content/60 hover:text-primary transition-colors flex items-center gap-2"
+                                        >
+                                          <span className="w-1 h-1 rounded-full bg-base-content/20" />
+                                          {sub}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
                           ))
                         )}
@@ -195,15 +213,15 @@ const Header = () => {
                  New
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
-               <Link to="/about" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+               <Link to="/about" className="hidden xl:block hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  About
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
-               <Link to="/blog" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+               <Link to="/blog" className="hidden xl:block hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Blog
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
-               <Link to="/contact" className="hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
+               <Link to="/contact" className="hidden xl:block hover:text-primary transition-all hover:-translate-y-0.5 relative group py-2">
                  Contact
                  <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all group-hover:w-full rounded-full" />
                </Link>
@@ -225,7 +243,7 @@ const Header = () => {
                         setSearchQuery(e.target.value);
                         if (!showSearchOverlay) setShowSearchOverlay(true);
                       }}
-                      className="w-full bg-base-200/50 rounded-2xl px-6 py-3.5 text-xs outline-none border-2 border-transparent focus:border-primary/40 font-black tracking-widest placeholder:text-base-content/20 transition-all focus:bg-base-100 shadow-inner"
+                      className="w-full bg-base-100 rounded-2xl px-6 py-3.5 text-xs outline-none border-2 border-transparent focus:border-primary/40 font-black tracking-widest placeholder:text-base-content/20 transition-all focus:bg-base-100 shadow-inner"
                     />
                     <button type="submit" className="absolute right-5 top-1/2 -translate-y-1/2 text-base-content/30 hover:text-primary transition-colors">
                        <Search size={16} strokeWidth={4} />
@@ -244,7 +262,7 @@ const Header = () => {
                           initial={{ opacity: 0, y: 10, scale: 0.98 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                          className="absolute top-full mt-3 right-0 w-[420px] bg-base-100 border-2 border-primary/20 shadow-[0_40px_80px_rgba(0,0,0,0.2)] rounded-[2.5rem] py-6 z-50 overflow-hidden backdrop-blur-3xl"
+                          className="absolute top-full mt-3 right-0 w-[420px] bg-base-100 border-2 border-primary/20 shadow-[0_40px_80px_rgba(10,10,10,0.2)] rounded-[2.5rem] py-6 z-50 overflow-hidden "
                         >
                           <div className="px-8 mb-4 flex justify-between items-center text-xs font-black uppercase tracking-widest text-base-content/40">
                              <span>Results For "{debouncedSearch}"</span>
@@ -354,69 +372,105 @@ const Header = () => {
                        </span>
                      )}
                   </button>
-               </div>
 
-               <button className="lg:hidden text-primary p-1 md:p-2 flex flex-col items-center justify-center gap-0.5 hover:bg-primary/5 rounded-xl md:rounded-2xl transition-all border border-transparent hover:border-primary/20 ml-1 md:ml-0" onClick={() => setIsMenuOpen(true)}>
-                  <Menu size={26} className="md:w-[34px] md:h-[34px]" strokeWidth={2.5} />
-                  <span className="text-xs md:text-xs font-bold uppercase tracking-[0.3em]">Menu</span>
-               </button>
+                  {/* Luxury Hamburger - Re-joined to Header for perfect alignment */}
+                  <button 
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="lg:hidden relative w-11 h-11 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-base-200 to-base-100 border border-primary/20 shadow-xl active:scale-90 transition-all overflow-hidden z-20 ml-2"
+                  >
+                    <div className={`absolute inset-0 bg-primary/5 transition-opacity duration-500 ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`} />
+                    <div className="flex flex-col gap-[4.5px] relative z-10">
+                       <span className={cn(
+                           "w-5 h-[2px] bg-gradient-to-r from-primary to-[#C9A84C] rounded-full transition-all duration-500 origin-center",
+                           isMenuOpen ? "rotate-[225deg] translate-y-[6.5px] scale-x-110" : ""
+                       )} />
+                       <span className={cn(
+                           "w-3.5 h-[2px] bg-primary rounded-full transition-all duration-300",
+                           isMenuOpen ? "opacity-0 -translate-x-4" : ""
+                       )} />
+                       <span className={cn(
+                           "w-5 h-[2px] bg-gradient-to-r from-[#C9A84C] to-primary rounded-full transition-all duration-500 origin-center",
+                           isMenuOpen ? "-rotate-[225deg] -translate-y-[6.5px] scale-x-110" : ""
+                       )} />
+                    </div>
+                  </button>
+               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="h-[112px] md:h-[130px]" />
+      <div className="h-[100px] md:h-[110px]" />
 
-      {/* Mobile Menu Overlay */}
+      {/* Elegant Side-Drawer Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 z-[155] bg-black/70 backdrop-blur-md lg:hidden"
             onClick={() => setIsMenuOpen(false)}
           >
             <motion.div
-              initial={{ x: '-100%' }}
+              initial={{ x: '-110%' }}
               animate={{ x: 0 }}
-              exit={{ x: '-100%' }}
-              transition={{ type: 'spring', stiffness: 340, damping: 34 }}
-              className="absolute left-0 top-0 bottom-0 w-[80%] max-w-[320px] bg-base-100 shadow-2xl flex flex-col"
+              exit={{ x: '-110%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 220 }}
+              className="absolute left-0 top-0 bottom-0 w-[85%] max-w-[340px] bg-base-100/90 backdrop-blur-2xl border-r border-white/10 shadow-[20px_0_80px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 flex justify-between items-center bg-[#050505] text-white">
-                <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center">
-                  <div className="w-24 h-12 flex items-center justify-center">
-                    <img src={logo} alt="Queens Fashion Store Logo" className="w-full h-full object-contain" />
+              {/* Drawer Header with Gold Accent */}
+              <div className="relative flex-shrink-0 flex items-center px-8 py-8 border-b border-white/5 bg-base-200/20">
+                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent" />
+                
+                <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-base-100 border border-primary/20 flex items-center justify-center p-2 shadow-inner">
+                    <img src={logo} alt="Queens Fashion Store Logo" className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(201,168,76,0.3)]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-black text-base-content tracking-tighter leading-none uppercase italic">Queens Fashion</p>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1.5 opacity-80">Storefront</p>
                   </div>
                 </Link>
-                <button 
-                  onClick={() => setIsMenuOpen(false)}
-                  className="w-10 h-10 flex items-center justify-center rounded-2xl bg-white/10 text-white hover:bg-primary hover:text-[#050505] transition-all"
-                >
-                  <X size={20} />
-                </button>
               </div>
 
-              <div className="flex-grow overflow-y-auto px-6 py-8 bg-base-100">
-                <nav className="flex flex-col gap-2">
-                  {/* Main Links */}
-                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+              {/* Scrollable Content */}
+              <div className="flex-grow overflow-y-auto custom-scrollbar flex flex-col">
+                
+                {/* Search Bar */}
+                <div className="p-5 border-b border-base-200">
+                  <form onSubmit={handleSearch} className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="Search store..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-base-200 rounded-xl px-5 py-3.5 text-sm outline-none border border-transparent focus:border-primary/30 font-bold transition-all"
+                    />
+                    <button type="submit" className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-primary transition-colors">
+                       <Search size={18} />
+                    </button>
+                  </form>
+                </div>
+
+                {/* Primary Nav */}
+                <nav className="flex flex-col py-2 px-3">
+                  <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-primary/5 text-sm font-black uppercase tracking-widest text-base-content transition-all">
                     Home
                   </Link>
-                  <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                  <Link to="/shop" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-primary/5 text-sm font-black uppercase tracking-widest text-base-content transition-all mt-1">
                     Shop
                   </Link>
 
                   {/* Collections Accordion */}
-                  <div className="rounded-2xl overflow-hidden border border-base-200/50">
+                  <div className="mt-1">
                     <button 
                       onClick={() => setIsMobileCatOpen(!isMobileCatOpen)}
-                      className="w-full flex justify-between items-center p-4 text-base font-black tracking-tight text-primary uppercase bg-primary/5 rounded-2xl"
+                      className="w-full flex justify-between items-center px-4 py-3.5 rounded-2xl text-sm font-black uppercase tracking-widest text-primary bg-primary/5"
                     >
                       <span>Collections</span>
-                      <ChevronDown size={16} className={`transition-transform duration-300 ${isMobileCatOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={18} className={`transition-transform duration-300 ${isMobileCatOpen ? 'rotate-180' : ''}`} />
                     </button>
                     
                     <AnimatePresence initial={false}>
@@ -428,34 +482,56 @@ const Header = () => {
                           transition={{ duration: 0.25 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-4 py-2 flex flex-col gap-1">
+                          <div className="flex flex-col px-2 py-2 gap-1 bg-base-100">
                             {!categories || categories.length === 0 ? (
-                              <p className="text-sm text-base-content/40 p-4 italic text-center">Loading...</p>
+                              <p className="text-xs text-base-content/40 px-4 py-2 italic font-bold">Loading...</p>
                             ) : (
                               categories.map(cat => (
                                 <div key={cat._id} className="flex flex-col">
-                                  <Link 
-                                    to={`/shop?category=${cat.slug}`} 
-                                    onClick={() => setIsMenuOpen(false)}
-                                    className="flex items-center justify-between px-4 py-3 rounded-xl hover:bg-primary/5 hover:text-primary font-bold text-base-content/70 transition-all text-sm"
-                                  >
-                                    {cat.name}
-                                    <ChevronRight size={14} className="text-primary/40"/>
-                                  </Link>
-                                  {cat.subcategories && cat.subcategories.length > 0 && (
-                                    <div className="flex flex-col pl-6 pr-2 pb-2 gap-2 mt-1">
-                                      {cat.subcategories.map(sub => (
-                                        <Link
-                                          key={sub}
-                                          to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
-                                          onClick={() => setIsMenuOpen(false)}
-                                          className="text-xs font-black uppercase tracking-widest text-base-content/50 hover:text-primary flex items-center gap-2"
-                                        >
-                                          • {sub}
-                                        </Link>
-                                      ))}
-                                    </div>
-                                  )}
+                                  <div className="flex items-center justify-between rounded-xl hover:bg-base-200 transition-all">
+                                    <Link 
+                                      to={`/shop?category=${cat.slug}`} 
+                                      onClick={() => setIsMenuOpen(false)}
+                                      className="flex-1 px-6 py-3 font-black text-xs uppercase tracking-widest text-base-content/70 hover:text-primary"
+                                    >
+                                      {cat.name}
+                                    </Link>
+                                    {cat.subcategories && cat.subcategories.length > 0 && (
+                                      <button 
+                                        onClick={(e) => {
+                                          e.preventDefault();
+                                          setExpandedCatId(expandedCatId === cat._id ? null : cat._id);
+                                        }}
+                                        className="p-3 px-6 text-base-content/40 hover:text-primary transition-colors"
+                                      >
+                                        <ChevronDown size={14} className={`transition-transform duration-300 ${expandedCatId === cat._id ? 'rotate-180 text-primary' : ''}`} />
+                                      </button>
+                                    )}
+                                  </div>
+                                  
+                                  <AnimatePresence initial={false}>
+                                    {expandedCatId === cat._id && cat.subcategories && cat.subcategories.length > 0 && (
+                                      <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden"
+                                      >
+                                        <div className="flex flex-col pl-10 pr-2 pb-2 gap-3 mt-1 border-l-2 border-base-200 ml-6">
+                                          {cat.subcategories.map(sub => (
+                                            <Link
+                                              key={sub}
+                                              to={`/shop?category=${cat.slug}&subcategory=${encodeURIComponent(sub)}`}
+                                              onClick={() => setIsMenuOpen(false)}
+                                              className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/50 hover:text-primary flex items-center gap-2"
+                                            >
+                                              • {sub}
+                                            </Link>
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </AnimatePresence>
                                 </div>
                               ))
                             )}
@@ -465,62 +541,59 @@ const Header = () => {
                     </AnimatePresence>
                   </div>
 
-                  <Link to="/shop?sort=newest" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                  <Link to="/shop?sort=newest" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-primary/5 text-sm font-black uppercase tracking-widest text-base-content transition-all mt-1">
                     New Arrivals
                   </Link>
-                  <Link to="/about" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                  <Link to="/about" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-primary/5 text-sm font-black uppercase tracking-widest text-base-content transition-all mt-1">
                     About Us
                   </Link>
-                  <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
+                  <Link to="/blog" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3.5 rounded-2xl hover:bg-primary/5 text-sm font-black uppercase tracking-widest text-base-content transition-all mt-1">
                     Blog
                   </Link>
-                  <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-primary italic">
-                    My Wishlist
-                    <div className="flex items-center gap-2">
-                       {wishlistCount > 0 && <span className="w-5 h-5 bg-primary text-primary-content text-xs flex items-center justify-center rounded-full font-black">{wishlistCount}</span>}
-                       <Heart size={16} className="fill-primary/10" />
-                    </div>
-                  </Link>
+                </nav>
 
-                  {/* Divider */}
-                  <div className="my-3 border-t border-base-200" />
-                  <p className="px-4 text-xs font-black uppercase tracking-[0.25em] text-base-content/30 mb-1">Support</p>
+                <div className="w-full h-px bg-base-200 my-2" />
 
-                  <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl bg-primary/10 border border-primary/20 text-primary font-black tracking-tight transition-all active:scale-95 shadow-sm">
-                    My Order History
-                    <ChevronRight size={14}/>
+                {/* Secondary Nav */}
+                <nav className="flex flex-col py-2 px-3 pb-8">
+                  <p className="px-5 text-[10px] font-black uppercase tracking-[0.3em] text-base-content/30 mb-3">Your Account</p>
+                  <Link to="/orders" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/70 transition-all">
+                    <User size={16} className="text-base-content/50" /> Orders
                   </Link>
-                  <Link to="/track" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
-                    Track My Order
-                    <ChevronRight size={14} className="text-primary/40" />
+                  <Link to="/wishlist" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/70 transition-all mt-1">
+                    <Heart size={16} className="text-base-content/50" /> Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
                   </Link>
-                  <Link to="/faq" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
-                    FAQ
-                    <ChevronRight size={14} className="text-primary/40" />
+                  <Link to="/track" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/70 transition-all mt-1">
+                    <Package size={16} className="text-base-content/50" /> Tracking
                   </Link>
-                  <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
-                    Contact Us
-                    <ChevronRight size={14} className="text-primary/40" />
-                  </Link>
-                  <Link to="/shipping" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
-                    Shipping Policy
-                    <ChevronRight size={14} className="text-primary/40" />
-                  </Link>
-                  <Link to="/returns" onClick={() => setIsMenuOpen(false)} className="flex justify-between items-center p-4 rounded-2xl hover:bg-primary/5 text-base font-black tracking-tight transition-all active:scale-95 text-base-content">
-                    Returns & Exchanges
-                    <ChevronRight size={14} className="text-primary/40" />
-                  </Link>
+                  
+                  <div className="w-full h-px bg-base-100 my-4" />
+                  
+                  <p className="px-5 text-[10px] font-black uppercase tracking-[0.3em] text-base-content/30 mb-3">Support</p>
+                  <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="flex items-center px-4 py-2.5 hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/60 transition-all rounded-xl">Contact Help</Link>
+                  <Link to="/faq" onClick={() => setIsMenuOpen(false)} className="flex items-center px-4 py-2.5 hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/60 transition-all rounded-xl">FAQs</Link>
+                  <Link to="/returns" onClick={() => setIsMenuOpen(false)} className="flex items-center px-4 py-2.5 hover:bg-base-200 text-xs font-bold uppercase tracking-widest text-base-content/60 transition-all rounded-xl">Returns Policy</Link>
                 </nav>
               </div>
 
-              <div className="p-6 bg-base-200/30 backdrop-blur-3xl">
+              {/* Sticky Footer */}
+              <div className="flex-shrink-0 p-5 bg-base-100 border-t border-base-200 flex flex-col gap-3">
                 <button 
                   onClick={() => { setCheckoutOpen(true); setIsMenuOpen(false); }}
-                  className="w-full py-4 bg-[#050505] text-primary rounded-2xl font-black text-base flex items-center justify-center gap-3 shadow-[0_10px_25px_rgba(201,168,76,0.3)] border-2 border-primary/40 active:scale-95 transition-all uppercase tracking-widest"
+                  className="w-full py-4 bg-[#0A0A0A] text-primary rounded-2xl font-black text-sm flex items-center justify-center gap-3 shadow-[0_5px_15px_rgba(201,168,76,0.2)] border border-primary/20 active:scale-95 transition-all uppercase tracking-widest"
                 >
-                  <ShoppingBag size={20} />
-                  Cart ({itemCount})
+                  <ShoppingBag size={18} />
+                  View Cart ({itemCount})
                 </button>
+                <div className="flex items-center justify-between px-2 mt-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-base-content/30 flex items-center gap-2">Theme Mode</span>
+                  <button 
+                    onClick={() => { setTheme(theme === 'queens-dark' ? 'queens-light' : 'queens-dark') }} 
+                    className="p-2 rounded-xl bg-base-200 text-base-content hover:text-primary transition-all"
+                  >
+                     {theme === 'queens-dark' ? <Sun size={16} /> : <Moon size={16} />}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

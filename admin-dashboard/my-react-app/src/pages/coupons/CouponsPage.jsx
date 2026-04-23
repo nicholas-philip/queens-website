@@ -32,11 +32,11 @@ function CouponCard({ coupon, onEdit, onToggle, onDelete }) {
       : `${formatCurrency(coupon.discountValue)} off`
 
   return (
-    <div className={`bg-neutral-900/40 border border-neutral-800 p-6 rounded-3xl flex flex-col gap-5 transition-all group hover:border-yellow-500/30 ${!coupon.isActive ? "opacity-60" : ""}`}>
+    <div className={`bg-neutral-900 border border-neutral-800 p-6 rounded-3xl flex flex-col gap-5 transition-all group hover:border-yellow-500/30 ${!coupon.isActive ? "opacity-60" : ""}`}>
       {/* Code + Copy */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xl font-bold text-white tracking-widest bg-black/40 px-3 py-1 rounded-lg border border-neutral-800">
+          <span className="font-mono text-xl font-bold text-white tracking-widest bg-black px-3 py-1 rounded-lg border border-neutral-800">
             {coupon.code}
           </span>
           <button onClick={copy} className="p-2 bg-neutral-800 rounded-xl text-neutral-400 hover:text-yellow-500 transition-colors">
@@ -71,17 +71,17 @@ function CouponCard({ coupon, onEdit, onToggle, onDelete }) {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-3 gap-3 text-center">
-        <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3">
+        <div className="rounded-2xl bg-black border border-neutral-800 p-3">
           <p className="text-lg font-bold text-white">{coupon.usedCount || 0}</p>
           <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Used</p>
         </div>
-        <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3">
+        <div className="rounded-2xl bg-black border border-neutral-800 p-3">
           <p className="text-lg font-bold text-white">
             {coupon.maxUses ? coupon.maxUses - (coupon.usedCount || 0) : "∞"}
           </p>
           <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Remaining</p>
         </div>
-        <div className="rounded-2xl bg-black/40 border border-neutral-800 p-3 flex flex-col items-center justify-center">
+        <div className="rounded-2xl bg-black border border-neutral-800 p-3 flex flex-col items-center justify-center">
           <p className="text-xs font-bold text-white leading-tight">{formatDate(coupon.expiryDate)}</p>
           <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mt-1">Expires</p>
         </div>
@@ -256,7 +256,7 @@ export default function CouponsPage() {
           { label: "Expired", value: expiredCount, iconColor: "text-red-500" },
           { label: "Total Uses", value: totalUsed, iconColor: "text-blue-500" },
         ].map((s) => (
-          <div key={s.label} className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-6">
+          <div key={s.label} className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6">
             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-2">{s.label}</p>
             <p className={`text-3xl font-bold ${s.iconColor}`}>{s.value}</p>
           </div>
@@ -264,9 +264,9 @@ export default function CouponsPage() {
       </div>
 
       {/* ── Filters ── */}
-      <div className="flex flex-col md:flex-row items-center gap-4 bg-neutral-900/40 border border-neutral-800 p-3 rounded-2xl">
+      <div className="flex flex-col md:flex-row items-center gap-4 bg-neutral-900 border border-neutral-800 p-3 rounded-2xl">
         {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-black/40 rounded-xl w-full md:w-auto">
+        <div className="flex gap-2 p-1 bg-black rounded-xl w-full md:w-auto">
           {[
             { key: "all", label: "All" },
             { key: "active", label: "Active" },
@@ -287,7 +287,7 @@ export default function CouponsPage() {
             value={search} 
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search code or name..." 
-            className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-medium placeholder:text-neutral-600"
+            className="w-full bg-black border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-medium placeholder:text-neutral-600"
           />
         </div>
       </div>
@@ -298,7 +298,7 @@ export default function CouponsPage() {
           <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
           <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center text-neutral-500 mb-4 shadow-inner">
             <Ticket className="h-8 w-8" />
           </div>
@@ -330,7 +330,7 @@ export default function CouponsPage() {
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Coupon Code *</label>
               <input
                 name="code" value={formData.code} onChange={handleFormChange}
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 uppercase tracking-widest font-mono"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 uppercase tracking-widest font-mono"
                 placeholder="e.g. FLASH20"
                 required
               />
@@ -341,7 +341,7 @@ export default function CouponsPage() {
             <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Description <span className="text-neutral-600 normal-case tracking-normal">(optional)</span></label>
             <input 
               name="description" value={formData.description} onChange={handleFormChange}
-              className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
+              className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
               placeholder="e.g. 20% off all orders" 
             />
           </div>
@@ -349,7 +349,7 @@ export default function CouponsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Discount Type *</label>
-              <select name="discountType" value={formData.discountType} onChange={handleFormChange} className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none">
+              <select name="discountType" value={formData.discountType} onChange={handleFormChange} className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none">
                 <option value="percentage">Percentage (%)</option>
                 <option value="fixed">Fixed Amount</option>
               </select>
@@ -360,7 +360,7 @@ export default function CouponsPage() {
               </label>
               <input
                 type="number" step="0.01" name="discountValue" value={formData.discountValue} onChange={handleFormChange} required min="0.01"
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono"
                 placeholder={formData.discountType === "percentage" ? "20" : "5000"}
               />
             </div>
@@ -369,12 +369,12 @@ export default function CouponsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Min. Order</label>
-              <input type="number" name="minOrderAmount" value={formData.minOrderAmount} onChange={handleFormChange} className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="0" />
+              <input type="number" name="minOrderAmount" value={formData.minOrderAmount} onChange={handleFormChange} className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="0" />
             </div>
             {formData.discountType === "percentage" && (
               <div>
                 <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Max Discount <span className="text-neutral-600 normal-case tracking-normal">(cap)</span></label>
-                <input type="number" name="maxDiscountAmount" value={formData.maxDiscountAmount} onChange={handleFormChange} className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="No cap" />
+                <input type="number" name="maxDiscountAmount" value={formData.maxDiscountAmount} onChange={handleFormChange} className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="No cap" />
               </div>
             )}
           </div>
@@ -382,11 +382,11 @@ export default function CouponsPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Max Uses <span className="text-neutral-600 normal-case tracking-normal">(blank = ∞)</span></label>
-              <input type="number" name="maxUses" value={formData.maxUses} onChange={handleFormChange} className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="e.g. 100" />
+              <input type="number" name="maxUses" value={formData.maxUses} onChange={handleFormChange} className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 font-mono" placeholder="e.g. 100" />
             </div>
             <div>
               <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest ml-1 block mb-2">Expiry Date *</label>
-              <input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleFormChange} required className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none" />
+              <input type="date" name="expiryDate" value={formData.expiryDate} onChange={handleFormChange} required className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 appearance-none" />
             </div>
           </div>
 

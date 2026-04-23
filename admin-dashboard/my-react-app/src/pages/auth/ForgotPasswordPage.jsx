@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
       />
 
       <div className="w-full max-w-md z-10">
-        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.7)] p-8 overflow-hidden">
+        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(10,10,10,0.7)] p-8 overflow-hidden">
           <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent" />
 
           <Link to="/auth/login" className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-yellow-500 transition-colors mb-7">

@@ -12,16 +12,16 @@
   --color-base-100: #FFFFFF;
   --color-base-200: #FBF9F4;
   --color-base-300: #F2EFE6;
-  --color-base-content: #000000;
+  --color-base-content: #0A0A0A;
 
-  --color-primary: #C9A84C;
+  --color-primary: #D4AF37;
   --color-primary-content: #FFFFFF;
 
   --color-secondary: #8A6F3B;
   --color-secondary-content: #FFFFFF;
 
   --color-accent: #D4AF37;
-  --color-accent-content: #000000;
+  --color-accent-content: #0A0A0A;
 
   --color-neutral: #151311;
   --color-neutral-content: #FFFFFF;
@@ -31,7 +31,7 @@
   --color-success: #22C55E;
   --color-success-content: #FFFFFF;
   --color-warning: #F59E0B;
-  --color-warning-content: #000000;
+  --color-warning-content: #0A0A0A;
   --color-error: #EF4444;
   --color-error-content: #FFFFFF;
 
@@ -42,31 +42,31 @@
    QUEENS — Custom Dark Theme (Black & Gold)
    ===================================================== */
 [data-theme="queens-dark"] {
-  --color-base-100: #050505;
+  --color-base-100: #0A0A0A;
   --color-base-200: #0A0A0A;
   --color-base-300: #121212;
   --color-base-content: #FFFFFF;
 
   --color-primary: #D4AF37;
-  --color-primary-content: #050505;
+  --color-primary-content: #0A0A0A;
 
   --color-secondary: #8A6F3B;
   --color-secondary-content: #FFFFFF;
 
-  --color-accent: #C9A84C;
-  --color-accent-content: #050505;
+  --color-accent: #D4AF37;
+  --color-accent-content: #0A0A0A;
 
   --color-neutral: #FFFFFF;
-  --color-neutral-content: #050505;
+  --color-neutral-content: #0A0A0A;
 
   --color-info: #60A5FA;
-  --color-info-content: #050505;
+  --color-info-content: #0A0A0A;
   --color-success: #4ADE80;
-  --color-success-content: #050505;
+  --color-success-content: #0A0A0A;
   --color-warning: #FBBF24;
-  --color-warning-content: #050505;
+  --color-warning-content: #0A0A0A;
   --color-error: #F87171;
-  --color-error-content: #050505;
+  --color-error-content: #0A0A0A;
 
   color-scheme: dark;
 }
@@ -89,11 +89,11 @@
 
 @theme {
   /* High-End Luxury Palette */
-  --color-gold: #C9A84C;
+  --color-gold: #D4AF37;
   --color-gold-light: #F1D592;
   --color-gold-dim: #8A6F3B;
   --color-gold-glimmer: #D4AF37;
-  --color-black-rich: #050505;
+  --color-black-rich: #0A0A0A;
 
   --font-size-xs: 0.875rem; /* Scaled from 12px to 14px */
   --font-size-sm: 1rem;    /* Scaled from 14px to 16px */
@@ -162,9 +162,9 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background-color: #050505; }
-::-webkit-scrollbar-thumb { background-color: #C9A84C66; border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background-color: #C9A84C; }
+::-webkit-scrollbar-track { background-color: #0A0A0A; }
+::-webkit-scrollbar-thumb { background-color: #D4AF37; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background-color: #D4AF37; }
 
 /* =====================================================
    UNIVERSAL THEME-AWARE TRANSPARENCY (V4)
@@ -178,3 +178,4 @@
   filter: invert(1) hue-rotate(180deg) brightness(1.2) contrast(1.1);
   mix-blend-mode: screen;
 }
+

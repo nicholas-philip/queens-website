@@ -137,7 +137,7 @@ export default function CategoriesPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search categories..."
-          className="w-full bg-neutral-900/40 border border-neutral-800 rounded-2xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-medium placeholder:text-neutral-600"
+          className="w-full bg-neutral-900 border border-neutral-800 rounded-2xl pl-11 pr-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-medium placeholder:text-neutral-600"
         />
       </div>
 
@@ -146,7 +146,7 @@ export default function CategoriesPage() {
           <Loader2 className="h-8 w-8 animate-spin text-yellow-500" />
         </div>
       ) : filteredCategories.length === 0 ? (
-        <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-12 text-center flex flex-col items-center justify-center">
             <div className="w-16 h-16 bg-neutral-800 rounded-full flex items-center justify-center text-neutral-500 mb-4 shadow-inner">
                 <Tag className="h-8 w-8" />
             </div>
@@ -159,8 +159,8 @@ export default function CategoriesPage() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredCategories.map((cat) => (
-            <div key={cat._id} className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-5 flex flex-col gap-4 hover:border-yellow-500/30 transition-colors group">
-              <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black/40 border border-neutral-800 relative">
+            <div key={cat._id} className="bg-neutral-900 border border-neutral-800 rounded-3xl p-5 flex flex-col gap-4 hover:border-yellow-500/30 transition-colors group">
+              <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-neutral-800 relative">
                 {cat.image ? (
                   <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
@@ -236,7 +236,7 @@ export default function CategoriesPage() {
             <input 
               value={formData.name} 
               onChange={e => setFormData({...formData, name: e.target.value})} 
-              className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
+              className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
               placeholder="e.g. Footwear" 
               required
             />
@@ -248,7 +248,7 @@ export default function CategoriesPage() {
               value={formData.description} 
               onChange={e => setFormData({...formData, description: e.target.value})} 
               rows={3} 
-              className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 resize-none" 
+              className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 resize-none" 
               placeholder="Optional short description..." 
             />
           </div>
@@ -283,7 +283,7 @@ export default function CategoriesPage() {
                          newSubs[index] = e.target.value;
                          setFormData({...formData, subcategories: newSubs});
                       }}
-                      className="flex-1 bg-black/40 border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
+                      className="flex-1 bg-black border border-neutral-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50" 
                       placeholder="e.g. Mens Necklace" 
                     />
                     <button 

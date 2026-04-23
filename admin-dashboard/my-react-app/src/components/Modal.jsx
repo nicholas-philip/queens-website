@@ -20,7 +20,7 @@ export default function Modal({ open, onClose, title, children, size = "md", foo
       onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
     >
       <div className={cn(
-        "w-full bg-neutral-900 border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.7)] flex flex-col max-h-[90vh] relative overflow-hidden",
+        "w-full bg-neutral-900 border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(10,10,10,0.7)] flex flex-col max-h-[90vh] relative overflow-hidden",
         sizes[size]
       )}>
         {/* Gold top edge */}

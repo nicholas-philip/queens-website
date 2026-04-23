@@ -6,7 +6,7 @@ const AccessDenied = () => {
     <div className="flex-1 flex flex-col items-center justify-center min-h-[80vh] px-6 text-center animate-fade-in translate-y-[-5%] overflow-hidden">
       {/* Visual Element */}
       <div className="relative mb-10 group">
-        <div className="absolute inset-0 bg-primary/20 blur-[50px] rounded-full group-hover:bg-primary/40 transition-all duration-500 scale-125"></div>
+        
         <div className="relative w-32 h-32 bg-neutral-900 border border-neutral-800 rounded-[2.5rem] flex items-center justify-center shadow-2xl overflow-hidden group-hover:border-primary/30 transition-all">
           <ShieldAlert className="w-14 h-14 text-primary animate-pulse" />
           

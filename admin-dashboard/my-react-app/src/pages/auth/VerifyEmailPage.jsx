@@ -48,7 +48,7 @@ export default function VerifyEmailPage() {
       />
 
       <div className="w-full max-w-md z-10">
-        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(0,0,0,0.7)] p-10 text-center overflow-hidden">
+        <div className="relative bg-neutral-900/80 backdrop-blur-sm border border-neutral-800 rounded-2xl shadow-[0_8px_48px_rgba(10,10,10,0.7)] p-10 text-center overflow-hidden">
           <div className="absolute top-0 left-[10%] right-[10%] h-px bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent" />
 
           {/* Verifying */}

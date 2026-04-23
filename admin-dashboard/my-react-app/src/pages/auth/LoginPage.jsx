@@ -71,18 +71,12 @@ export default function LoginPage() {
     <div className="min-h-[100dvh] bg-base-100 flex items-center justify-center p-4 relative overflow-hidden">
 
       {/* Ambient glows (Hidden on mobile to protect Safari performance) */}
-      <div className="pointer-events-none fixed inset-0 z-0 hidden lg:block">
-        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/10 blur-3xl opacity-50" />
-        <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-primary/10 blur-3xl opacity-50" />
-      </div>
+      
 
       {/* Dot grid */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.035]"
-        style={{
-          backgroundImage: "radial-gradient(rgba(212,160,23,1) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-        }}
+        
       />
 
       <div className="w-full max-w-md z-10">

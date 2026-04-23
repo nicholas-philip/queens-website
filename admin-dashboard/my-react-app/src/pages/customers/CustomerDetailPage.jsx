@@ -88,8 +88,8 @@ export default function CustomerDetailPage() {
         <div className="lg:col-span-4 space-y-8">
             
             {/* Primary Profile Card */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm flex flex-col items-center text-center">
-                <div className="w-24 h-24 rounded-3xl bg-neutral-950 border-2 border-neutral-900 flex items-center justify-center font-bold text-yellow-500 text-4xl shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] mb-6 ring-4 ring-yellow-500/5 ring-offset-4 ring-offset-neutral-950">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm flex flex-col items-center text-center">
+                <div className="w-24 h-24 rounded-3xl bg-neutral-950 border-2 border-neutral-900 flex items-center justify-center font-bold text-yellow-500 text-4xl shadow-[inset_0_0_20px_rgba(10,10,10,0.5)] mb-6 ring-4 ring-yellow-500/5 ring-offset-4 ring-offset-neutral-950">
                     {customer.name?.charAt(0)}
                 </div>
                 <h3 className="text-xl font-bold text-white tracking-tight">{customer.name}</h3>
@@ -117,7 +117,7 @@ export default function CustomerDetailPage() {
             </div>
 
             {/* Performance KPIs */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 space-y-6 shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6 shadow-sm">
                 <div className="flex items-center gap-3 pb-2 border-b border-neutral-800/50">
                     <Activity className="h-5 w-5 text-yellow-500/70" />
                     <h2 className="text-sm font-bold text-white tracking-widest uppercase">Performance Stats</h2>
@@ -143,7 +143,7 @@ export default function CustomerDetailPage() {
         <div className="lg:col-span-8 space-y-8">
             
             {/* Recent Orders Table */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
                 <div className="p-8 border-b border-neutral-800/50 flex items-center justify-between">
                     <div>
                         <h3 className="text-lg font-bold text-white tracking-tight">Consignment Registry</h3>
@@ -206,12 +206,12 @@ export default function CustomerDetailPage() {
             </div>
 
             {/* Quick Actions / Store Context */}
-            <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="group">
                     <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <AlertCircle className="h-3 w-3 text-red-500" /> Administrative Risk
                     </h4>
-                    <div className="bg-black/40 border border-neutral-800 rounded-2xl p-6 transition-all group-hover:border-red-500/20">
+                    <div className="bg-black border border-neutral-800 rounded-2xl p-6 transition-all group-hover:border-red-500/20">
                         <p className="text-xs text-neutral-400 font-medium leading-relaxed mb-6">
                             Restrict this partner from placing new orders on the storefront.
                         </p>
@@ -224,7 +224,7 @@ export default function CustomerDetailPage() {
                     <h4 className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                         <CheckCircle2 className="h-3 w-3 text-green-500" /> Verified Status
                     </h4>
-                    <div className="bg-black/40 border border-neutral-800 rounded-2xl p-6">
+                    <div className="bg-black border border-neutral-800 rounded-2xl p-6">
                         <p className="text-xs text-neutral-400 font-medium leading-relaxed mb-6">
                             This account has been verified against our KYC standards and is eligible for global shipping.
                         </p>

@@ -94,6 +94,15 @@ router.get("/admin/analytics/categories",   verifyAdmin, getSalesByCategory);
 // =====================================================
 router.get   ("/admin/products/low-stock",           verifyAdmin, getLowStockProducts);
 router.get   ("/admin/products",                     verifyAdmin, getProducts);
+router.post  ("/admin/products/upload-temp", verifyAdmin, upload.array("images", 10), async (req, res) => {
+  const { uploadToCloudinary } = require("../utils/Cloudinaryupload");
+  try {
+    const urls = await Promise.all(req.files.map(file => uploadToCloudinary(file.buffer, "products")));
+    res.status(200).json({ success: true, urls });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Upload failed" });
+  }
+});
 router.post  ("/admin/products",                     verifyAdmin, upload.array("images", 5), validate(schemas.createProduct), createProduct);
 router.get   ("/admin/products/:id",                 verifyAdmin, getProductById);
 router.get   ("/admin/products/:id/similar-styles",  verifyAdmin, getSimilarStyles);
@@ -203,6 +212,7 @@ router.get   ("/admin/accounts/:id/logs",           verifyAdmin, requireSuperAdm
 // NOTIFICATIONS
 // =====================================================
 router.get   ("/admin/notifications/unread-count", verifyAdmin, notif.getUnreadCount);
+router.post  ("/admin/notifications/register-token", verifyAdmin, notif.registerToken);
 router.patch ("/admin/notifications/read-all",     verifyAdmin, notif.markAllRead);
 router.delete("/admin/notifications/clear-read",   verifyAdmin, notif.clearReadNotifications);
 router.get   ("/admin/notifications",              verifyAdmin, notif.getNotifications);
@@ -221,6 +231,7 @@ router.post  ("/admin/settings/maintenance",  verifyAdmin, requireSuperAdmin, se
 // =====================================================
 router.patch ("/admin/bulk/orders/status",    verifyAdmin, validate(schemas.bulkUpdateOrders), bulk.bulkUpdateOrderStatus);
 router.patch ("/admin/bulk/products/status",  verifyAdmin, bulk.bulkUpdateProductStatus);
+router.post  ("/admin/bulk/products",         verifyAdmin, bulk.bulkCreateProducts);
 router.patch ("/admin/bulk/products/stock",   verifyAdmin, bulk.bulkRestockProducts);
 router.delete("/admin/bulk/products",         verifyAdmin, validate(schemas.bulkDeleteProducts), bulk.bulkDeleteProducts);
 router.patch ("/admin/bulk/invoices/status",  verifyAdmin, bulk.bulkUpdateInvoiceStatus);

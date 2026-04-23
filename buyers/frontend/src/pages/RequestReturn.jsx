@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { RotateCcw, ArrowRight, ShieldCheck, Mail, Package } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { RotateCcw, ArrowRight, ShieldCheck, Mail, Package, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api';
 
@@ -8,6 +8,18 @@ const RequestReturn = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [isReasonOpen, setIsReasonOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsReasonOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -107,21 +119,49 @@ const RequestReturn = () => {
                     />
                   </div>
 
-                  <div className="space-y-3 sm:space-y-4">
+                  {/* Premium Custom Dropdown for Reason */}
+                  <div className="space-y-3 sm:space-y-4 relative" ref={dropdownRef}>
                     <label className="text-xs font-bold text-base-content/40 uppercase tracking-widest block">Reason for Return</label>
-                    <select
-                      required
-                      value={formData.reason}
-                      onChange={(e) => setFormData({...formData, reason: e.target.value})}
-                      className="w-full bg-base-200 border border-base-300 rounded-xl px-5 py-4 text-base-content font-bold focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none"
+                    <button
+                      type="button"
+                      onClick={() => setIsReasonOpen(!isReasonOpen)}
+                      className={`w-full flex items-center justify-between gap-3 bg-base-200 border transition-all px-5 py-4 rounded-xl text-sm font-bold text-base-content outline-none cursor-pointer ${isReasonOpen ? 'border-primary/50 bg-base-300' : formData.reason ? 'border-primary/30 ring-1 ring-primary/10' : 'border-base-300 hover:border-base-content/20'}`}
                     >
-                      <option value="" disabled>Select a reason...</option>
-                      <option value="Item arrived damaged or defective">Item arrived damaged or defective</option>
-                      <option value="Incorrect item received">Incorrect item received</option>
-                      <option value="Not satisfied with product quality">Not satisfied with product quality</option>
-                      <option value="Purchased by mistake">Purchased by mistake</option>
-                      <option value="Changed my mind">Changed my mind</option>
-                    </select>
+                      {formData.reason || <span className="text-base-content/30 italic">Select a reason...</span>}
+                      <ChevronDown size={16} className={`text-base-content/40 transition-transform duration-300 ${isReasonOpen ? 'rotate-180' : ''}`} />
+                    </button>
+
+                    <AnimatePresence>
+                      {isReasonOpen && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.15, ease: 'easeOut' }}
+                          className="absolute top-full left-0 mt-2 w-full bg-base-100  border border-base-300 rounded-2xl shadow-xl overflow-hidden py-2 z-50"
+                        >
+                          {[
+                            "Item arrived damaged or defective",
+                            "Incorrect item received",
+                            "Not satisfied with product quality",
+                            "Purchased by mistake",
+                            "Changed my mind"
+                          ].map(option => (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => {
+                                setFormData({...formData, reason: option});
+                                setIsReasonOpen(false);
+                              }}
+                              className={`w-full text-left px-5 py-3 text-sm font-bold transition-colors ${formData.reason === option ? 'text-primary bg-primary/5' : 'text-base-content hover:text-primary hover:bg-base-200'}`}
+                            >
+                              {option}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
 
                   {error && <p className="text-error font-bold tracking-wide text-sm bg-error/10 p-3 rounded-lg border border-error/20">{error}</p>}
@@ -165,3 +205,4 @@ const RequestReturn = () => {
 };
 
 export default RequestReturn;
+

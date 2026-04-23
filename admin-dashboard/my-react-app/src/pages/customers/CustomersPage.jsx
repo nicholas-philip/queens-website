@@ -77,20 +77,20 @@ export default function CustomersPage() {
       </div>
 
       {/* ── Search Bar ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 shadow-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 shadow-sm">
         <div className="relative w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600" />
           <input 
             value={search} 
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by name, email, or phone number..."
-            className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder:text-neutral-700 font-medium" 
+            className="w-full bg-black border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder:text-neutral-700 font-medium" 
           />
         </div>
       </div>
 
       {/* ── Customers Table ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
         <Table>
           <TableHead headers={["Customer profile", "Contact Info", "Registration", "Orders", "Spend", "Status"]} />
           <TableBody>

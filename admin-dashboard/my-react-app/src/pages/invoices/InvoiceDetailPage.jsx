@@ -63,7 +63,7 @@ export default function InvoiceDetailPage() {
       </div>
 
       {/* ── Invoice Document ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl print:bg-white print:text-black print:border-0 print:shadow-none" id="invoice-doc">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-2xl print:bg-white print:text-black print:border-0 print:shadow-none" id="invoice-doc">
         
         {/* Document Header */}
         <div className="p-10 border-b border-neutral-800/50 flex flex-col md:flex-row justify-between items-start gap-8 bg-black/20 print:bg-transparent print:border-neutral-200">
@@ -171,7 +171,7 @@ export default function InvoiceDetailPage() {
                         <span className="text-xs font-bold uppercase tracking-widest">Logistics / Handling</span>
                         <span className="font-medium">{formatCurrency(invoice.shippingCharge || 0)}</span>
                     </div>
-                    <div className="flex justify-between items-center bg-black/40 border border-neutral-800 rounded-2xl p-6 mt-6 print:bg-neutral-50 print:border-neutral-200">
+                    <div className="flex justify-between items-center bg-black border border-neutral-800 rounded-2xl p-6 mt-6 print:bg-neutral-50 print:border-neutral-200">
                         <span className="text-xs font-bold text-white uppercase tracking-[0.2em] print:text-black">Balance Due</span>
                         <span className="text-2xl font-bold text-yellow-500 tracking-tighter print:text-black">{formatCurrency(invoice.amount)}</span>
                     </div>
@@ -181,7 +181,7 @@ export default function InvoiceDetailPage() {
 
         {/* Note / Footer */}
         {invoice.notes && (
-            <div className="m-10 p-6 bg-black/40 border border-neutral-800 rounded-2xl print:bg-transparent print:border-0 print:border-t print:border-neutral-100">
+            <div className="m-10 p-6 bg-black border border-neutral-800 rounded-2xl print:bg-transparent print:border-0 print:border-t print:border-neutral-100">
                 <h4 className="text-xs font-bold text-neutral-600 uppercase tracking-widest mb-2">Internal Remarks</h4>
                 <p className="text-xs text-neutral-400 leading-relaxed font-medium print:text-neutral-600">{invoice.notes}</p>
             </div>

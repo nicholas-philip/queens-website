@@ -306,7 +306,19 @@ const CheckoutModal = () => {
           <div className="p-5 rounded-2xl border border-gold/30 bg-gold/5 space-y-3">
             <p className="text-xs text-white/40 uppercase tracking-widest font-bold">Send to</p>
             <div className="space-y-1">
-              <p className="text-gold font-black text-3xl tracking-widest">{MOMO_NUMBER}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-gold font-black text-3xl tracking-widest">{MOMO_NUMBER}</p>
+                <button 
+                  onClick={() => {
+                    navigator.clipboard.writeText('0536479169');
+                    toast.success("Copied", "MoMo number copied to clipboard.");
+                  }}
+                  className="p-2 bg-gold/10 hover:bg-gold/20 rounded-lg text-gold transition-all"
+                  title="Copy Number"
+                >
+                  <Tag size={14} />
+                </button>
+              </div>
               <p className="text-white/70 text-sm font-semibold">{MOMO_NAME}</p>
               <p className="text-white/30 text-xs">MTN Mobile Money</p>
             </div>
@@ -586,23 +598,30 @@ const CheckoutModal = () => {
                     </Field>
                   </div>
                   <div className="col-span-2">
+                    <Field label="Region" error={errors.region}>
+                      <Select name="region" value={formData.region} onChange={handleChange} error={errors.region}>
+                        {REGIONS.map(r => <option key={r} value={r} className="bg-neutral-900">{r}</option>)}
+                      </Select>
+                    </Field>
+                  </div>
+                  <div className="col-span-2">
                     <Field label="Delivery Location *" error={errors.address}>
                       <Input 
                         name="address" 
                         value={formData.address} 
                         onChange={handleChange} 
-                        placeholder="House No., Area or GPS Address (e.g. GH-123-456)" 
+                        placeholder="House No., Area or GPS Address" 
                         error={errors.address} 
                       />
                     </Field>
                   </div>
                   <div className="col-span-2">
-                    <Field label="Landmark (optional)">
+                    <Field label="Nearest Landmark (Optional)">
                       <Input 
                         name="city" 
                         value={formData.city} 
                         onChange={handleChange} 
-                        placeholder="e.g. Near the big church, Opposite Total" 
+                        placeholder="e.g. Opposite Total, Near the big church" 
                       />
                     </Field>
                   </div>

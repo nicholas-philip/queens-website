@@ -151,7 +151,7 @@ const BlogDetail = () => {
                 className="prose prose-lg sm:prose-xl max-w-none text-base-content/80 font-medium leading-[1.8] 
                 prose-headings:text-base-content prose-headings:font-black prose-headings:tracking-tight 
                 prose-a:text-primary prose-strong:text-base-content prose-strong:font-black
-                prose-img:rounded-[2rem] prose-blockquote:border-primary prose-blockquote:bg-base-200/50 prose-blockquote:px-8 prose-blockquote:py-2 prose-blockquote:rounded-2xl"
+                prose-img:rounded-[2rem] prose-blockquote:border-primary prose-blockquote:bg-base-100 prose-blockquote:px-8 prose-blockquote:py-2 prose-blockquote:rounded-2xl"
                 dangerouslySetInnerHTML={{ __html: post.content }}
               />
 
@@ -178,7 +178,7 @@ const BlogDetail = () => {
 
               {/* Share & Impact Section at the bottom */}
               <div className="mt-12 pt-12 border-t border-base-200">
-                <div className="bg-base-200/50 rounded-[2.5rem] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 border border-base-200/50">
+                <div className="bg-base-100 rounded-[2.5rem] p-8 sm:p-12 flex flex-col md:flex-row items-center justify-between gap-8 border border-base-200/50">
                   <div className="text-center md:text-left">
                     <h3 className="text-2xl font-black text-base-content mb-2 tracking-tight">Enjoyed this editorial?</h3>
                     <p className="text-base-content/50 font-medium max-w-md leading-relaxed">
@@ -254,3 +254,4 @@ const BlogDetail = () => {
 };
 
 export default BlogDetail;
+

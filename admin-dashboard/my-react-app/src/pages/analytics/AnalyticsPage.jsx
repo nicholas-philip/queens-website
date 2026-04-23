@@ -254,7 +254,7 @@ export default function AnalyticsPage() {
 
         <div className="divide-y divide-neutral-800/60">
           {(data?.products || []).map((p, i) => (
-            <div key={p._id} className="flex items-center gap-5 px-6 py-4 hover:bg-neutral-900/40 transition-colors group">
+            <div key={p._id} className="flex items-center gap-5 px-6 py-4 hover:bg-neutral-900 transition-colors group">
 
               {/* Rank */}
               <span className="text-xs font-bold text-neutral-700 w-5 shrink-0 text-center">{i + 1}</span>

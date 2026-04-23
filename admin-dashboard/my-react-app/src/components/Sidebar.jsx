@@ -7,8 +7,11 @@ import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard, Package, ShoppingCart, Users, CreditCard,
   FileText, Tag, Ticket, Star, Bell, Settings, UserCog,
-  BarChart3, LogOut, ChevronLeft, ChevronRight, X, PenTool
+  BarChart3, LogOut, ChevronLeft, ChevronRight, X, PenTool,
+  Sun, Moon
 } from "lucide-react"
+import { useTheme } from "next-themes"
+
 
 const navGroups = [
   {
@@ -85,8 +88,10 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
   }, [mobileOpen])
 
   const closeMobile = () => setMobileOpen(false)
+  const { theme, setTheme } = useTheme()
 
   /* ─── Shared nav list used in both mobile & desktop ─── */
+
   const NavList = ({ mini = false }) => (
     <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
       {filteredNavGroups.map(({ group, items }) => (
@@ -135,7 +140,7 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
 
   /* ─── Shared footer ─── */
   const Footer = ({ mini = false }) => (
-    <div className="shrink-0 border-t border-base-300 p-3 bg-base-100/50">
+    <div className="shrink-0 border-t border-base-300 p-3 bg-base-100">
       {!mini ? (
         <div className="flex items-center gap-3 px-1">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/20 border border-primary/30 text-primary text-xs font-black">
@@ -181,7 +186,7 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
               exit={{ opacity: 0 }}
               transition={{ duration: 0.22 }}
               onClick={closeMobile}
-              className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-black backdrop-blur-sm lg:hidden"
             />
 
             {/* Slide-in drawer */}
@@ -190,35 +195,40 @@ export default function Sidebar({ notificationCount = 0, mobileOpen = false, set
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 340, damping: 34 }}
-              className="fixed top-0 left-0 h-[100dvh] w-[280px] max-w-[85vw] z-50 flex flex-col bg-base-100 shadow-2xl shadow-black/60 lg:hidden overflow-hidden"
-              style={{ borderRight: "1px solid color-mix(in oklch, var(--color-base-300) 100%, transparent)" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 left-0 h-[100dvh] w-[300px] z-[90] flex flex-col bg-base-100/80 backdrop-blur-2xl lg:hidden overflow-hidden border-r border-white/10 shadow-[20px_0px_80px_rgba(0,0,0,0.4)]"
             >
               {/* ── Drawer header ── */}
-              <div className="relative flex h-16 shrink-0 items-center justify-between px-4 border-b border-base-300">
+              <div className="relative flex h-20 shrink-0 items-center px-6 border-b border-base-300 bg-base-200/30">
                 {/* Gold shimmer accent */}
-                <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent" />
+                <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-transparent via-primary to-transparent" />
 
-                <div className="flex items-center gap-3">
-                  <img src={logo} alt="Queens Fashion Store Logo" className="h-9 w-9 object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]" />
-                  <div>
-                    <p className="text-sm font-black text-base-content tracking-tight leading-none">Queens Fashion Store</p>
-                    <p className="text-xs font-bold text-primary uppercase tracking-[0.16em] mt-0.5">Admin Panel</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-base-100 border border-base-300 flex items-center justify-center p-2 shadow-sm">
+                    <img src={logo} alt="Queens Fashion Store Logo" className="h-full w-full object-contain drop-shadow-[0_0_6px_rgba(212,175,55,0.35)]" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-black text-base-content tracking-tight leading-none uppercase">Queens Dashboard</p>
+                    <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1 opacity-80">Store Operation</p>
                   </div>
                 </div>
-
-                {/* ✕ Close button */}
-                <motion.button
-                  whileTap={{ scale: 0.88 }}
-                  onClick={closeMobile}
-                  aria-label="Close menu"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl border border-base-300 bg-base-200 text-base-content/50 hover:border-primary/40 hover:bg-base-300 hover:text-base-content transition-all"
-                >
-                  <X className="h-4 w-4" />
-                </motion.button>
               </div>
 
+
               <NavList mini={false} />
+              
+              <div className="p-4 border-t border-base-300">
+                <div className="flex items-center justify-between px-2">
+                   <span className="text-[10px] font-black uppercase tracking-[0.2em] text-base-content/40">Interface Theme</span>
+                   <button
+                        onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                        className="w-10 h-10 rounded-xl bg-base-200 border border-base-300 flex items-center justify-center text-base-content/60 hover:text-primary transition-all active:scale-95 shadow-sm"
+                    >
+                        {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                    </button>
+                </div>
+              </div>
+
               <Footer mini={false} />
             </motion.aside>
           </>

@@ -65,7 +65,7 @@ const ProductCard = ({ product }) => {
         {/* Out of Stock overlay */}
         {isOutOfStock && (
           <div className="absolute inset-0 flex items-center justify-center z-20">
-            <span className="bg-black/80 backdrop-blur-md text-primary text-xs font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20 shadow-xl">
+            <span className="bg-black/80  text-primary text-xs font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-primary/20 shadow-xl">
               Sold Out
             </span>
           </div>
@@ -81,7 +81,7 @@ const ProductCard = ({ product }) => {
         {/* Wishlist */}
         <button
           onClick={handleToggleWishlist}
-          className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-base-100/95 backdrop-blur-md flex items-center justify-center shadow-md border border-base-content/5 z-20 md:opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95 ${wishedFeedback ? 'scale-125 !bg-primary !border-primary' : ''}`}
+          className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-base-100  flex items-center justify-center shadow-md border border-base-content/5 z-20 md:opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300 hover:scale-110 active:scale-95 ${wishedFeedback ? 'scale-125 !bg-primary !border-primary' : ''}`}
           aria-label={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
         >
           <Heart
@@ -133,7 +133,7 @@ const ProductCard = ({ product }) => {
               isOutOfStock
                 ? 'bg-base-200 text-base-content/20 cursor-not-allowed border-transparent'
                 : addedFeedback
-                ? 'bg-[#050505] text-primary border-primary/30'
+                ? 'bg-[#0A0A0A] text-primary border-primary/30'
                 : 'bg-primary text-primary-content hover:shadow-xl hover:shadow-primary/20 border-transparent'
             }`}
             aria-label="Add to cart"
@@ -151,3 +151,4 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
+

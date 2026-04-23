@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -18,10 +18,22 @@ import ProductCard from "../components/ProductCard";
 import { useSearchParams } from "react-router-dom";
 
 const Shop = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
+  const sortDropdownRef = useRef(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target)) {
+        setIsSortOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const [searchParams, setSearchParams] = useSearchParams();
   const category    = searchParams.get("category") || "";
   const subcategory = searchParams.get("subcategory") || "";
   const sort        = searchParams.get("sort") || "all";
@@ -102,7 +114,7 @@ const Shop = () => {
   const activeCategoryObj = categories?.find(c => c.slug === category);
 
   return (
-    <div className="min-h-screen bg-base-100 pt-32 pb-20">
+    <div className="min-h-screen bg-base-100 pt-36 md:pt-48 pb-20">
       {/* ── Header Section ── */}
       <section className="px-4 md:px-8 mb-12">
         <div className="max-w-[1440px] mx-auto">
@@ -122,21 +134,54 @@ const Shop = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <div className="relative group">
-                <select 
-                  value={sort}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="appearance-none bg-base-200 border-2 border-transparent focus:border-primary/20 rounded-2xl px-6 py-4 pr-12 text-xs font-black uppercase tracking-widest outline-none transition-all hover:bg-base-300 cursor-pointer"
+              {/* Premium Custom Sorting Dropdown */}
+              <div className="relative z-40">
+                <button
+                  type="button"
+                  onClick={() => setIsSortOpen(!isSortOpen)}
+                  onBlur={() => setTimeout(() => setIsSortOpen(false), 200)}
+                  className={`flex items-center justify-between gap-3 min-w-[200px] border-2 transition-all px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest outline-none cursor-pointer ${isSortOpen ? 'border-primary/20 bg-base-300' : 'border-transparent bg-base-200 hover:bg-base-300'}`}
                 >
-                  <option value="all">All Pieces</option>
-                  <option value="newest">Newest First</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="popular">Most Popular</option>
-                </select>
-                <ChevronDown size={14} className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none group-focus-within:rotate-180 transition-transform" />
+                  {sort === 'all' ? 'Sort By' : 
+                   sort === 'newest' ? 'Newest First' : 
+                   sort === 'price-asc' ? 'Price: Low to High' : 
+                   sort === 'price-desc' ? 'Price: High to Low' : 'Most Popular'}
+                  <ChevronDown size={14} className={`transition-transform duration-300 ${isSortOpen ? 'rotate-180' : ''}`} />
+                </button>
+
+                <AnimatePresence>
+                  {isSortOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: 'easeOut' }}
+                      className="absolute top-full left-0 mt-2 w-full bg-base-200/90  border border-white/5 rounded-2xl shadow-2xl overflow-hidden py-2 z-40"
+                    >
+                      {[
+                        { id: 'all', label: 'All Pieces' },
+                        { id: 'newest', label: 'Newest First' },
+                        { id: 'price-asc', label: 'Price: Low to High' },
+                        { id: 'price-desc', label: 'Price: High to Low' },
+                        { id: 'popular', label: 'Most Popular' }
+                      ].map(option => (
+                        <button
+                          key={option.id}
+                          onClick={() => {
+                            handleSortChange(option.id);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full text-left px-5 py-3 text-xs font-black uppercase tracking-widest transition-colors ${sort === option.id ? 'text-primary bg-primary/5' : 'text-base-content/60 hover:text-primary hover:bg-base-300'}`}
+                        >
+                          {option.label}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
+              {/* Filtering Button */}
               <button 
                 onClick={() => setIsFilterOpen(!isFilterOpen)}
                 className={`flex items-center gap-2 px-6 py-4 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${isFilterOpen ? 'bg-primary text-primary-content' : 'bg-base-200 hover:bg-base-300'}`}
@@ -158,7 +203,7 @@ const Shop = () => {
             exit={{ height: 0, opacity: 0 }}
             className="px-4 md:px-8 mb-12 overflow-hidden"
           >
-            <div className="max-w-[1440px] mx-auto bg-base-200/50 rounded-[2rem] p-8">
+            <div className="max-w-[1440px] mx-auto bg-base-100 rounded-[2rem] p-8">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="md:col-span-3">
                   <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-base-content/40 mb-4">Categories</h4>
@@ -271,3 +316,4 @@ const Shop = () => {
 };
 
 export default Shop;
+

@@ -49,7 +49,7 @@ const Blog = () => {
             <p className="text-xs font-black uppercase tracking-[0.3em] text-base-content/20 italic">Loading Stories...</p>
           </div>
         ) : blogs?.length === 0 ? (
-          <div className="py-32 text-center bg-base-200/50 rounded-[3rem] border-2 border-dashed border-base-300">
+          <div className="py-32 text-center bg-base-100 rounded-[3rem] border-2 border-dashed border-base-300">
             <Bell size={48} className="mx-auto text-base-content/10 mb-4" />
             <h3 className="text-xl font-black text-base-content/40 uppercase">No editorials yet</h3>
             <p className="text-sm font-medium text-base-content/30 mt-2">We're currently crafting new stories for you.</p>
@@ -74,7 +74,7 @@ const Blog = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   
                   {post.category && (
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-md px-4 py-1.5 rounded-full shadow-lg">
+                    <div className="absolute top-4 left-4 bg-white/90  px-4 py-1.5 rounded-full shadow-lg">
                       <span className="text-[10px] font-black uppercase tracking-widest text-black">{post.category}</span>
                     </div>
                   )}
@@ -114,3 +114,4 @@ const Blog = () => {
 };
 
 export default Blog;
+

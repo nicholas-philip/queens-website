@@ -135,7 +135,7 @@ export default function BlogFormPage() {
                 required
                 value={formData.title} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                 placeholder="e.g. 5 Skincare Routines for Summer"
               />
             </div>
@@ -147,7 +147,7 @@ export default function BlogFormPage() {
                   name="category" 
                   value={formData.category} 
                   onChange={handleChange} 
-                  className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                   placeholder="e.g. Beauty Tips"
                 />
               </div>
@@ -159,7 +159,7 @@ export default function BlogFormPage() {
                   name="readTimeMin" 
                   value={formData.readTimeMin} 
                   onChange={handleChange} 
-                  className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                   min="1"
                 />
               </div>
@@ -172,7 +172,7 @@ export default function BlogFormPage() {
                 required
                 value={formData.excerpt} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[80px]"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[80px]"
                 placeholder="A brief summary of what the article is about..."
               />
             </div>
@@ -184,7 +184,7 @@ export default function BlogFormPage() {
                 required
                 value={formData.content} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[300px]"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[300px]"
                 placeholder="Write your beautiful article here..."
               />
             </div>
@@ -196,7 +196,7 @@ export default function BlogFormPage() {
                   name="tags" 
                   value={formData.tags} 
                   onChange={handleChange} 
-                  className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                   placeholder="e.g. skin, summer, care"
                 />
               </div>
@@ -206,7 +206,7 @@ export default function BlogFormPage() {
                   name="authorName" 
                   value={formData.authorName} 
                   onChange={handleChange} 
-                  className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                  className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                   placeholder="Queens Fashion Store Team"
                 />
               </div>
@@ -259,7 +259,7 @@ export default function BlogFormPage() {
                 name="slug" 
                 value={formData.slug} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-mono"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all font-mono"
                 placeholder="e.g. skin-care-tips-2024"
               />
               <p className="text-[10px] text-neutral-500 mt-2 italic">If left blank, a slug will be automatically generated from the title.</p>
@@ -271,7 +271,7 @@ export default function BlogFormPage() {
                 name="metaTitle" 
                 value={formData.metaTitle} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all"
                 placeholder="Highly optimized SEO title"
               />
             </div>
@@ -282,7 +282,7 @@ export default function BlogFormPage() {
                 name="metaDescription" 
                 value={formData.metaDescription} 
                 onChange={handleChange} 
-                className="w-full bg-black/40 border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[80px]"
+                className="w-full bg-black border border-neutral-800 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all min-h-[80px]"
                 placeholder="The snippet that appears in search results..."
               />
             </div>

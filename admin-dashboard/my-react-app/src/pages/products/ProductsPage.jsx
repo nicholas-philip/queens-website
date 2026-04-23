@@ -89,18 +89,22 @@ export default function ProductsPage() {
           <Link to="/products/new" className="flex items-center gap-2 px-5 py-2.5 bg-yellow-500 rounded-xl text-xs font-bold text-black hover:bg-yellow-400 shadow-lg shadow-yellow-500/20 transition-all">
             <Plus className="h-4 w-4" /> Add New Product
           </Link>
+          <Link to="/products/bulk" className="flex items-center gap-2 px-4 py-2.5 bg-neutral-900 border border-neutral-800 rounded-xl text-xs font-bold text-white hover:bg-neutral-800 transition-all">
+            <LayoutGrid className="h-4 w-4 text-yellow-500" />
+            Bulk Import
+          </Link>
         </div>
       </div>
 
       {/* ── Filters Bar ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 shadow-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col md:flex-row items-center gap-4 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-600" />
           <input 
             value={search} 
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             placeholder="Search by name, SKU, or category..."
-            className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder:text-neutral-700" 
+            className="w-full bg-black border border-neutral-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-1 focus:ring-yellow-500/50 transition-all placeholder:text-neutral-700" 
           />
         </div>
 
@@ -110,7 +114,7 @@ export default function ProductsPage() {
                 <select 
                     value={status} 
                     onChange={(e) => { setStatus(e.target.value); setPage(1) }}
-                    className="w-full bg-black/40 border border-neutral-800 rounded-xl pl-11 pr-8 py-2.5 text-sm text-white appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500/50 cursor-pointer"
+                    className="w-full bg-black border border-neutral-800 rounded-xl pl-11 pr-8 py-2.5 text-sm text-white appearance-none focus:outline-none focus:ring-1 focus:ring-yellow-500/50 cursor-pointer"
                 >
                     <option value="">All Status</option>
                     <option value="Active">Active</option>
@@ -122,7 +126,7 @@ export default function ProductsPage() {
       </div>
 
       {/* ── Products Table ── */}
-      <div className="bg-neutral-900/40 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl overflow-hidden shadow-sm">
         <Table>
           <TableHead headers={["Product Detail", "SKU", "Price", "Inventory", "Status", "Actions"]} />
           <TableBody>
@@ -154,7 +158,7 @@ export default function ProductsPage() {
 
                   {/* SKU */}
                   <TableCell>
-                    <span className="font-mono text-xs font-bold text-neutral-500 bg-black/40 border border-neutral-800 px-2 py-1 rounded-lg">
+                    <span className="font-mono text-xs font-bold text-neutral-500 bg-black border border-neutral-800 px-2 py-1 rounded-lg">
                       {p.SKU || "NO-SKU"}
                     </span>
                   </TableCell>

@@ -28,7 +28,7 @@ const About = () => {
               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Est. 2024</span>
             </div>
             <h1 className="text-5xl sm:text-7xl md:text-8xl font-black text-base-content tracking-tighter leading-[0.9] mb-8 uppercase">
-              The Queen's <br/> <span className="text-primary">Legacy.</span>
+              Queens <br/> <span className="text-primary">Fashion Store.</span>
             </h1>
             <p className="max-w-xl mx-auto text-base-content/60 text-lg font-medium leading-relaxed">
               Based in the heart of Accra, we're redefining West African luxury through a curated lens of high fashion, streetwear, and premium beauty.
@@ -37,30 +37,7 @@ const About = () => {
         </div>
         
         {/* Glow decoration */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
-      </section>
-
-      {/* ── Visual Strip ────────────────────────────── */}
-      <section className="mb-24 md:mb-32">
-        <div className="flex gap-4 sm:gap-6 overflow-hidden select-none">
-          {[
-            'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800',
-            'https://images.unsplash.com/photo-1539109132384-361555753195?q=80&w=800',
-            'https://images.unsplash.com/photo-1445205170230-053b830c6050?q=80&w=800',
-            'https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=800',
-          ].map((img, i) => (
-            <motion.div 
-              key={i}
-              initial={{ opacity: 0, scale: 1.1 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 1, delay: i * 0.1 }}
-              className="flex-shrink-0 w-64 sm:w-80 md:w-[400px] h-[500px] rounded-[2.5rem] overflow-hidden border border-base-200"
-            >
-              <img src={img} className="w-full h-full object-cover" alt="Fashion Editorial" />
-            </motion.div>
-          ))}
-        </div>
+        
       </section>
 
       {/* ── Story Section ───────────────────────────── */}
@@ -89,7 +66,7 @@ const About = () => {
               { label: 'Excellence', icon: Award, text: 'Unmatched customer service standards.' },
             ].map((feature, i) => (
               <FadeUp key={i} delay={i * 0.1}>
-                <div className="bg-base-200/50 p-8 rounded-[2rem] border border-base-200 hover:border-primary/20 transition-all group">
+                <div className="bg-base-100 p-8 rounded-[2rem] border border-base-200 hover:border-primary/20 transition-all group">
                   <feature.icon size={28} className="text-primary mb-4 group-hover:scale-110 transition-transform" />
                   <h4 className="font-black text-sm uppercase tracking-widest mb-2">{feature.label}</h4>
                   <p className="text-xs text-base-content/50 font-bold leading-relaxed">{feature.text}</p>
@@ -101,8 +78,8 @@ const About = () => {
       </section>
 
       {/* ── The Boutique Experience ─────────────────── */}
-      <section className="bg-[#050505] text-white py-24 md:py-32 px-4 md:px-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px]" />
+      <section className="bg-[#0A0A0A] text-white py-24 md:py-32 px-4 md:px-8 relative overflow-hidden">
+        
         
         <div className="max-w-[1440px] mx-auto relative z-10 text-center">
           <FadeUp>
@@ -150,3 +127,5 @@ const About = () => {
 };
 
 export default About;
+
+

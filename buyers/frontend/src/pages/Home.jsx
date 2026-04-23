@@ -77,8 +77,8 @@ const Home = () => {
       ═══════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden bg-base-100 border-b border-base-200">
         {/* Subtle gold radial glow */}
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 -left-20 w-[400px] h-[400px] rounded-full bg-primary/4 blur-[100px] pointer-events-none" />
+        
+        
 
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 py-16 md:py-24 lg:py-32 relative z-10">
           <div className="max-w-3xl">
@@ -125,7 +125,7 @@ const Home = () => {
             <div className="animate-marquee whitespace-nowrap text-xs font-black uppercase tracking-[0.3em] text-base-content/20 select-none">
               {Array.from({ length: 2 }).map((_, i) => (
                 <span key={i}>
-                  {['Free Delivery on Orders Over GHS 500', '✦', 'Authentic Products', '✦', 'Premium Quality', '✦', 'Luxury Fashion', '✦', 'Beauty Essentials', '✦', 'Express Delivery', '✦'].join('   ')}
+                  {['Express Delivery Worldwide', '✦', 'Authentic Products', '✦', 'Premium Quality', '✦', 'Luxury Fashion', '✦', 'Beauty Essentials', '✦', 'Verified Quality', '✦'].join('   ')}
                   {'     '}
                 </span>
               ))}
@@ -175,7 +175,7 @@ const Home = () => {
           FEATURED PRODUCTS
       ═══════════════════════════════════════════════════ */}
       {featured.length > 0 && (
-        <section className="py-14 sm:py-20 bg-base-200/50 border-y border-base-200">
+        <section className="py-14 sm:py-20 bg-base-100 border-y border-base-200">
           <div className="max-w-[1440px] mx-auto px-4 md:px-8">
             <FadeUp>
               <SectionHeader
@@ -227,7 +227,7 @@ const Home = () => {
           ALL PRODUCTS
       ═══════════════════════════════════════════════════ */}
       {allProducts.length > 0 && (
-        <section className="py-14 sm:py-20 md:py-24 bg-base-200/50 border-t border-base-200">
+        <section className="py-14 sm:py-20 md:py-24 bg-base-100 border-t border-base-200">
           <div className="max-w-[1440px] mx-auto px-4 md:px-8">
             <FadeUp>
               <SectionHeader
@@ -269,13 +269,13 @@ const Home = () => {
           <div className="max-w-[1440px] mx-auto">
             <div className="relative overflow-hidden rounded-[2rem] bg-neutral text-neutral-content flex flex-col sm:flex-row items-center justify-between gap-8 px-8 py-10 md:px-14 md:py-12 shadow-2xl border border-primary/20">
               {/* Gold glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
+              
               <div>
                 <span className="text-xs font-black uppercase tracking-[0.3em] text-primary mb-3 block">
                   ✦ Limited Time
                 </span>
                 <h2 className="text-2xl sm:text-3xl md:text-4xl font-black leading-tight mb-2">
-                  Free Delivery on<br />Orders Over GHS 500
+                  Complimentary Shipping<br />on Featured Pieces
                 </h2>
                 <p className="text-neutral-content/60 text-sm font-medium">
                   Don't miss out — shop the full collection today.
@@ -300,3 +300,5 @@ const Home = () => {
 };
 
 export default Home;
+
+

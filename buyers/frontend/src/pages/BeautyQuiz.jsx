@@ -181,7 +181,7 @@ const BeautyQuiz = () => {
                         className={`py-3.5 sm:py-4 px-4 sm:px-5 rounded-2xl border-2 text-left font-bold transition-all duration-200 text-sm sm:text-base ${
                           isSelected
                             ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                            : 'border-base-200 bg-base-100 text-base-content/70 hover:border-base-300 hover:bg-base-200/50'
+                            : 'border-base-200 bg-base-100 text-base-content/70 hover:border-base-300 hover:bg-base-100'
                         }`}
                       >
                         <span className={`inline-block w-4 h-4 rounded border-2 mr-2 align-middle transition-all ${
@@ -284,3 +284,4 @@ const BeautyQuiz = () => {
 };
 
 export default BeautyQuiz;
+
