@@ -22,6 +22,7 @@ const ProductSchema = new mongoose.Schema(
     SKU:           { type: String, unique: true, uppercase: true, trim: true }, 
     slug:          { type: String, unique: true }, 
     price:         { type: Number, required: [true, "Price is required"], min: 0 },
+    priceSuffix:   { type: String, default: "" }, // e.g. "each", "per set", "pair"
     discountPrice: { type: Number, default: null },
 
     hasVariants:   { type: Boolean, default: false },

@@ -89,23 +89,30 @@ export default function BulkUploadPage() {
     setProducts(next)
   }
 
-  const onDragOver = (e, index) => {
-      e.preventDefault()
-      const next = [...products]
-      if (!next[index].dragging) {
-          next[index].dragging = true
-          setProducts(next)
-      }
+  const onDragOver = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
   }
 
-  const onDragLeave = (index) => {
-      const next = [...products]
-      next[index].dragging = false
-      setProducts(next)
+  const onDragEnter = (e, index) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const next = [...products];
+      next[index].dragging = true;
+      setProducts(next);
+  }
+
+  const onDragLeave = (e, index) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const next = [...products];
+      next[index].dragging = false;
+      setProducts(next);
   }
 
   const onDrop = (e, index) => {
-      e.preventDefault()
+      e.preventDefault();
+      e.stopPropagation();
       handleImageChange(index, e.dataTransfer.files)
   }
 
@@ -144,9 +151,9 @@ export default function BulkUploadPage() {
   }
 
   const handleSubmit = async () => {
-    const validProducts = products.filter(p => p.title && p.price && p.category)
+    const validProducts = products.filter(p => p.title && p.price && p.category && p.description)
     if (validProducts.length === 0) {
-      toast.error("Validation Error", "Please fill in names, prices, and categories.")
+      toast.error("Validation Error", "Please fill in names, prices, categories, and descriptions.")
       return
     }
 
@@ -157,14 +164,29 @@ export default function BulkUploadPage() {
         if (p.imageFiles.length > 0) {
             const formData = new FormData()
             p.imageFiles.forEach(f => formData.append("images", f.file))
-            const { data } = await api.post("/admin/products/upload-temp", formData)
+            // ✅ CRITICAL BUG FIX: Added multipart/form-data header for image upload
+            const { data } = await api.post("/admin/products/upload-temp", formData, {
+              headers: { "Content-Type": "multipart/form-data" }
+            })
             imageUrls = data.urls || []
         }
+        // Helper to extract numeric value and suffix (e.g. "100 each" -> price: 100, suffix: "each")
+        const parsePrice = (val) => {
+            if (!val) return { price: 0, suffix: "" };
+            const numericPart = String(val).match(/[0-9.]+/);
+            const price = numericPart ? Number(numericPart[0]) : 0;
+            const suffix = String(val).replace(/[0-9.]+|gh|ghs|₵/gi, "").trim();
+            return { price, suffix };
+        };
+
+        const { price, suffix } = parsePrice(p.price);
+
         return {
             title: p.title,
             description: p.description,
-            price: Number(p.price),
-            stockQuantity: Number(p.stockQuantity),
+            price: price,
+            priceSuffix: suffix,
+            stockQuantity: Number(p.stockQuantity) || 0,
             category: p.category,
             subcategory: p.subcategory || undefined,
             images: imageUrls,
@@ -175,6 +197,7 @@ export default function BulkUploadPage() {
       toast.success("Success", `Created ${processedProducts.length} items.`)
       navigate("/products")
     } catch (err) {
+      console.error("Bulk Upload Error:", err)
       toast.error("Sync Failed", err.response?.data?.message || "Check fields.")
     } finally {
       setLoading(false)
@@ -192,7 +215,6 @@ export default function BulkUploadPage() {
            </Link>
            <h1 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase italic">Inventory Factory</h1>
            <p className="text-xs text-neutral-500 mt-2 max-w-lg leading-relaxed">Mass produce your jewelry catalog. Define specs, set prices, and drag images directly into the production line. Use CSV import for industrial-scale uploads.</p>
-
         </div>
 
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
@@ -265,16 +287,28 @@ export default function BulkUploadPage() {
                             return (
                                 <tr key={idx} className="group hover:bg-white/[0.02] transition-colors">
                                     <td className="px-6 py-8 text-xs font-black text-neutral-700 text-center bg-neutral-900/20">{idx + 1}</td>
-                                    <td className="px-3 py-4" onDragOver={(e) => onDragOver(e, idx)} onDragLeave={() => onDragLeave(idx)} onDrop={(e) => onDrop(e, idx)}>
-                                        <div className={p.dragging ? "border-yellow-500 bg-yellow-500/5 rounded-xl border-2 border-dashed flex items-center justify-center p-3 transition-all" : "border-white/5 bg-black/40 group-hover:border-white/20 rounded-xl border-2 border-dashed flex items-center justify-center p-3 transition-all"}>
+                                    <td 
+                                      className="px-3 py-4" 
+                                      onDragOver={onDragOver} 
+                                      onDragEnter={(e) => onDragEnter(e, idx)}
+                                      onDragLeave={(e) => onDragLeave(e, idx)} 
+                                      onDrop={(e) => onDrop(e, idx)}
+                                    >
+                                        <div className={cn(
+                                          "min-h-[100px] flex items-center justify-center p-3 transition-all rounded-xl border-2 border-dashed",
+                                          p.dragging ? "border-yellow-500 bg-yellow-500/10 scale-[1.02]" : "border-white/5 bg-black/40 group-hover:border-white/20"
+                                        )}>
                                             {p.imageFiles.length === 0 ? (
-                                                <label className="text-center text-[9px] font-black text-neutral-700 uppercase tracking-widest cursor-pointer py-4">Drag & Drop Files<input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleImageChange(idx, e.target.files)} /></label>
+                                                <label className="text-center text-[9px] font-black text-neutral-700 uppercase tracking-widest cursor-pointer py-4 w-full">
+                                                  Drag & Drop Files
+                                                  <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleImageChange(idx, e.target.files)} />
+                                                </label>
                                             ) : (
-                                                <div className="flex gap-2 p-1">
+                                                <div className="flex gap-2 p-1 flex-wrap justify-center">
                                                     {p.imageFiles.map((img, iIdx) => (
-                                                        <div key={iIdx} className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/20 ring-1 ring-white/5"><img src={img.preview} className="w-full h-full object-cover" /><button onClick={() => removeImage(idx, iIdx)} className="absolute inset-0 bg-red-600/90 text-white opacity-0 hover:opacity-100 flex items-center justify-center transition-all scale-110"><TrashIcon size={12} /></button></div>
+                                                        <div key={iIdx} className="relative w-12 h-12 rounded-lg overflow-hidden border border-white/20 ring-1 ring-white/5 shadow-lg group/img transition-transform hover:scale-110"><img src={img.preview} className="w-full h-full object-cover" /><button onClick={() => removeImage(idx, iIdx)} className="absolute inset-0 bg-red-600/90 text-white opacity-0 group-hover/img:opacity-100 flex items-center justify-center transition-all"><TrashIcon size={12} /></button></div>
                                                     ))}
-                                                    <label className="w-12 h-12 rounded-lg bg-white/5 border border-dashed border-white/20 flex items-center justify-center text-neutral-500 hover:text-white cursor-pointer"><PlusIcon size={14} /><input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleImageChange(idx, e.target.files)} /></label>
+                                                    <label className="w-12 h-12 rounded-lg bg-white/5 border border-dashed border-white/20 flex items-center justify-center text-neutral-500 hover:text-white cursor-pointer hover:bg-white/10 transition-colors"><PlusIcon size={14} /><input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleImageChange(idx, e.target.files)} /></label>
                                                 </div>
                                             )}
                                         </div>
@@ -289,7 +323,7 @@ export default function BulkUploadPage() {
                                           className="w-full bg-neutral-900/50 border border-white/5 rounded-lg p-2 outline-none text-[10px] font-bold text-neutral-400 placeholder:text-white/10 resize-none focus:border-yellow-500/50 transition-all min-h-[60px]" 
                                         />
                                     </td>
-                                    <td className="px-3 py-4"><div className="flex items-center gap-1"><span className="text-[10px] font-black text-neutral-600">₵</span><input type="number" step="0.01" value={p.price} onChange={(e) => handleChange(idx, "price", e.target.value)} placeholder="0.00" className="w-full bg-transparent outline-none text-lg font-black text-yellow-500" /></div></td>
+                                    <td className="px-3 py-4"><div className="flex items-center gap-1"><span className="text-[10px] font-black text-neutral-600">₵</span><input type="text" value={p.price} onChange={(e) => handleChange(idx, "price", e.target.value)} placeholder="0.00" className="w-full bg-transparent outline-none text-lg font-black text-yellow-500" /></div></td>
                                     <td className="px-3 py-4"><input type="number" value={p.stockQuantity} onChange={(e) => handleChange(idx, "stockQuantity", e.target.value)} className="w-full bg-transparent outline-none text-sm font-black text-neutral-400" /></td>
                                     <td className="px-3 py-4"><div className="relative"><select value={p.category} onChange={(e) => handleChange(idx, "category", e.target.value)} className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-[10px] font-black uppercase text-neutral-300 appearance-none"><option value="" disabled className="bg-neutral-900">Select Cat</option>{categories.map(c => <option key={c._id} value={c._id} className="bg-neutral-900">{c.name}</option>)}</select><ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600" /></div></td>
                                     <td className="px-3 py-4"><div className="relative"><select value={p.subcategory} onChange={(e) => handleChange(idx, "subcategory", e.target.value)} disabled={!p.category || subcats.length === 0} className="w-full bg-white/5 border border-white/5 rounded-xl px-4 py-3 text-[10px] font-black uppercase text-neutral-500 appearance-none"><option value="" className="bg-neutral-900">{subcats.length > 0 ? "Select Sub" : "No Subs"}</option>{subcats.map(s => <option key={s} value={s} className="bg-neutral-900">{s}</option>)}</select><ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-600" /></div></td>
@@ -342,7 +376,7 @@ export default function BulkUploadPage() {
                                 <label className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">Price (GHS)</label>
                                 <div className="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5">
                                     <span className="text-yellow-500 font-black">₵</span>
-                                    <input type="number" step="0.01" value={p.price} onChange={(e) => handleChange(idx, "price", e.target.value)} placeholder="0.00" className="w-full bg-transparent outline-none font-black text-yellow-500" />
+                                    <input type="text" value={p.price} onChange={(e) => handleChange(idx, "price", e.target.value)} placeholder="0.00" className="w-full bg-transparent outline-none font-black text-yellow-500" />
                                 </div>
                              </div>
                              <div className="space-y-1">

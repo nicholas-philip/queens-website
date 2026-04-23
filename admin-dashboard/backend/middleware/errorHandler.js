@@ -11,7 +11,7 @@ const errorHandler = (err, req, res, next) => {
   let message = err.message    || "An unexpected error occurred.";
 
   if (err.code === 11000) {                               // MongoDB duplicate key
-    const field = Object.keys(err.keyValue)[0];
+    const field = err.keyValue ? Object.keys(err.keyValue)[0] : "field";
     message = `A record with this ${field} already exists.`;
     status  = 400;
   }

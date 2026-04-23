@@ -18,7 +18,7 @@ const SizeGuide = require("../models/SizeGuide");
 
 // Product fields safe to expose publicly
 const PUBLIC_FIELDS =
-  "title description price discountPrice images SKU averageRating reviewCount " +
+  "title description price priceSuffix discountPrice images SKU averageRating reviewCount " +
   "totalSold tags sizes colors status stockQuantity hasVariants variants category metadata";
 
 // ── Shop page ─────────────────────────────────────
@@ -121,7 +121,7 @@ const searchSuggestions = async (req, res) => {
     const products = await Product.find({
       status: "Active",
       $or: [{ title: regex }, { tags: regex }],
-    }).limit(8).select("title images price discountPrice SKU averageRating");
+    }).limit(8).select("title images price priceSuffix discountPrice SKU averageRating");
     res.status(200).json({ success: true, suggestions: products });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
@@ -181,7 +181,7 @@ const getSimilarStyles = async (req, res) => {
       ]
     })
     .limit(10)
-    .select("title images price discountPrice SKU");
+    .select("title images price priceSuffix discountPrice SKU");
 
     res.status(200).json({ success: true, count: similar.length, data: similar });
   } catch (err) {

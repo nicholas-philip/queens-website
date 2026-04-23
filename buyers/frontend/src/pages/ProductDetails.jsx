@@ -171,9 +171,9 @@ const ProductDetails = () => {
               <div className="flex flex-wrap items-center gap-6 mt-5">
 
                 <div className="flex items-baseline gap-2">
-                   <p className="text-2xl font-black text-primary">
-                    GHS {(product.discountPrice ?? product.price ?? 0).toLocaleString()}
-                  </p>
+                    <p className="text-2xl font-black text-primary">
+                     GHS {(product.discountPrice ?? product.price ?? 0).toLocaleString()} {product.priceSuffix && <span className="text-sm font-bold opacity-60 ml-1">{product.priceSuffix}</span>}
+                   </p>
                   {product.discountPrice && (
                     <p className="text-sm text-base-content/30 line-through">
                       GHS {(product.price ?? 0).toLocaleString()}

@@ -117,7 +117,7 @@ const ProductCard = ({ product }) => {
         <div className="mt-auto pt-2 md:pt-3 flex items-center justify-between border-t border-base-200">
           <div className="flex flex-col">
             <span className="text-base-content font-black text-sm md:text-base tracking-tight">
-              GHS {displayPrice.toLocaleString()}
+              GHS {displayPrice.toLocaleString()} {product.priceSuffix && <span className="text-[10px] opacity-40 font-bold ml-0.5">{product.priceSuffix}</span>}
             </span>
             {salePrice && (
               <span className="text-base-content/30 text-xs md:text-xs line-through font-bold">

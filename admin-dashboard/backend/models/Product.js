@@ -24,9 +24,10 @@ const ProductSchema = new mongoose.Schema(
     title:         { type: String, required: [true, "Title is required"], trim: true },
     brand:         { type: String, default: "" }, // Brand or Manufacturer
     description:   { type: String, required: [true, "Description is required"] },
-    SKU:           { type: String, unique: true, uppercase: true, trim: true }, // Will be auto-generated if not provided
-    slug:          { type: String, unique: true }, // For SEO friendly URLs
+    SKU:           { type: String, unique: true, sparse: true, uppercase: true, trim: true }, // Sparse allows multiple nulls if needed, though we avoid it
+    slug:          { type: String, unique: true, sparse: true }, // For SEO friendly URLs
     price:         { type: Number, required: [true, "Price is required"], min: 0 },
+    priceSuffix:   { type: String, default: "" }, // e.g. "each", "per set", "pair"
     discountPrice: { type: Number, default: null },
 
     hasVariants:   { type: Boolean, default: false },

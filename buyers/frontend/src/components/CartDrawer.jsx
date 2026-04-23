@@ -111,7 +111,7 @@ export default function CartDrawer() {
                     </div>
 
                     <p className="mt-2 text-sm font-black text-primary">
-                      GHS {((item.product.discountPrice ?? item.product.price)).toFixed(2)}
+                      GHS {((item.product.discountPrice ?? item.product.price)).toFixed(2)} {item.product.priceSuffix && <span className="text-[10px] opacity-50 font-bold ml-0.5">{item.product.priceSuffix}</span>}
                     </p>
 
                     {/* Quantity controls */}
