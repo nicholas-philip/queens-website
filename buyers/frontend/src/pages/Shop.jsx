@@ -67,7 +67,7 @@ const Shop = () => {
 
       // "all" = no sort params → backend returns every product
       const sortParams = sort === "all" ? { sortBy: "random", sortOrder: "asc" } : (sortMap[sort] || {});
-      const actualLimit = 12; // Standardize limit to 12 for better infinite scroll behavior
+      const actualLimit = sort === "all" ? 200 : 12; // High limit for "All Pieces" to show full collection
 
       const params = {
         page: pageParam,

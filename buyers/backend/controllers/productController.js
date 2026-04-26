@@ -79,49 +79,40 @@ const getProducts = async (req, res) => {
 
     const sortMap = {
       createdAt: "createdAt", 
-      price: "effectivePrice",
       rating: "averageRating", 
       popular: "totalSold",
       title: "title",
-      random: "randomScore"
+      random: "_id"
     };
+
     const sortField = sortMap[sortBy] || "createdAt";
     const sortDir   = sortOrder === "asc" ? 1 : -1;
 
-    // Use aggregation to handle sorting by computed effectivePrice (discountPrice ?? price)
-    const pipeline = [
-      { $match: filter },
-      {
-        $addFields: {
-          effectivePrice: { $ifNull: ["$discountPrice", "$price"] },
-          // A pseudo-random score using the product's ID to keep order somewhat stable for pagination
-          randomScore: { $mod: [{ $toLong: "$_id" }, 100] } 
-        }
-      },
-      { $sort: { [sortField]: sortDir, _id: 1 } },
-      { $skip: skip },
-      { $limit: lim },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "category"
-        }
-      },
-      { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          ...PUBLIC_FIELDS.split(" ").reduce((acc, f) => ({ ...acc, [f]: 1 }), {}),
-          effectivePrice: 1
-        }
-      }
-    ];
+    let data;
+    const total = await Product.countDocuments(filter);
 
-    const [data, total] = await Promise.all([
-      Product.aggregate(pipeline),
-      Product.countDocuments(filter),
-    ]);
+    if (sortBy === "price") {
+      // Use aggregation ONLY for price sorting (to handle discountPrice)
+      const pipeline = [
+        { $match: filter },
+        { $addFields: { effectivePrice: { $ifNull: ["$discountPrice", "$price"] } } },
+        { $sort: { effectivePrice: sortDir, _id: 1 } },
+        { $skip: skip },
+        { $limit: lim },
+        { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
+        { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+        { $project: { ...projection, effectivePrice: 1 } }
+      ];
+      data = await Product.aggregate(pipeline);
+    } else {
+      // Use standard find() for everything else (Faster / Safer)
+      data = await Product.find(filter)
+        .populate("category", "name slug")
+        .sort({ [sortField]: sortDir })
+        .skip(skip)
+        .limit(lim)
+        .select(fields);
+    }
 
     res.status(200).json({
       success: true,

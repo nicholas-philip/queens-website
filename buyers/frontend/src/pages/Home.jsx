@@ -108,13 +108,13 @@ const Home = () => {
                   to="/shop"
                   className="px-8 py-4 bg-primary text-primary-content font-black text-sm uppercase tracking-widest rounded-2xl hover:brightness-110 shadow-lg shadow-primary/20 active:scale-95 transition-all"
                 >
-                  Shop Now
+                  Browse Collection
                 </Link>
                 <Link
                   to="/shop?sort=newest"
                   className="px-8 py-4 border-2 border-base-300 text-base-content font-black text-sm uppercase tracking-widest rounded-2xl hover:border-primary hover:text-primary active:scale-95 transition-all"
                 >
-                  New Arrivals
+                  Latest Drops
                 </Link>
               </div>
             </motion.div>
@@ -198,32 +198,6 @@ const Home = () => {
       )}
 
       {/* ═══════════════════════════════════════════════════
-          NEW ARRIVALS
-      ═══════════════════════════════════════════════════ */}
-      {newArrivals.length > 0 && (
-        <section className="py-14 sm:py-20 md:py-24 max-w-[1440px] mx-auto px-4 md:px-8">
-          <FadeUp>
-            <SectionHeader
-              eyebrow="Just Dropped"
-              title="New Arrivals"
-              subtitle="Fresh styles added weekly — be first to wear them."
-              linkTo="/shop?sort=newest"
-              linkLabel="See All"
-            />
-          </FadeUp>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {newArrivals.map((product, i) => (
-              <FadeUp key={product._id} delay={i * 0.05}>
-                <ProductCard product={product} />
-              </FadeUp>
-            ))}
-          </div>
-        </section>
-      )}
-
-     
-
-      {/* ═══════════════════════════════════════════════════
           ALL PRODUCTS
       ═══════════════════════════════════════════════════ */}
       {allProducts.length > 0 && (
@@ -231,11 +205,11 @@ const Home = () => {
           <div className="max-w-[1440px] mx-auto px-4 md:px-8">
             <FadeUp>
               <SectionHeader
-                eyebrow="Full Collection"
-                title="Everything You Need"
-                subtitle="Browse our entire premium catalog — curated just for you."
+                eyebrow="The Master Catalog"
+                title="Explore the Collection"
+                subtitle="Browse every exquisite piece in our curated inventory."
                 linkTo="/shop"
-                linkLabel="Shop with Filters"
+                linkLabel="Shop All Pieces"
               />
             </FadeUp>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
@@ -250,6 +224,30 @@ const Home = () => {
                 Browse Full Shop
               </Link>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════
+          NEW ARRIVALS (Now lower)
+      ═══════════════════════════════════════════════════ */}
+      {newArrivals.length > 0 && (
+        <section className="py-14 sm:py-20 md:py-24 max-w-[1440px] mx-auto px-4 md:px-8 bg-base-100 border-t border-base-200">
+          <FadeUp>
+            <SectionHeader
+              eyebrow="Just Dropped"
+              title="Recent Additions"
+              subtitle="The very latest pieces added to our catalog."
+              linkTo="/shop?sort=newest"
+              linkLabel="See All New"
+            />
+          </FadeUp>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            {newArrivals.map((product, i) => (
+              <FadeUp key={product._id} delay={i * 0.05}>
+                <ProductCard product={product} />
+              </FadeUp>
+            ))}
           </div>
         </section>
       )}
