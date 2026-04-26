@@ -66,8 +66,8 @@ const Shop = () => {
       };
 
       // "all" = no sort params → backend returns every product
-      const sortParams = sort !== "all" ? (sortMap[sort] || {}) : {};
-      const actualLimit = sort === "all" ? 1000 : 12;
+      const sortParams = sort === "all" ? { sortBy: "random", sortOrder: "asc" } : (sortMap[sort] || {});
+      const actualLimit = 12; // Standardize limit to 12 for better infinite scroll behavior
 
       const params = {
         page: pageParam,
@@ -81,7 +81,7 @@ const Shop = () => {
       return data;
     },
     getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.page < lastPage.pagination.pages) {
+      if (lastPage.pagination.page < lastPage.pagination.totalPages) {
         return lastPage.pagination.page + 1;
       }
       return undefined;

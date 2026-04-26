@@ -78,20 +78,48 @@ const getProducts = async (req, res) => {
     const skip = (pg - 1) * lim;
 
     const sortMap = {
-      createdAt: "createdAt", price: "price",
-      rating: "averageRating", popular: "totalSold",
+      createdAt: "createdAt", 
+      price: "effectivePrice",
+      rating: "averageRating", 
+      popular: "totalSold",
       title: "title",
+      random: "randomScore"
     };
     const sortField = sortMap[sortBy] || "createdAt";
     const sortDir   = sortOrder === "asc" ? 1 : -1;
 
+    // Use aggregation to handle sorting by computed effectivePrice (discountPrice ?? price)
+    const pipeline = [
+      { $match: filter },
+      {
+        $addFields: {
+          effectivePrice: { $ifNull: ["$discountPrice", "$price"] },
+          // A pseudo-random score using the product's ID to keep order somewhat stable for pagination
+          randomScore: { $mod: [{ $toLong: "$_id" }, 100] } 
+        }
+      },
+      { $sort: { [sortField]: sortDir, _id: 1 } },
+      { $skip: skip },
+      { $limit: lim },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          ...PUBLIC_FIELDS.split(" ").reduce((acc, f) => ({ ...acc, [f]: 1 }), {}),
+          effectivePrice: 1
+        }
+      }
+    ];
+
     const [data, total] = await Promise.all([
-      Product.find(filter)
-        .populate("category", "name slug")
-        .sort({ [sortField]: sortDir })
-        .skip(skip)
-        .limit(lim)
-        .select(PUBLIC_FIELDS),
+      Product.aggregate(pipeline),
       Product.countDocuments(filter),
     ]);
 
@@ -99,7 +127,9 @@ const getProducts = async (req, res) => {
       success: true,
       data,
       pagination: {
-        total, page: pg, limit: lim,
+        total, 
+        page: pg, 
+        limit: lim,
         totalPages: Math.ceil(total / (lim || 12)),
         hasNext: pg < Math.ceil(total / (lim || 12)),
         hasPrev: pg > 1,
