@@ -19,7 +19,8 @@ const SizeGuide = require("../models/SizeGuide");
 // Product fields safe to expose publicly
 const PUBLIC_FIELDS =
   "title description price priceSuffix discountPrice images SKU averageRating reviewCount " +
-  "totalSold tags sizes colors status stockQuantity hasVariants variants category metadata";
+  "totalSold tags sizes colors status stockQuantity hasVariants variants category subcategory metadata";
+const PUBLIC_PROJECTION = PUBLIC_FIELDS.split(" ").reduce((acc, f) => ({ ...acc, [f]: 1 }), {});
 
 // ── Shop page ─────────────────────────────────────
 const getProducts = async (req, res) => {
@@ -101,7 +102,7 @@ const getProducts = async (req, res) => {
         { $limit: lim },
         { $lookup: { from: "categories", localField: "category", foreignField: "_id", as: "category" } },
         { $unwind: { path: "$category", preserveNullAndEmptyArrays: true } },
-        { $project: { ...projection, effectivePrice: 1 } }
+        { $project: { ...PUBLIC_PROJECTION, effectivePrice: 1 } }
       ];
       data = await Product.aggregate(pipeline);
     } else {
@@ -111,7 +112,7 @@ const getProducts = async (req, res) => {
         .sort({ [sortField]: sortDir })
         .skip(skip)
         .limit(lim)
-        .select(fields);
+        .select(PUBLIC_FIELDS);
     }
 
     res.status(200).json({
