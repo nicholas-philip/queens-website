@@ -20,7 +20,8 @@ const { sendOrderConfirmation, sendStatusUpdate } = require("../utils/emailServi
 
 // ── POST /api/orders — Guest checkout ─────────────
 const placeOrder = async (req, res) => {
-  const { customerDetails, items, couponCode, shipping = 0, tax = 0, paymentMethod = 'Paystack' } = req.body;
+  try {
+    const { customerDetails, items, couponCode, shipping = 0, tax = 0, paymentMethod = 'Paystack' } = req.body;
 
   if (!customerDetails || !items?.length) {
     return res.status(400).json({ success: false, message: "Customer details and items are required." });
@@ -183,6 +184,10 @@ const placeOrder = async (req, res) => {
       _id:           order._id,
     },
   });
+  } catch (error) {
+    console.error("placeOrder Error:", error);
+    res.status(500).json({ success: false, message: error.message || "Failed to place order." });
+  }
 };
 
 // ── GET /api/orders/track/:orderNumber ─────────────
