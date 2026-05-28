@@ -124,7 +124,7 @@ const placeOrder = async (req, res) => {
     subtotal, discount, tax: taxAmount, shipping: shippingFee, total,
     couponCode:    appliedCode,
     paymentMethod: paymentMethod,
-    paymentStatus: isMoMo ? 'Unpaid' : 'Pending',
+    paymentStatus: 'Unpaid',
     currentStatus: "Pending",
     statusHistory: [{ status: "Pending", note: isMoMo ? "Order placed via storefront — awaiting Manual MoMo payment" : "Order placed via storefront", changedAt: new Date() }],
     metadata: {

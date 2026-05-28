@@ -26,7 +26,7 @@ const initializePayment = async (req, res) => {
     }
 
     // Validate channel
-    const validChannels = ["card", "mobile_money", "bank"];
+    const validChannels = ["card", "mobile_money", "bank", "all"];
     if (!validChannels.includes(channel)) {
       return res.status(400).json({
         success: false,

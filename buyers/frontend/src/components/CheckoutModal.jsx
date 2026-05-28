@@ -6,7 +6,7 @@
 //   - Paystack (DISABLED)  — shown but non-clickable until enabled
 // =====================================================
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, ShoppingCart, User, Truck, CreditCard,
@@ -112,10 +112,17 @@ const CheckoutModal = () => {
   const [step, setStep]             = useState(1);
   const [loading, setLoading]       = useState(false);
   const [errors, setErrors]         = useState({});
-  const [paymentMethod, setPaymentMethod] = useState('Manual MoMo');
+  const [paymentMethod, setPaymentMethod] = useState('Paystack');
   // momoStage: 'select' | 'instructions' | 'success'
   const [momoStage, setMomoStage]   = useState('select');
   const [orderResult, setOrderResult] = useState(null);
+
+  // ── Geolocation & Dynamic Leaflet Map States ──────────
+  const [leafletLoaded, setLeafletLoaded] = useState(false);
+  const [coordinates, setCoordinates]     = useState(null); // { lat, lng }
+  const [gpsLink, setGpsLink]             = useState('');
+  const [mapError, setMapError]           = useState('');
+  const [mapSearching, setMapSearching]   = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '',
@@ -132,6 +139,95 @@ const CheckoutModal = () => {
   const shipping = shippingMethod?.price ?? 0;
   const discount = couponResult?.discountAmount ?? 0;
   const total    = subtotal + shipping - discount;
+  // ── Geolocation & Leaflet Map ────────────────────────
+  useEffect(() => {
+    if (!isCheckoutOpen) return;
+
+    // Load Leaflet CSS
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+
+    // Load Leaflet JS
+    if (!window.L) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+      script.async = true;
+      script.onload = () => setLeafletLoaded(true);
+      document.body.appendChild(script);
+    } else {
+      setLeafletLoaded(true);
+    }
+  }, [isCheckoutOpen]);
+
+  const handleShareLocation = () => {
+    if (!navigator.geolocation) {
+      setMapError("Geolocation is not supported by your browser.");
+      return;
+    }
+    setMapSearching(true);
+    setMapError("");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoordinates({ lat: latitude, lng: longitude });
+        setGpsLink(`https://www.google.com/maps?q=${latitude},${longitude}`);
+        setMapSearching(false);
+      },
+      (error) => {
+        console.error("GPS Error:", error);
+        setMapError("Could not access your location. Please check browser permissions or enter it manually.");
+        setMapSearching(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
+  useEffect(() => {
+    if (!coordinates || !leafletLoaded || !isCheckoutOpen) return;
+
+    const timer = setTimeout(() => {
+      const mapContainer = document.getElementById('checkout-map');
+      if (!mapContainer) return;
+
+      if (window.checkoutMapInstance) {
+        window.checkoutMapInstance.remove();
+      }
+
+      // Initialize Leaflet map centered at our coordinates
+      const map = window.L.map('checkout-map', {
+        zoomControl: false
+      }).setView([coordinates.lat, coordinates.lng], 16);
+
+      window.checkoutMapInstance = map;
+
+      // Add Zoom control at top-right
+      window.L.control.zoom({ position: 'topright' }).addTo(map);
+
+      // Premium Dark Mode Tiles (CartoDB Dark Matter)
+      window.L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 20,
+        attribution: '© OpenStreetMap & CartoDB'
+      }).addTo(map);
+
+      // Bolt style - When the map is dragged, update the location details based on center coordinate
+      map.on('moveend', () => {
+        const center = map.getCenter();
+        setCoordinates({ lat: center.lat, lng: center.lng });
+        setGpsLink(`https://www.google.com/maps?q=${center.lat},${center.lng}`);
+      });
+
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [coordinates, leafletLoaded, isCheckoutOpen]);
 
   // ── Field change ────────────────────────────────────
   const handleChange = useCallback((e) => {
@@ -181,6 +277,10 @@ const CheckoutModal = () => {
     setLoading(true);
     try {
       const sessionId = localStorage.getItem('queens_session_id');
+      const fullAddress = gpsLink 
+        ? `${formData.address.trim()} (GPS: ${gpsLink})`
+        : formData.address.trim();
+
       const { data: orderData } = await api.post('/orders', {
         paymentMethod: 'Manual MoMo',
         metadata: { sessionId },
@@ -189,7 +289,7 @@ const CheckoutModal = () => {
           email:   formData.email.trim(),
           phone:   formData.whatsapp.trim(),
           address: {
-            street:  formData.address.trim(),
+            street:  fullAddress,
             city:    formData.city.trim(),
             state:   formData.region,
             country: 'Ghana',
@@ -219,6 +319,64 @@ const CheckoutModal = () => {
       } else {
         toast.error('Checkout Error', err.response?.data?.message || 'Something went wrong. Please try again.');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ── Place order & Pay via Paystack ───────────────────
+  const handlePaystackCheckout = async () => {
+    if (!shippingMethod) return;
+    setLoading(true);
+    try {
+      const sessionId = localStorage.getItem('queens_session_id');
+      const fullAddress = gpsLink 
+        ? `${formData.address.trim()} (GPS: ${gpsLink})`
+        : formData.address.trim();
+
+      // 1. Create order in Database
+      const { data: orderData } = await api.post('/orders', {
+        paymentMethod: 'Paystack',
+        metadata: { sessionId },
+        customerDetails: {
+          name:    `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+          email:   formData.email.trim(),
+          phone:   formData.whatsapp.trim(),
+          address: {
+            street:  fullAddress,
+            city:    formData.city.trim(),
+            state:   formData.region,
+            country: 'Ghana',
+          },
+        },
+        items: cartItems.map(item => ({
+          productId:    item.product._id,
+          quantity:     item.quantity,
+          selectedSize:  item.product.selectedSize,
+          selectedColor: item.product.selectedColor,
+        })),
+        shipping:   shippingMethod.price,
+        couponCode: couponCode.trim() || undefined,
+        tax:        0,
+      });
+
+      if (!orderData.success) throw new Error(orderData.message);
+
+      // 2. Initialize Paystack Transaction
+      const { data: paystackData } = await api.post('/payment/initialize', {
+        orderId: orderData.order._id,
+        channel: 'all' // Allows both card and mobile money
+      });
+
+      if (!paystackData.success) throw new Error(paystackData.message);
+
+      // 3. Clear cart and redirect to Paystack
+      clearCart();
+      window.location.href = paystackData.authorization_url;
+
+    } catch (err) {
+      console.error('Paystack checkout error:', err.response?.data || err.message);
+      toast.error('Payment Error', err.response?.data?.message || 'Could not initialize payment. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -431,22 +589,31 @@ const CheckoutModal = () => {
             </div>
           </button>
 
-          {/* Paystack — DISABLED */}
-          <div
-            title="Paystack payments are temporarily unavailable"
-            className="w-full text-left p-4 rounded-2xl border border-white/5 bg-white/2 opacity-40 cursor-not-allowed select-none"
+          {/* Paystack — ACTIVE */}
+          <button
+            type="button"
+            onClick={() => setPaymentMethod('Paystack')}
+            className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 ${
+              paymentMethod === 'Paystack'
+                ? 'border-gold bg-gold/8 shadow-lg shadow-gold/5'
+                : 'border-white/8 bg-white/3 hover:border-white/15'
+            }`}
           >
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded-full border-2 border-white/10 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-white/50 font-semibold text-sm flex items-center gap-2">
-                  <CreditCard size={14} /> Paystack (Card / MoMo)
-                </p>
-                <p className="text-white/25 text-xs mt-0.5">Instant payment via card or mobile money</p>
+              <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                paymentMethod === 'Paystack' ? 'border-gold' : 'border-white/20'
+              }`}>
+                {paymentMethod === 'Paystack' && <div className="w-2 h-2 rounded-full bg-gold" />}
               </div>
-              <span className="text-xs bg-white/5 text-white/30 border border-white/10 px-2 py-0.5 rounded-full font-bold">Soon</span>
+              <div className="flex-1">
+                <p className="text-white font-semibold text-sm flex items-center gap-2">
+                  <CreditCard size={14} className="text-gold" /> Paystack (Card / MoMo)
+                </p>
+                <p className="text-white/40 text-xs mt-0.5">Secure payment via Cards or Mobile Money (MTN/Telecel/AirtelTigo)</p>
+              </div>
+              <span className="text-xs bg-green-500/20 text-green-400 border border-green-500/30 px-2 py-0.5 rounded-full font-bold">Active</span>
             </div>
-          </div>
+          </button>
 
         </div>
       </motion.div>
@@ -604,7 +771,7 @@ const CheckoutModal = () => {
                       </Select>
                     </Field>
                   </div>
-                  <div className="col-span-2">
+                   <div className="col-span-2">
                     <Field label="Delivery Location *" error={errors.address}>
                       <Input 
                         name="address" 
@@ -615,6 +782,82 @@ const CheckoutModal = () => {
                       />
                     </Field>
                   </div>
+
+                  {/* Sleek Bolt-Style Geolocation Map Picker */}
+                  <div className="col-span-2 space-y-2 mt-1 mb-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-white/40">📍 Exact GPS Location (Bolt Style)</span>
+                      {gpsLink && (
+                        <span className="text-[10px] font-black uppercase tracking-widest text-green-400 flex items-center gap-1 font-bold">
+                          ✓ Pinned
+                        </span>
+                      )}
+                    </div>
+                    
+                    {!coordinates ? (
+                      <button
+                        type="button"
+                        onClick={handleShareLocation}
+                        disabled={mapSearching}
+                        className="w-full py-3 rounded-xl bg-gold/10 border border-gold/25 hover:bg-gold/20 text-gold text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-[0.98] disabled:opacity-50"
+                      >
+                        {mapSearching ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-gold/30 border-t-gold rounded-full animate-spin" />
+                            Sharing Location...
+                          </>
+                        ) : (
+                          <>
+                            📍 Share & Map My Exact Location
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      <div className="space-y-2">
+                        {/* Map Container */}
+                        <div className="relative w-full h-[220px] rounded-2xl border border-white/10 overflow-hidden" id="checkout-map" style={{ zIndex: 10 }}>
+                          
+                          {/* static Bolt-style center marker overlay */}
+                          <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-[999] mb-5">
+                            <div className="relative flex flex-col items-center">
+                              {/* glowing pulse */}
+                              <div className="w-8 h-8 rounded-full bg-gold/30 absolute -top-4 animate-ping" />
+                              {/* gold pin icon */}
+                              <div className="w-3.5 h-3.5 rounded-full bg-gold border-2 border-black shadow-xl z-10" />
+                              {/* pin stand */}
+                              <div className="w-0.5 h-5 bg-gold shadow-lg" />
+                              {/* shadow at bottom */}
+                              <div className="w-3 h-1 bg-black/40 rounded-full blur-[1px]" />
+                            </div>
+                          </div>
+
+                        </div>
+                        
+                        {/* Map Details and Reset */}
+                        <div className="flex items-center justify-between gap-3 text-xs bg-white/3 p-3 rounded-xl border border-white/6">
+                          <div className="truncate text-white/50 font-medium">
+                            <span className="font-bold text-gold">Coordinates: </span>
+                            {coordinates.lat.toFixed(6)}, {coordinates.lng.toFixed(6)}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCoordinates(null);
+                              setGpsLink('');
+                            }}
+                            className="text-gold font-bold text-[10px] uppercase tracking-widest hover:text-gold-light whitespace-nowrap"
+                          >
+                            Reset Map
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {mapError && (
+                      <p className="text-red-400 text-xs mt-1 font-semibold">⚠️ {mapError}</p>
+                    )}
+                  </div>
+
                   <div className="col-span-2">
                     <Field label="Nearest Landmark (Optional)">
                       <Input 
@@ -733,10 +976,20 @@ const CheckoutModal = () => {
               ) : (
                 // Step 4 select stage — show "Proceed to Pay"
                 <button
-                  onClick={() => setMomoStage('instructions')}
-                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20"
+                  onClick={paymentMethod === 'Paystack' ? handlePaystackCheckout : () => setMomoStage('instructions')}
+                  disabled={loading}
+                  className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gold text-black font-bold text-sm hover:bg-gold-light transition-all shadow-lg shadow-gold/20 disabled:opacity-60"
                 >
-                  Proceed to Pay · GHS {total.toFixed(2)} <ChevronRight size={16} />
+                  {loading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      Proceed to Pay · GHS {total.toFixed(2)} <ChevronRight size={16} />
+                    </>
+                  )}
                 </button>
               )}
             </div>

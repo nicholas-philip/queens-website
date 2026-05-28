@@ -246,7 +246,7 @@ const Header = () => {
                       className="w-full bg-base-100 rounded-2xl px-6 py-3.5 text-xs outline-none border-2 border-transparent focus:border-primary/40 font-black tracking-widest placeholder:text-base-content/20 transition-all focus:bg-base-100 shadow-inner"
                     />
                     <button type="submit" className="absolute right-5 top-1/2 -translate-y-1/2 text-base-content/30 hover:text-primary transition-colors">
-                       <Search size={16} strokeWidth={4} />
+                       <Search size={10} strokeWidth={4} />
                     </button>
                   </form>
 

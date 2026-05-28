@@ -297,7 +297,7 @@ const Shop = () => {
                   <button
                     onClick={() => fetchNextPage()}
                     disabled={isFetchingNextPage}
-                    className="btn btn-primary btn-wide rounded-full shadow-lg shadow-primary/20 font-black text-sm uppercase tracking-widest flex items-center gap-2"
+                    className="btn btn-primary btn-wide rounded-full font-black text-sm uppercase tracking-widest flex items-center gap-2"
                   >
                     {isFetchingNextPage ? (
                       <><Loader2 size={16} className="animate-spin" /> Loading...</>

@@ -30,8 +30,13 @@ const initializeTransaction = async ({ email, amount, reference, metadata = {}, 
     reference,
     callback_url: callbackUrl || process.env.PAYSTACK_CALLBACK_URL,
     metadata,
-    channels: [channel],
   };
+
+  if (channel && channel !== "all") {
+    payload.channels = [channel];
+  } else {
+    payload.channels = ["card", "mobile_money"];
+  }
 
   // Mobile Money requires provider
   if (channel === "mobile_money" && mobileProvider) {

@@ -106,7 +106,7 @@ const Home = () => {
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/shop"
-                  className="px-8 py-4 bg-primary text-primary-content font-black text-sm uppercase tracking-widest rounded-2xl hover:brightness-110 shadow-lg shadow-primary/20 active:scale-95 transition-all"
+                  className="px-8 py-4 bg-primary text-primary-content font-black text-sm uppercase tracking-widest rounded-2xl hover:brightness-110 active:scale-95 transition-all"
                 >
                   Browse Collection
                 </Link>

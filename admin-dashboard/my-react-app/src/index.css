@@ -83,6 +83,14 @@ body {
   border-radius: 9999px;
   opacity: 0.8;
 }
-::-webkit-scrollbar-thumb:hover {
+:: -webkit-scrollbar-thumb:hover {
   background: #b5952f;
+}
+
+/* =====================================================
+   GLOBAL BUTTON SHADOW REMOVAL
+   ===================================================== */
+button, .btn, [role="button"] {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
 }

@@ -179,3 +179,12 @@
   mix-blend-mode: screen;
 }
 
+/* =====================================================
+   GOLBAL BUTTON SHADOW REMOVAL
+   ===================================================== */
+button, .btn, [role="button"], a.btn {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  -moz-box-shadow: none !important;
+}
+

@@ -234,7 +234,7 @@ const ProductDetails = () => {
                           className={`h-9 px-4 rounded-lg text-[10px] font-black transition-all duration-300 border flex items-center justify-center min-w-[2.5rem]
                           ${
                             selectedSize === size
-                              ? "bg-primary border-primary text-primary-content shadow-md shadow-primary/10"
+                              ? "bg-primary border-primary text-primary-content"
                               : "border-base-200 text-base-content/50 hover:border-primary/40 hover:text-primary"
                           }`}
                         >
@@ -301,7 +301,7 @@ const ProductDetails = () => {
                     if (product.sizes?.length > 0 && !selectedSize) return alert("Please select a size before adding to cart");
                     addToCart({ ...product, selectedSize }, quantity);
                   }}
-                  className="btn btn-primary h-14 flex-1 gap-3 rounded-[1.25rem] font-black text-sm uppercase tracking-widest shadow-xl shadow-primary/20 border-none group"
+                  className="btn btn-primary h-14 flex-1 gap-3 rounded-[1.25rem] font-black text-sm uppercase tracking-widest border-none group"
                 >
                   <ShoppingBag size={20} className="group-hover:scale-110 transition-transform" />
                   Add to Cart
