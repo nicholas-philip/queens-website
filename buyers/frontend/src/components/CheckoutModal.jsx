@@ -621,7 +621,7 @@ const CheckoutModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-stretch md:items-center justify-end bg-black/70 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[200] flex items-stretch md:items-center justify-end bg-black/70 backdrop-blur-sm">
       <motion.div
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
